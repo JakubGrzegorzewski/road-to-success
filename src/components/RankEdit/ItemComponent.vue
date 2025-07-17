@@ -18,7 +18,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import SelectionComponent from "@/components/SelectionComponent.vue";
+import SelectionComponent from "@/components/RankEdit/SelectionComponent.vue";
 
 const content = ref("Test fasdf asdfasd fa dfa");
 const idea = ref("Swoją postawą propaguje harcerski system wartości wynikający z Przyrzeczenia i Prawa Harcerskiego. Poznaje siebie i motywy swojego postępowania. Pracuje nad własnymi słabościami i rozwija zdolności. Jest wzorem dla harcerzy. We współdziałaniu z dziećmi i młodzieżą znajduje radość, umie być starszym kolegą i przewodnikiem. Bierze aktywny udział w życiu drużyny, świadomie stosując metodę harcerską i wykorzystując przykład osobisty do realizacji celów wychowawczych. Ma poczucie odpowiedzialności za pracę i powierzoną grupę. Współtworzy hufcową wspólnotę. Ma świadomość wychowawczej roli służby w harcerstwie.");

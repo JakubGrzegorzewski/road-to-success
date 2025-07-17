@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import RankComponent from "@/components/RankComponent.vue";
+import RankComponent from "@/components/RankEdit/RankComponent.vue";
 </script>
 
 <template>
