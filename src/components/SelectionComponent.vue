@@ -18,13 +18,14 @@
 
       <div class="selection-component-buttons">
         <div
-            v-if="showActionButtons"
+            v-if="showAddSelection"
             class="selection-component-button confirm-button"
             @click.stop="confirmSelection"
         >
           <span class="info-icon">Zatwierdź zaznaczenie ✔</span>
         </div>
         <div
+            v-if="showClearSelection"
             class="selection-component-button clear-button"
             @click.stop="resetSelection"
         >
@@ -36,10 +37,14 @@
 </template>
 
 <script setup>
-  import { computed, ref, nextTick, onUnmounted } from 'vue'
+  import { computed, ref, nextTick, onUnmounted, onMounted } from 'vue'
 
   const props = defineProps({
     text: {
+      type: String,
+      required: true
+    },
+    originalText: {
       type: String,
       required: true
     }
@@ -49,18 +54,21 @@
 
   const words = computed(() => props.text.split(' '))
 
-  const showActionButtons = ref(false)
+  const showAddSelection = ref(false)
+  const showClearSelection = ref(false)
   const highlightedWords = ref([])
   const textContainer = ref(null)
 
-  const clearHighlight = () => {
+  const clearHighlight = async () => {
     highlightedWords.value.forEach(span => {
       span.classList.remove('highlighted')
     })
     highlightedWords.value = []
-    showActionButtons.value = false
+    showAddSelection.value = false
     window.getSelection().removeAllRanges()
     document.removeEventListener('click', handleContainerClick)
+    await nextTick();
+    showClearSelection.value = props.text !== props.originalText
   }
 
   const handleContainerClick = async (event) => {
@@ -97,7 +105,8 @@
       if (selection.containsNode(span, true)) {
         highlightedWords.value.push(span)
         span.classList.add('highlighted')
-        showActionButtons.value = true
+        showAddSelection.value = true
+        showClearSelection.value = true
       }
     })
 
@@ -121,10 +130,14 @@
       reset: true
     })
     clearHighlight()
+    showClearSelection.value = props.text !== props.originalText
   }
 
   onUnmounted(() => {
     document.removeEventListener('click', handleContainerClick)
+  })
+  onMounted(() => {
+    showClearSelection.value = props.text !== props.originalText
   })
 </script>
 
@@ -133,21 +146,21 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     user-select: text;
     cursor: text;
-    padding: 12px;
-    border-radius: 8px;
-    background-color: #f5f5f5;
     min-height: 60px;
+    font-family: 'Museo', sans-serif;
+    font-size: 12px;
   }
 
   .selection-component-text {
     font-size: 1.1em;
     line-height: 1.6;
     color: #333;
-    display: block;
-    word-wrap: break-word;
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
   }
 
   .selection-component-word {
