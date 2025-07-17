@@ -1,16 +1,16 @@
 <template>
-  <div class="rank-item-component">
-    <div class="rank-item-component-content">
-      <h2>Nazwa</h2>
+  <div class="rank-item-components">
+    <div class="rank-item-component-content rank-item-component">
       <h3>Treść</h3>
-      <textarea v-model="content"></textarea>
+      <textarea class="rank-item-component-content-value" v-model="content"></textarea>
       <selection-component
           v-if="selectedText"
           :text="selectedText"
+          :original-text="idea"
           @text-highlighted="onTextHighlighted"
       />
     </div>
-    <div class="rank-item-component-comments">
+    <div class="rank-item-component-comments rank-item-component">
 
     </div>
   </div>
@@ -34,23 +34,42 @@ const onTextHighlighted = (data) => {
 </script>
 
 <style scoped>
-.rank-item-component {
+.rank-item-components {
   display: flex;
   flex-direction: row;
   gap: 20px;
   padding: 20px;
-  background-color: #f9f9f9;
   border-radius: 8px;
+  align-items: stretch;
+  font-family: "Museo", sans-serif;
 }
+
 .rank-item-component-content {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  max-width: 1000px;
+  min-width: 500px;
+  flex: 2;
 }
 .rank-item-component-comments {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  flex: 1;
 }
+
+.rank-item-component {
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  padding: 20px;
+  gap: 10px;
+  border: 1px solid var(--shadow-light);
+}
+
+.rank-item-component-content h3 {
+  margin: 0;
+}
+
+.rank-item-component-content-value{
+  resize: vertical;
+  min-height: 50px;
+  flex: 1;
+}
+
 </style>
