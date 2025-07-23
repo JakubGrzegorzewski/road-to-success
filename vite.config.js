@@ -10,11 +10,19 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  base: '/road-to-success/',
+  // base: '/road-to-success/',
 
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+    resolve: {
+        alias: {
+          '@': fileURLToPath(new URL('./src', import.meta.url))
+        },
     },
-  },
+    server: {
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8081',
+                changeOrigin: true
+            }
+        }
+    }
 })
