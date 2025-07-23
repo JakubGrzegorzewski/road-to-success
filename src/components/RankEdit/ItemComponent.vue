@@ -1,12 +1,12 @@
 <template>
   <div class="rank-item-components">
     <div class="rank-item-component-content rank-item-component">
-      <h3>Treść</h3>
+      <h3>{{props.task}}</h3>
       <textarea class="rank-item-component-content-value" v-model="content"></textarea>
       <selection-component
           v-if="selectedText"
           :text="selectedText"
-          :original-text="idea"
+          :original-text="props.idea"
           @text-highlighted="onTextHighlighted"
       />
     </div>
@@ -17,16 +17,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineProps } from 'vue';
 import SelectionComponent from "@/components/RankEdit/SelectionComponent.vue";
 
-const content = ref("Test fasdf asdfasd fa dfa");
-const idea = ref("Swoją postawą propaguje harcerski system wartości wynikający z Przyrzeczenia i Prawa Harcerskiego. Poznaje siebie i motywy swojego postępowania. Pracuje nad własnymi słabościami i rozwija zdolności. Jest wzorem dla harcerzy. We współdziałaniu z dziećmi i młodzieżą znajduje radość, umie być starszym kolegą i przewodnikiem. Bierze aktywny udział w życiu drużyny, świadomie stosując metodę harcerską i wykorzystując przykład osobisty do realizacji celów wychowawczych. Ma poczucie odpowiedzialności za pracę i powierzoną grupę. Współtworzy hufcową wspólnotę. Ma świadomość wychowawczej roli służby w harcerstwie.");
-const selectedText = ref(idea.value);
+const props = defineProps({
+  idea : String,
+  task: String,
+  taskContent: String
+})
+
+const content = ref(props.taskContent);
+const selectedText = ref(props.idea);
 
 const onTextHighlighted = (data) => {
   if (data.reset)
-    selectedText.value = idea.value;
+    selectedText.value = props.idea;
   else
     selectedText.value = data.text;
 
@@ -38,7 +43,6 @@ const onTextHighlighted = (data) => {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  padding: 20px;
   border-radius: 8px;
   align-items: stretch;
   font-family: "Museo", sans-serif;

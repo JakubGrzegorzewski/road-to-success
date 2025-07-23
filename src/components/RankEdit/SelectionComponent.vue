@@ -22,14 +22,14 @@
             class="selection-component-button confirm-button"
             @click.stop="confirmSelection"
         >
-          <span class="info-icon">Zatwierdź zaznaczenie ✔</span>
+          <span class="info-icon"> {{ $t('edit.save') }} ✔</span>
         </div>
         <div
             v-if="showClearSelection"
             class="selection-component-button clear-button"
             @click.stop="resetSelection"
         >
-          <span class="info-icon">Wyczyść zaznaczenie ✘</span>
+          <span class="info-icon"> {{ $t('edit.cancel') }} ✘</span>
         </div>
       </div>
 
