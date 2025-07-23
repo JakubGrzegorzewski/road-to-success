@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { locale } = useI18n()
@@ -55,7 +55,6 @@ nav{
 .language-select select {
   appearance: none;
   -webkit-appearance: none;
-  -moz-appearance: none;
   background:white;
   border: 2px solid lightgray;
   border-radius: 8px;

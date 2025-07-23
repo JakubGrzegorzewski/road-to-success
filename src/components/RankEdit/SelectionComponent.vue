@@ -169,18 +169,6 @@
     display: inline;
   }
 
-  .selection-component-word.highlighted {
-    background-color: var(--accent-info);
-    color: white;
-    font-weight: 500;
-  }
-
-  .selection-component-word.selected {
-    background-color: var(--accent-warning);
-    color: white;
-    font-weight: 500;
-  }
-
   .selection-component-buttons {
     display: flex;
     gap: 10px;
