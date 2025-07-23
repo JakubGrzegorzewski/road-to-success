@@ -3,5 +3,14 @@
     "home": "Home",
     "myAdvancement": "My Advancements",
     "menteesAdvancements": "Mentee Advancements"
+  },
+  "edit": {
+    "title": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this advancement?",
+    "deleteSuccess": "Advancement successfully deleted.",
+    "editSuccess": "Advancement successfully updated."
   }
 }

@@ -3,5 +3,14 @@
     "home": "Strona główna",
     "myAdvancement": "Moje próby",
     "menteesAdvancements": "Próby podopiecznych"
+  },
+  "edit": {
+    "title": "Edytuj",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "deleteConfirm": "Czy na pewno chcesz usunąć tę próbę?",
+    "deleteSuccess": "Próba została pomyślnie usunięta.",
+    "editSuccess": "Próba została pomyślnie zaktualizowana."
   }
 }
