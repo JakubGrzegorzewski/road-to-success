@@ -79,7 +79,7 @@ const onRankChange = () => {
   height: 40px;
 }
 .rank-details {
-  padding: 0 40px, 40px 40px;
+  padding: 0 40px 40px 40px;
   font-family: 'Museo', sans-serif;
   display: flex;
   flex-direction: column;
