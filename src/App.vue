@@ -1,5 +1,5 @@
 <script setup>
-import NavBarComponent from "@/components/NavBarComponent.vue";
+  import NavBarComponent from "@/components/NavBarComponent.vue";
 </script>
 
 <template>
@@ -11,9 +11,11 @@ import NavBarComponent from "@/components/NavBarComponent.vue";
 </template>
 
 <style scoped>
-@import url('./assets/default.css');
+  @import url('assets/css/default.css');
+  @import url('assets/css/custom_components.css');
 </style>
 
 <style>
-@import url('./assets/default.css');
+  @import url('assets/css/default.css');
+  @import url('assets/css/custom_components.css');
 </style>
