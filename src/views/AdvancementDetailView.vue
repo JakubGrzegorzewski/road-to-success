@@ -80,7 +80,7 @@ async function fetchRankBasedOn(name) {
   <div class="rank-details" v-if="rank && rankBased">
     <div class="rank-details-info">
       <h2>{{ rankBased.rank_name_full }}</h2>
-      <p style="text-align: justify">Idea stopnia: <br> {{ rankBased.rank_idea.description }}</p>
+      <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rankBased.rank_idea.description }}</p>
     </div>
     <item-component
         v-for="item in rankBased.requirements"

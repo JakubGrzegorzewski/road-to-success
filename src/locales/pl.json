@@ -9,8 +9,16 @@
     "save": "Zapisz",
     "cancel": "Anuluj",
     "delete": "Usuń",
-    "deleteConfirm": "Czy na pewno chcesz usunąć tę próbę?",
-    "deleteSuccess": "Próba została pomyślnie usunięta.",
-    "editSuccess": "Próba została pomyślnie zaktualizowana."
+    "add": "Dodaj"
+  },
+  "advancement": {
+    "idea": "Idea stopnia",
+    "status": "Status",
+    "statusOptions": {
+      "pending": "Oczekująca",
+      "completed": "Zakończona",
+      "failed": "Nieudana"
+    },
+    "addNew": "Dodaj nową próbę"
   }
 }

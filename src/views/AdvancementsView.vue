@@ -40,7 +40,7 @@ onMounted(() => {
         @click="$router.push(`/Advancement/${rank.id}`)"
     />
     <SelectRankComponent
-        rankName="Create New Rank"
+        :rankName="$t('advancement.addNew')"
         rankImage="@/assets/images/plus.png"
         @click="$router.push('/CreateAdvancement')"
     />

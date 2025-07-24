@@ -9,8 +9,16 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "deleteConfirm": "Are you sure you want to delete this advancement?",
-    "deleteSuccess": "Advancement successfully deleted.",
-    "editSuccess": "Advancement successfully updated."
+    "add": "Add"
+  },
+  "advancement": {
+    "idea": "Rank idea",
+    "status": "Status",
+    "statusOptions": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "addNew": "Add New Advancement"
   }
 }
