@@ -78,8 +78,10 @@ async function fetchRankBasedOn(name) {
 
 <template>
   <div class="rank-details" v-if="rank && rankBased">
-    <h2>Wybrany stopień: {{ rankBased.rank_name_full }}</h2>
-    <p>Idea stopnia: {{ rankBased.rank_idea.description }}</p>
+    <div class="rank-details-info">
+      <h2>{{ rankBased.rank_name_full }}</h2>
+      <p style="text-align: justify">Idea stopnia: <br> {{ rankBased.rank_idea.description }}</p>
+    </div>
     <item-component
         v-for="item in rankBased.requirements"
         :key="item.id"
@@ -92,5 +94,15 @@ async function fetchRankBasedOn(name) {
 </template>
 
 <style scoped>
-
+.rank-details {
+  padding: 40px;
+  font-family: 'Museo', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.rank-details-info {
+  max-width: 1000px;
+}
 </style>

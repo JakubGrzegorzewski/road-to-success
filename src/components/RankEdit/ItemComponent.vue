@@ -73,7 +73,6 @@ const onTextHighlighted = (data) => {
 .rank-item-component-content-value{
   resize: vertical;
   min-height: 50px;
-  flex: 1;
 }
 
 </style>

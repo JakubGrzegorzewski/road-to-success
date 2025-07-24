@@ -54,5 +54,6 @@ onMounted(() => {
     align-items: flex-start;
     justify-content: flex-start;
     gap: 20px;
+    padding : 20px;
   }
 </style>

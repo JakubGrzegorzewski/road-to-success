@@ -1,32 +1,32 @@
 <template>
     <div
       ref="textContainer"
-      class="selection-component"
+      class="snipped"
     >
-      <div class="selection-component-text"
+      <div class="snipped-text"
            @mouseup="handleTextSelection"
            @touchend="handleTextSelection"
       >
         <span
           v-for="(word, index) in words"
           :key="`${word}-${index}`"
-          class="selection-component-word"
+          class="snipped-word"
         >
           {{ word }}{{ index < words.length - 1 ? ' ' : '' }}
         </span>
       </div>
 
-      <div class="selection-component-buttons">
+      <div class="snipped-buttons">
         <div
             v-if="showAddSelection"
-            class="selection-component-button confirm-button"
+            class="snipped-button confirm-button"
             @click.stop="confirmSelection"
         >
           <span class="info-icon"> {{ $t('edit.save') }} ✔</span>
         </div>
         <div
             v-if="showClearSelection"
-            class="selection-component-button clear-button"
+            class="snipped-button clear-button"
             @click.stop="resetSelection"
         >
           <span class="info-icon"> {{ $t('edit.cancel') }} ✘</span>
@@ -73,7 +73,7 @@
 
   const handleContainerClick = async (event) => {
     await new Promise(resolve => setTimeout(resolve, 100))
-    if (!event.target.closest('.selection-component-text') && !event.target.closest('.selection-component-buttons')) {
+    if (!event.target.closest('.snipped-text') && !event.target.closest('.snipped-buttons')) {
       clearHighlight()
     }
   }
@@ -100,7 +100,7 @@
       return
     }
 
-    const spans = container.querySelectorAll('.selection-component-word')
+    const spans = container.querySelectorAll('.snipped-word')
     spans.forEach(span => {
       if (selection.containsNode(span, true)) {
         highlightedWords.value.push(span)
@@ -142,7 +142,7 @@
 </script>
 
 <style scoped>
-  .selection-component {
+  .snipped {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -154,7 +154,7 @@
     font-size: 12px;
   }
 
-  .selection-component-text {
+  .snipped-text {
     font-size: 1.1em;
     line-height: 1.6;
     color: #333;
@@ -163,19 +163,19 @@
     flex-wrap: wrap;
   }
 
-  .selection-component-word {
+  .snipped-word {
     margin: 0;
     padding: 0.1em 0.2em;
     display: inline;
   }
 
-  .selection-component-buttons {
+  .snipped-buttons {
     display: flex;
     gap: 10px;
     margin-top: 20px;
   }
 
-  .selection-component-button {
+  .snipped-button {
     color: white;
     border: none;
     border-radius: 20px;
@@ -192,12 +192,18 @@
     white-space: nowrap;
   }
 
-  .selection-component-button:hover {
+  .snipped-button:hover {
     transform: scale(1.05);
   }
 
-  .selection-component-button:active {
+  .snipped-button:active {
     transform: scale(0.95);
+  }
+
+  .snipped-word.highlighted {
+    background-color: var(--accent-info);
+    color: white;
+    font-weight: 500;
   }
 
   .info-icon {

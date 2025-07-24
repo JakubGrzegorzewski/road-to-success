@@ -18,7 +18,7 @@ const changeLocale = () => {
       <router-link class="btn-primary btn" to="/">{{ $t('nav.home') }}</router-link>
       <router-link class="btn-primary btn" to="/Advancements">{{ $t('nav.myAdvancement') }}</router-link>
       <router-link class="btn-primary btn" to="/menteesAdvancements">{{ $t('nav.menteesAdvancements') }}</router-link>
-      <div class="language-select">
+      <div class="language-select text-selection-component">
         <select @change="changeLocale" v-model="currentLocale">
           <option value="en">English</option>
           <option value="pl">Polski</option>
@@ -45,59 +45,5 @@ nav{
   display: flex;
   align-items: center;
   gap: 16px;
-}
-
-.language-select {
-  position: relative;
-  display: inline-block;
-}
-
-.language-select select {
-  appearance: none;
-  -webkit-appearance: none;
-  background:white;
-  border: 2px solid lightgray;
-  border-radius: 8px;
-  padding: 8px 32px 8px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--primary-color-dark);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
-}
-
-.language-select::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid var(--primary-color-dark);
-  pointer-events: none;
-  transition: transform 0.3s ease;
-}
-
-.language-select:hover select {
-  border-color: var(--primary-color);
-  box-shadow: 0 2px 8px var(--shadow-light);
-}
-
-.language-select:hover::after {
-  border-top-color: var(--primary-color);
-}
-
-.language-select select:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(var(--primary-color-dark), 0.1);
-}
-
-.language-select select:active::after {
-  transform: translateY(-50%) rotate(180deg);
 }
 </style>
