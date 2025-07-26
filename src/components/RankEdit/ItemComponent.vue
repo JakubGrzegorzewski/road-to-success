@@ -1,6 +1,7 @@
 <template>
   <div class="rank-item-components">
-    <div class="rank-item-component-content rank-item-component">
+    <div class="rank-item-component-content rank-item-component"
+         ref="contentRef" >
       <h3>{{props.task}}</h3>
       <textarea class="rank-item-component-content-value" v-model="content"></textarea>
       <selection-component
@@ -10,17 +11,21 @@
           @text-highlighted="onTextHighlighted"
       />
     </div>
-    <div class="rank-item-component-comments rank-item-component">
+    <div class="rank-item-component-comments rank-item-component"
+         :style="{ height: contentHeight + 'px' }"
+    >
       <comment-component v-if="props.taskContent" v-for="currentTask in props.taskContent?.comments" :comment="currentTask" :key="currentTask.id" />
-      <p v-else style="align-self: center">{{ $t("advancement.noComments") }}</p>
+      <button-component v-if="props.taskContent" style="align-self: center" :button-text="$t('advancement.comment.add')" buttonStyle="default" @click="$emit('addComment', props.task, content)" />
+      <p v-else style="align-self: center">{{ $t("advancement.comment.noComments") }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
 import SelectionComponent from "@/components/RankEdit/SelectionComponent.vue";
 import CommentComponent from "@/components/RankEdit/CommentComponent.vue";
+import ButtonComponent from "@/components/ButtonComponent.vue";
 
 const props = defineProps({
   idea : String,
@@ -41,6 +46,27 @@ const onTextHighlighted = (data) => {
     selectedText.value = data.text;
 
 };
+
+const contentRef = ref(null);
+const contentHeight = ref(0);
+let observer;
+
+onMounted(() => {
+  if (contentRef.value) {
+    observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        contentHeight.value = entry.contentRect.height;
+      }
+    });
+    observer.observe(contentRef.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (observer && contentRef.value) {
+    observer.unobserve(contentRef.value);
+  }
+});
 </script>
 
 <style scoped>
