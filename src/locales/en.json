@@ -5,7 +5,7 @@
     "menteesAdvancements": "Mentee Advancements"
   },
   "edit": {
-    "title": "Edit",
+    "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -21,8 +21,16 @@
       "completed": "Completed",
       "failed": "Failed"
     },
-    "addNew": "Add New Advancement",
+    "add": "Add New Advancement",
     "noAdvancements": "No advancements to display",
-    "noComments": "No comments to display"
+    "comment": {
+      "add": "Add Comment",
+      "edit": "Edit Comment",
+      "delete": "Delete Comment",
+      "placeholder": "Write your comment here...",
+      "save": "Save Comment",
+      "cancel": "Cancel",
+      "noComments": "No comments to display"
+    }
   }
 }

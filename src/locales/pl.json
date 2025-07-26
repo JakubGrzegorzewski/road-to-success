@@ -5,7 +5,7 @@
     "menteesAdvancements": "Próby podopiecznych"
   },
   "edit": {
-    "title": "Edytuj",
+    "edit": "Edytuj",
     "save": "Zapisz",
     "cancel": "Anuluj",
     "delete": "Usuń",
@@ -21,8 +21,16 @@
       "completed": "Zakończona",
       "failed": "Nieudana"
     },
-    "addNew": "Dodaj nową próbę",
+    "add": "Dodaj nową próbę",
     "noAdvancements": "Brak prób do wyświetlenia",
-    "noComments": "Brak komentarzy do wyświetlenia"
+    "comment": {
+      "add": "Dodaj komentarz",
+      "edit": "Edytuj komentarz",
+      "delete": "Usuń komentarz",
+      "placeholder": "Napisz swój komentarz tutaj...",
+      "save": "Zapisz komentarz",
+      "cancel": "Anuluj",
+      "noComments": "Brak komentarzy do wyświetlenia"
+    }
   }
 }
