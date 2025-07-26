@@ -13,7 +13,7 @@ const changeLocale = () => {
 
 <template>
   <nav>
-    <img class="nav-logo" src="../assets/logo.svg" alt="logo">
+    <img class="nav-logo" src="../../assets/logo.svg" alt="logo">
     <div class="nav-buttons">
       <router-link class="btn-primary btn" to="/">{{ $t('nav.home') }}</router-link>
       <router-link class="btn-primary btn" to="/Advancements">{{ $t('nav.myAdvancement') }}</router-link>

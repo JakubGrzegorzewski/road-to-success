@@ -1,5 +1,5 @@
 <script setup>
-import SelectRankComponent from "@/components/MyRanks/SelectRankComponent.vue";
+import SelectRankComponent from "@/components/Advancement/SelectRankComponent.vue";
 import {ref, onMounted} from 'vue';
 
 const ranks = ref([]);

@@ -36,7 +36,7 @@
 
 <script setup>
   import { computed, ref, nextTick, onUnmounted, onMounted } from 'vue'
-  import ButtonComponent from "@/components/ButtonComponent.vue";
+  import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
 
   const props = defineProps({
     text: {

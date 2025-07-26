@@ -23,9 +23,9 @@
 
 <script setup>
 import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
-import SelectionComponent from "@/components/RankEdit/SelectionComponent.vue";
-import CommentComponent from "@/components/RankEdit/CommentComponent.vue";
-import ButtonComponent from "@/components/ButtonComponent.vue";
+import SelectionComponent from "@/components/UniversalComponents/SelectionComponent.vue";
+import CommentComponent from "@/components/Advancement/CommentComponent.vue";
+import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
 
 const props = defineProps({
   idea : String,

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import ItemComponent from "@/components/RankEdit/ItemComponent.vue";
+import ItemComponent from "@/components/Advancement/ItemComponent.vue";
 
 
 const rank = ref(null);

@@ -34,13 +34,6 @@ async function deleteComment(id) {
       }
     });
 
-    if (response.status === 403) {
-      throw new Error('Access forbidden - check authentication');
-    }
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     return await response.json();
   } catch (err) {
     console.error('Error deleting comment:', err);
@@ -56,7 +49,7 @@ onMounted(async () => {
 });
 
 import { computed } from 'vue';
-import ButtonComponent from "@/components/ButtonComponent.vue";
+import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
 
 const displayName = computed(() => {
   const u = user.value;

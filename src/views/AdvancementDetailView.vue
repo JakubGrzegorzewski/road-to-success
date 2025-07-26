@@ -1,6 +1,6 @@
 <script setup>
 import {ref, onMounted, defineProps} from 'vue';
-import ItemComponent from "@/components/RankEdit/ItemComponent.vue";
+import ItemComponent from "@/components/Advancement/ItemComponent.vue";
 const props = defineProps(['id'])
 
 const rank = ref(null);
