@@ -21,6 +21,8 @@
       "completed": "Zakończona",
       "failed": "Nieudana"
     },
-    "addNew": "Dodaj nową próbę"
+    "addNew": "Dodaj nową próbę",
+    "noAdvancements": "Brak prób do wyświetlenia",
+    "noComments": "Brak komentarzy do wyświetlenia"
   }
 }

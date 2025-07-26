@@ -21,6 +21,8 @@
       "completed": "Completed",
       "failed": "Failed"
     },
-    "addNew": "Add New Advancement"
+    "addNew": "Add New Advancement",
+    "noAdvancements": "No advancements to display",
+    "noComments": "No comments to display"
   }
 }
