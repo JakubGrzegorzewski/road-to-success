@@ -11,7 +11,8 @@
       />
     </div>
     <div class="rank-item-component-comments rank-item-component">
-
+      <comment-component v-if="props.taskContent" v-for="currentTask in props.taskContent?.comments" :comment="currentTask" :key="currentTask.id" />
+      <p v-else style="align-self: center">{{ $t("advancement.noComments") }}</p>
     </div>
   </div>
 </template>
@@ -19,14 +20,18 @@
 <script setup>
 import { ref, defineProps } from 'vue';
 import SelectionComponent from "@/components/RankEdit/SelectionComponent.vue";
+import CommentComponent from "@/components/RankEdit/CommentComponent.vue";
 
 const props = defineProps({
   idea : String,
   task: String,
-  taskContent: String
+  taskContent: {
+    type: Object,
+    required: false
+  }
 })
 
-const content = ref(props.taskContent);
+const content = ref(props.taskContent?.content);
 const selectedText = ref(props.idea);
 
 const onTextHighlighted = (data) => {
@@ -55,6 +60,11 @@ const onTextHighlighted = (data) => {
 }
 .rank-item-component-comments {
   flex: 1;
+  overflow: auto;
+;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .rank-item-component {
