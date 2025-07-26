@@ -18,17 +18,6 @@ async function fetchUser(id) {
         'Content-Type': 'application/json',
       }
     });
-
-    if (response.status === 403) {
-      throw new Error('Access forbidden - check authentication');
-    }
-    if (response.status === 404) {
-      throw new Error('User not found');
-    }
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     return await response.json();
   } catch (err) {
     console.error('Error fetching user:', err);
