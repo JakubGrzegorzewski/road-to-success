@@ -17,20 +17,18 @@
       </div>
 
       <div class="snipped-buttons">
-        <div
+        <button-component
             v-if="showAddSelection"
-            class="snipped-button confirm-button"
             @click.stop="confirmSelection"
-        >
-          <span class="info-icon"> {{ $t('edit.save') }} ✔</span>
-        </div>
-        <div
+            :button-text="$t('edit.save')"
+            button-style='success'
+        />
+        <button-component
             v-if="showClearSelection"
-            class="snipped-button clear-button"
             @click.stop="resetSelection"
-        >
-          <span class="info-icon"> {{ $t('edit.cancel') }} ✘</span>
-        </div>
+            :button-text="$t('edit.cancel')"
+            button-style='error'
+        />
       </div>
 
     </div>
@@ -38,6 +36,7 @@
 
 <script setup>
   import { computed, ref, nextTick, onUnmounted, onMounted } from 'vue'
+  import ButtonComponent from "@/components/ButtonComponent.vue";
 
   const props = defineProps({
     text: {
@@ -175,48 +174,10 @@
     margin-top: 20px;
   }
 
-  .snipped-button {
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 0.9em;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .snipped-button:hover {
-    transform: scale(1.05);
-  }
-
-  .snipped-button:active {
-    transform: scale(0.95);
-  }
 
   .snipped-word.highlighted {
     background-color: var(--accent-info);
     color: white;
     font-weight: 500;
-  }
-
-  .info-icon {
-    font-weight: bold;
-    font-size: 1.1em;
-  }
-
-  .confirm-button{
-    background-color: var(--accent-success);
-  }
-
-  .clear-button {
-    background-color: var(--accent-error);
-    right: 60px;
   }
 </style>

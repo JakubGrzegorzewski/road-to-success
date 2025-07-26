@@ -87,7 +87,7 @@ async function fetchRankBasedOn(name) {
         :key="item.id"
         :idea="rankBased.rank_idea.description"
         :task="item.number + '. ' + item.content"
-        :task-content="rank.tasks?.find(t => t.number === item.number)?.content || '' "
+        :task-content="rank.tasks?.find(t => t.number === item.number) || null "
     >
     </item-component>
   </div>
@@ -99,10 +99,7 @@ async function fetchRankBasedOn(name) {
   font-family: 'Museo', sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 20px;
-}
-.rank-details-info {
-  max-width: 1000px;
 }
 </style>
