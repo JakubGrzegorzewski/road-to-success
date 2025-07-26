@@ -71,7 +71,7 @@ async function fetchAllRanks() {
         @click="$router.push(`/Advancement/${rank.id}`)"
     />
     <SelectRankComponent
-        :rankName="$t('advancement.addNew')"
+        :rankName="$t('advancement.add')"
         rankImage="@/assets/images/plus.png"
         @click="$router.push('/CreateAdvancement')"
     />

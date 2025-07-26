@@ -54,6 +54,10 @@ const props = defineProps({
   background-color: var(--primary-color-dark);
 }
 
+.primary {
+  background-color: var(--primary-color);
+}
+
 .success {
   background-color: var(--accent-success);
 }

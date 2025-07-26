@@ -90,7 +90,8 @@ const displayName = computed(() => {
     </div>
     <p class="comment-text">{{ props.comment.text }}</p>
     <div class="comment-actions">
-      <button-component @click="deleteComment(props.comment.id)" class="delete-button" buttonStyle="default" :button-text="$t('edit.delete')"></button-component>
+      <button-component class="delete-button" buttonStyle="warning" :button-text="$t('edit.edit')"></button-component>
+      <button-component @click="deleteComment(props.comment.id)" class="delete-button" buttonStyle="error" :button-text="$t('edit.delete')"></button-component>
     </div>
   </div>
 </template>
@@ -101,7 +102,6 @@ const displayName = computed(() => {
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  background-color: white;
 }
 
 .comment-header {
@@ -130,5 +130,6 @@ const displayName = computed(() => {
 .comment-actions {
   display: flex;
   justify-content: center;
+  gap: 8px;
 }
 </style>
