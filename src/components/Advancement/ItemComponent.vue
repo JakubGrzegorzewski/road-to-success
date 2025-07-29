@@ -87,7 +87,6 @@ onBeforeUnmount(() => {
 .rank-item-component-comments {
   flex: 1;
   overflow: auto;
-;
   display: flex;
   flex-direction: column;
   align-items: stretch;
