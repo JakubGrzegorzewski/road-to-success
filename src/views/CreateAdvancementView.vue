@@ -1,39 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import ItemComponent from "@/components/Advancement/ItemComponent.vue";
+import {fetchGET} from "@/main.js";
 
 
 const rank = ref(null);
 const ranks = ref([]);
 const selectedRank = ref('pwd');
-const error = ref(null);
 
 onMounted(() => {
-  fetch("/api/ranks", {
-    method: "GET",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-      .then(response => {
-        if (response.status === 403) {
-          throw new Error('Access forbidden - check authentication');
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        ranks.value = data;
-        rank.value = data.find(r => r.rank_short === selectedRank.value);
-        error.value = null;
-      })
-      .catch(err => {
-        console.error('Error fetching ranks:', err);
-        error.value = err.message;
-        rank.value = null;
-      });
+  fetchGET('/api/ranks').then(data => {
+    ranks.value = data
+    rank.value = data.find(r => r.rank_short === selectedRank.value);
+  });
 })
 const onRankChange = () => {
   rank.value = ranks.value.find(r => r.rank_short === selectedRank.value) || null;

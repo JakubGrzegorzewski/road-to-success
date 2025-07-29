@@ -2,6 +2,7 @@
 import { defineProps, ref, onMounted, computed } from 'vue';
 import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Advancement/EditCommentComponent.vue";
+import {fetchGET} from "@/main.js";
 
 const props = defineProps({
   comment: {
@@ -11,43 +12,12 @@ const props = defineProps({
 });
 
 const user = ref(null);
-
-async function fetchUser(id) {
-  try {
-    const response = await fetch(`/api/user/${id}`, {
-      method: "GET",
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    return await response.json();
-  } catch (err) {
-    console.error('Error fetching user:', err);
-    return null;
-  }
-}
-
-async function deleteComment(id) {
-  try {
-    const response = await fetch(`/api/comment/${id}`, {
-      method: "DELETE",
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
-    return await response.json();
-  } catch (err) {
-    console.error('Error deleting comment:', err);
-  }
-}
-
 const showCommentEdit = ref(false);
 
 onMounted(async () => {
   if (props.comment && props.comment.userId) {
-    const data = await fetchUser(props.comment.userId);
-    console.log('Fetched user:', data); // 👈 See what you're getting
+    const data = await fetchGET(`/api/user/${props.comment.userId}`);
+    console.log('Fetched user:', data);
     user.value = data;
   }
 });

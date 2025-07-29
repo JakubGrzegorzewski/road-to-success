@@ -1,78 +1,19 @@
 <script setup>
 import {ref, onMounted, defineProps} from 'vue';
 import ItemComponent from "@/components/Advancement/ItemComponent.vue";
+import {fetchGET} from "@/main.js";
 const props = defineProps(['id'])
 
 const rank = ref(null);
 const rankBased = ref(null);
 
-const error = ref(null);
-
 onMounted(() => {
-  fetchSelectedRank()
-      .finally(async () => {
-            fetchRankBasedOn(rank.value.rank)
-          }
-      ).catch(
-          err => console.error('Error during fetching ranks:', err.message
-      )
-  );
+  fetchGET(`/api/rank/${props.id}`)
+      .then(data => {
+        rank.value = data
+        fetchGET(`/api/ranks/${data.rank}`).then(rankData => rankBased.value = rankData)
+      })
 })
-
-async function fetchSelectedRank() {
-  return fetch(`/api/rank/${props.id}`, {
-    method: "GET",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-      .then(response => {
-        if (response.status === 403) {
-          throw new Error('Access forbidden - check authentication');
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        rank.value = data;
-        console.log(rank.value);
-        error.value = null;
-      })
-      .catch(err => {
-        console.error('Error fetching ranks:', err);
-        error.value = err.message;
-        rank.value = null;
-      });
-}
-
-async function fetchRankBasedOn(name) {
-  return fetch(`/api/ranks/${name}`, {
-    method: "GET",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-      .then(response => {
-        if (response.status === 403) {
-          throw new Error('Access forbidden - check authentication');
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        rankBased.value = data;
-        error.value = null;
-      })
-      .catch(err => {
-        console.error('Error fetching ranks:', err);
-        error.value = err.message;
-        rankBased.value = null;
-      });
-}
 
 </script>
 

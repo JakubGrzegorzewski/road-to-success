@@ -1,63 +1,15 @@
 <script setup>
 import SelectRankComponent from "@/components/Advancement/SelectRankComponent.vue";
 import {ref, onMounted} from 'vue';
+import {fetchGET} from "@/main.js";
 
 const ranks = ref([]);
 const allRanks = ref([]);
-const error = ref(null);
 
 onMounted(() => {
-  fetchUserRanks(123);
-  fetchAllRanks();
+  fetchGET('/api/rank/user/123').then(data => ranks.value = data);
+  fetchGET('/api/ranks').then(data => allRanks.value = data);
 })
-
-async function fetchUserRanks(id) {
-  fetch(`/api/rank/user/${id}`, {
-    method: "GET",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-      .then(async response => {
-        if (response.status === 403) {
-          throw new Error('Access forbidden - check authentication');
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        ranks.value = await response.json();
-        console.log(ranks.value);
-      })
-      .catch(err => {
-        console.error('Error fetching ranks:', err);
-        error.value = err.message;
-        ranks.value = null;
-      });
-}
-
-async function fetchAllRanks() {
-  fetch("/api/ranks", {
-    method: "GET",
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-      .then(async response => {
-        if (response.status === 403) {
-          throw new Error('Access forbidden - check authentication');
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        allRanks.value = await response.json();
-      })
-      .catch(err => {
-        console.error('Error fetching all ranks:', err);
-        error.value = err.message;
-        allRanks.value = null;
-      });
-}
-
 </script>
 
 <template>
