@@ -1,5 +1,7 @@
 <script setup>
-import { defineProps, ref, onMounted } from 'vue';
+import { defineProps, ref, onMounted, computed } from 'vue';
+import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
+import EditCommentComponent from "@/components/Advancement/EditCommentComponent.vue";
 
 const props = defineProps({
   comment: {
@@ -40,6 +42,8 @@ async function deleteComment(id) {
   }
 }
 
+const showCommentEdit = ref(false);
+
 onMounted(async () => {
   if (props.comment && props.comment.userId) {
     const data = await fetchUser(props.comment.userId);
@@ -47,9 +51,6 @@ onMounted(async () => {
     user.value = data;
   }
 });
-
-import { computed } from 'vue';
-import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
 
 const displayName = computed(() => {
   const u = user.value;
@@ -63,7 +64,7 @@ const displayName = computed(() => {
 </script>
 
 <template>
-  <div class="comment-component">
+  <div class="comment-component" v-if="!showCommentEdit">
     <div class="comment-header">
       <h3 class="comment-author">
         {{ displayName }}
@@ -72,10 +73,22 @@ const displayName = computed(() => {
     </div>
     <p class="comment-text">{{ props.comment.text }}</p>
     <div class="comment-actions">
-      <button-component class="delete-button" buttonStyle="warning" :button-text="$t('edit.edit')"></button-component>
-      <button-component @click="deleteComment(props.comment.id)" class="delete-button" buttonStyle="error" :button-text="$t('edit.delete')"></button-component>
+      <button-component
+          @click="showCommentEdit = true"
+          class="edit-button" buttonStyle="default"
+          :button-text="$t('edit.edit')"/>
+      <button-component
+          @click="deleteComment(props.comment.id)"
+          class="delete-button"
+          buttonStyle="error"
+          :button-text="$t('edit.delete')"/>
     </div>
   </div>
+  <edit-comment-component
+      v-if="showCommentEdit"
+      :displayName="displayName"
+      :comment="props.comment"
+      @close-edit="showCommentEdit = false"/>
 </template>
 
 <style scoped>
