@@ -15,9 +15,9 @@
     "idea": "Rank idea",
     "status": "Status",
     "statusOptions": {
-      "creation": "Creation",
+      "created": "Created",
       "pending": "Sended",
-      "inProgress": "In Progress",
+      "in_progress": "In Progress",
       "completed": "Completed",
       "failed": "Failed"
     },

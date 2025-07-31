@@ -15,9 +15,9 @@
     "idea": "Idea stopnia",
     "status": "Status",
     "statusOptions": {
-      "creation": "Tworzenie",
+      "created": "Stworzone",
       "pending": "Wysłana",
-      "inProgress": "W trakcie",
+      "in_progress": "W trakcie",
       "completed": "Zakończona",
       "failed": "Nieudana"
     },
