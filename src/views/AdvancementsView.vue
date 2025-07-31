@@ -3,25 +3,27 @@ import SelectRankComponent from "@/components/Advancement/SelectRankComponent.vu
 import {ref, onMounted} from 'vue';
 import {fetchGET} from "@/main.js";
 
-const ranks = ref([]);
-const allRanks = ref([]);
+const userRanks = ref([]);
 
 onMounted(() => {
-  fetchGET('/api/rank/user/123').then(data => ranks.value = data);
-  fetchGET('/api/ranks').then(data => allRanks.value = data);
+  fetchGET('/api/rankInProgress/user/1').then(data => {
+    userRanks.value = data;
+    console.log(data);
+  });
 })
 </script>
 
 <template>
-  <div class="all-ranks" v-if="allRanks && ranks">
+  <div class="all-ranks" v-if="userRanks">
     <SelectRankComponent
-        v-for="rank in ranks"
-        :key="rank.rank"
-        :rankName="allRanks.find(element => element.rank_short === rank.rank)?.rank_name_full || 'rank not found'"
-        :rankImage="`@/assets/images/${rank.rank}.png`"
+        v-for="rank in userRanks"
+        :key="rank.id"
+        :rankName="rank.rank.fullName || 'rank not found'"
+        :rankImage="`@/assets/images/${rank.rank.shortName}.png`"
         :rankStatus="rank.status"
         @click="$router.push(`/Advancement/${rank.id}`)"
-    />
+    >
+    </SelectRankComponent>
     <SelectRankComponent
         :rankName="$t('advancement.add')"
         rankImage="@/assets/images/plus.png"

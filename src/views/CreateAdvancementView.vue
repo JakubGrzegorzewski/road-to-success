@@ -9,13 +9,13 @@ const ranks = ref([]);
 const selectedRank = ref('pwd');
 
 onMounted(() => {
-  fetchGET('/api/ranks').then(data => {
+  fetchGET('/api/rank').then(data => {
     ranks.value = data
-    rank.value = data.find(r => r.rank_short === selectedRank.value);
+    rank.value = data.find(r => r.shortName === selectedRank.value);
   });
 })
 const onRankChange = () => {
-  rank.value = ranks.value.find(r => r.rank_short === selectedRank.value) || null;
+  rank.value = ranks.value.find(r => r.shortName === selectedRank.value) || null;
 }
 </script>
 
@@ -24,19 +24,19 @@ const onRankChange = () => {
     <h3>Wybierz stopień</h3>
     <div class="text-selection-component">
       <select class="rank-select " v-model="selectedRank" @change="onRankChange">
-        <option v-for="thisRank in ranks" :value="thisRank.rank_short"> {{ thisRank.rank_name_full }} </option>
+        <option v-for="thisRank in ranks" :value="thisRank.shortName"> {{ thisRank.fullName }} </option>
 
       </select>
     </div>
   </div>
   <div class="rank-details" v-if="rank">
     <div class="rank-details-info">
-      <p style="text-align: justify">Idea stopnia: <br> {{ rank.rank_idea.description }}</p>
+      <p style="text-align: justify">Idea stopnia: <br> {{ rank.idea }}</p>
     </div>
     <item-component
         v-for="item in rank.requirements"
         :key="item.id"
-        :idea="rank.rank_idea.description"
+        :idea="rank.idea"
         :task="item.number + '. ' + item.content"
         style="margin-bottom: 20px;"
     >
@@ -58,13 +58,11 @@ const onRankChange = () => {
   height: 40px;
 }
 .rank-details {
-  padding: 0 40px 40px 40px;
+  padding: 40px;
   font-family: 'Museo', sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-.rank-details-info {
-  max-width: 1000px;
+  align-items: stretch;
+  gap: 20px;
 }
 </style>
