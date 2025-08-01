@@ -25,6 +25,9 @@ const resolvedImageSrc = computed(() => {
 function selectColor(status) {
   let color = 'color: '
   switch (status) {
+    case 'draft':
+      color += 'var(--accent-warning)';
+      return color
     case 'creation':
       color += 'var(--primary-color-dark)';
       return color
@@ -51,7 +54,7 @@ function selectColor(status) {
   <div class="rank-component">
     <img :src="resolvedImageSrc" class="rank-image" :alt="rankName">
     <h2 class="rank-name">{{ rankName }}</h2>
-    <h3 v-if="props.rankStatus" class="rank-status" :style="selectColor(props.rankStatus)"> {{ $t(`advancement.statusOptions.${props.rankStatus.toLowerCase()}`) }} </h3>
+    <h3 v-if="props.rankStatus" class="rank-status" :style="selectColor(props.rankStatus.toLowerCase())"> {{ $t(`advancement.statusOptions.${props.rankStatus.toLowerCase()}`) }} </h3>
   </div>
 </template>
 
