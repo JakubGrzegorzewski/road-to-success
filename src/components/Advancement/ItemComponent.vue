@@ -1,31 +1,9 @@
-<template>
-  <div class="rank-item-components">
-    <div class="rank-item-component-content rank-item-component"
-         ref="contentRef" >
-      <h3>{{props.task}}</h3>
-      <textarea class="rank-item-component-content-value" v-model="content"></textarea>
-      <selection-component
-          v-if="selectedText"
-          :text="selectedText"
-          :original-text="props.idea"
-          @text-highlighted="onTextHighlighted"
-      />
-    </div>
-    <div class="rank-item-component-comments rank-item-component"
-         :style="{ height: contentHeight + 'px' }"
-    >
-      <comment-component v-if="props.taskContent" v-for="currentTask in props.taskContent?.comments" :comment="currentTask" :key="currentTask.id" />
-      <button-component v-if="props.taskContent" style="align-self: center" :button-text="$t('advancement.comment.add')" buttonStyle="default" @click="$emit('addComment', props.task, content)" />
-      <p v-else style="align-self: center">{{ $t("advancement.comment.noComments") }}</p>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
+import {ref, defineProps, onMounted, onBeforeUnmount, defineEmits} from 'vue';
 import SelectionComponent from "@/components/UniversalComponents/SelectionComponent.vue";
 import CommentComponent from "@/components/Advancement/CommentComponent.vue";
 import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
+import EditCommentComponent from "@/components/Advancement/EditCommentComponent.vue";
 
 const props = defineProps({
   idea : String,
@@ -38,6 +16,7 @@ const props = defineProps({
 
 const content = ref(props.taskContent?.content);
 const selectedText = ref(props.idea);
+const addComment = ref(false);
 
 const onTextHighlighted = (data) => {
   if (data.reset)
@@ -68,6 +47,30 @@ onBeforeUnmount(() => {
   }
 });
 </script>
+
+<template>
+  <div class="rank-item-components">
+    <div class="rank-item-component-content rank-item-component"
+         ref="contentRef" >
+      <h3>{{props.task}}</h3>
+      <textarea class="rank-item-component-content-value" v-model="content"></textarea>
+      <selection-component
+          v-if="selectedText"
+          :text="selectedText"
+          :original-text="props.idea"
+          @text-highlighted="onTextHighlighted"
+      />
+    </div>
+    <div class="rank-item-component-comments rank-item-component"
+         :style="{ height: contentHeight + 'px' }"
+    >
+      <comment-component v-if="props.taskContent" v-for="currentTask in props.taskContent?.comments" :comment="currentTask" :key="currentTask.id" />
+      <edit-comment-component v-if="addComment" comment="" @close="addComment = false" />
+      <p v-if="!props.taskContent && !addComment" style="align-self: center">{{ $t("advancement.comment.noComments") }}</p>
+      <button-component style="align-self: center" :button-text="$t('advancement.comment.add')" buttonStyle="default" @click="addComment = true"/>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .rank-item-components {

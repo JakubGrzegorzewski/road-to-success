@@ -58,7 +58,7 @@ const displayName = computed(() => {
       v-if="showCommentEdit"
       :displayName="displayName"
       :comment="props.comment"
-      @close-edit="showCommentEdit = false"/>
+      @close="showCommentEdit = false"/>
 </template>
 
 <style scoped>

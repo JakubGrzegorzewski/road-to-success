@@ -1,6 +1,7 @@
 <script setup>
-import {defineProps, ref, defineEmits, computed} from 'vue';
+import {defineProps, ref} from 'vue';
 import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
+import {fetchPOST} from "@/main.js";
 
 const props = defineProps({
   comment: {
@@ -10,9 +11,17 @@ const props = defineProps({
   displayName : String
 });
 
-const emit = defineEmits(['closeEdit']);
-
 const text = ref(props.comment.text);
+
+function saveComment() {
+  const comment = {
+    id: props.comment.id? props.comment.id : "",
+    text: text.value,
+    date: new Date().toISOString(),
+    userId: props.comment.userId ? props.comment.userId : null
+  };
+  fetchPOST("/api/Comment", comment)
+}
 </script>
 
 <template>
@@ -27,12 +36,12 @@ const text = ref(props.comment.text);
     <div class="comment-actions">
       <button-component
           buttonStyle="success"
-          @click="$emit('closeEdit')"
+          @click="saveComment"
           :button-text="$t('edit.save')"
       />
       <button-component
         buttonStyle="warning"
-        @click="$emit('closeEdit')"
+        @click="$emit('close')"
         :button-text="$t('edit.cancel')"
       />
       </div>
