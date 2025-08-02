@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cookies from 'js-cookie'
 
 const { locale } = useI18n()
-const currentLocale = ref(Cookies.get('locale') || 'pl')
+const currentLocale = ref(null)
 
 const changeLocale = () => {
   const newLocale = currentLocale.value
@@ -12,6 +12,13 @@ const changeLocale = () => {
   localStorage.setItem('locale', newLocale)
   Cookies.set('locale', newLocale, { expires: 365 })
 }
+
+onMounted(() => {
+  const savedLocale = localStorage.getItem('locale') || 'en'
+  locale.value = savedLocale
+  currentLocale.value = savedLocale
+  Cookies.set('locale', savedLocale, { expires: 365 })
+})
 </script>
 
 <template>
