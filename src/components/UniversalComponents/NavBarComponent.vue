@@ -1,13 +1,16 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Cookies from 'js-cookie'
 
 const { locale } = useI18n()
-const currentLocale = ref(locale.value)
+const currentLocale = ref(Cookies.get('locale') || 'pl')
 
 const changeLocale = () => {
-  locale.value = currentLocale.value
-  localStorage.setItem('locale', currentLocale.value)
+  const newLocale = currentLocale.value
+  locale.value = newLocale
+  localStorage.setItem('locale', newLocale)
+  Cookies.set('locale', newLocale, { expires: 365 })
 }
 </script>
 
@@ -29,21 +32,22 @@ const changeLocale = () => {
 </template>
 
 <style scoped>
-nav{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--primary-color-dark);
-  box-shadow: 0 10px 10px var(--shadow-light);
-}
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--primary-color-dark);
+    box-shadow: 0 10px 10px var(--shadow-light);
+    padding: 0 20px;
+  }
 
-.nav-logo{
-  margin-left: 32px;
-  width: 64px;
-}
-.nav-buttons{
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  .nav-logo {
+    width: 64px;
+  }
+
+  .nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 </style>
