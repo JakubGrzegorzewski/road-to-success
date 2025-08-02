@@ -21,7 +21,7 @@ const changeLocale = () => {
       <router-link class="btn-primary btn" to="/">{{ $t('nav.home') }}</router-link>
       <router-link class="btn-primary btn" to="/Advancements">{{ $t('nav.myAdvancement') }}</router-link>
       <router-link class="btn-primary btn" to="/menteesAdvancements">{{ $t('nav.menteesAdvancements') }}</router-link>
-      <div class="language-select text-selection-component">
+      <div class="text-selection-component">
         <select @change="changeLocale" v-model="currentLocale">
           <option value="en">English</option>
           <option value="pl">Polski</option>
