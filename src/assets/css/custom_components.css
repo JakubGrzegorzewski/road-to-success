@@ -1,14 +1,19 @@
 .text-selection-component {
     position: relative;
     display: flex;
+    padding: 10px 32px 10px 12px;
+    border-radius: 8px;
+    background: white;
+    color: var(--primary-color-dark);
+    box-shadow: 0 4px 14px var(--shadow-light);
 }
 
 .text-selection-component select {
     appearance: none;
     -webkit-appearance: none;
-    background: white;
-    border-radius: 8px;
-    padding: 10px 32px 10px 12px;
+    border: none;
+    width: 100%;
+    height: 100%;
     font-size: 14px;
     font-weight: 500;
     color: var(--primary-color-dark);
@@ -53,7 +58,7 @@
 .btn {
     font-family: 'Museo', sans-serif;
     font-weight: 500;
-    font-size: 14px; /* Fixed: removed invalid var() syntax */
+    font-size: 14px;
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
