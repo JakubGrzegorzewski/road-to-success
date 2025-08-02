@@ -13,14 +13,6 @@
   },
   "advancement": {
     "idea": "Idea stopnia",
-    "status": "Status",
-    "statusOptions": {
-      "created": "Stworzone",
-      "pending": "Wysłana",
-      "in_progress": "W trakcie",
-      "completed": "Zakończona",
-      "failed": "Nieudana"
-    },
     "add": "Dodaj nową próbę",
     "noAdvancements": "Brak prób do wyświetlenia",
     "comment": {
@@ -32,5 +24,27 @@
       "cancel": "Anuluj",
       "noComments": "Brak komentarzy do wyświetlenia"
     }
+  },
+  "status": "Status",
+  "statusOptions": {
+    "draft": "Szkic",
+    "created": "Stworzone",
+    "pending": "Wysłana",
+    "in_progress": "W trakcie",
+    "completed": "Zakończona",
+    "failed": "Nieudana"
+  },
+  "user": {
+    "name": "Imię",
+    "email": "Email",
+    "role": "Rola",
+    "mentor": "Mentor",
+    "mentee": "Podopieczny",
+    "admin": "Administrator",
+    "addUser": "Dodaj użytkownika",
+    "noUsers": "Brak użytkowników do wyświetlenia",
+    "editUser": "Edytuj użytkownika",
+    "deleteUser": "Usuń użytkownika",
+    "you" : "Ty"
   }
 }
