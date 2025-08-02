@@ -2,7 +2,7 @@
 import { defineProps, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
-import EditCommentComponent from "@/components/Advancement/EditCommentComponent.vue";
+import EditCommentComponent from "@/components/UniversalComponents/EditCommentComponent.vue";
 
 const props = defineProps({
   comment: { type: Object, required: true }
