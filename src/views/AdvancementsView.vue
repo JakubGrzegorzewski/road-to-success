@@ -2,13 +2,20 @@
 import SelectRankComponent from "@/components/Advancement/SelectRankComponent.vue";
 import {ref, onMounted} from 'vue';
 import {fetchGET} from "@/main.js";
+import Cookies from 'js-cookie';
 
 const userRanks = ref([]);
+const userRanksInProgress = ref([]);
 
 onMounted(() => {
-  fetchGET('/api/rankInProgress/user/1').then(data => {
-    userRanks.value = data;
-    console.log(data);
+  fetchGET(`/api/rankInProgress/user/${Cookies.get('userId')}`).then(data => {
+    for (let rank of data) {
+      userRanks.value.push(rank);
+      fetchGET(`/api/rank/${rank.rankId}`).then(rankData => {
+        userRanksInProgress.value.push(rankData);
+      })
+    }
+
   });
 })
 </script>
@@ -16,10 +23,11 @@ onMounted(() => {
 <template>
   <div class="all-ranks" v-if="userRanks">
     <SelectRankComponent
+        v-if="userRanks.length > 0"
         v-for="rank in userRanks"
         :key="rank.id"
-        :rankName="rank.rank.fullName || 'rank not found'"
-        :rankImage="`@/assets/images/${rank.rank.shortName}.png`"
+        :rankName="userRanksInProgress.find( r => r.id === rank.rankId)?.fullName || 'rank not found'"
+        :rankImage="`@/assets/images/${userRanksInProgress.find( r => r.id === rank.rankId)?.shortName}.png`"
         :rankStatus="rank.status"
         @click="$router.push(`/Advancement/${rank.id}`)"
     >
@@ -38,7 +46,8 @@ onMounted(() => {
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: 20px;
-    padding : 20px;
+    flex-wrap: wrap;
+    gap: 40px;
+    padding : 40px;
   }
 </style>
