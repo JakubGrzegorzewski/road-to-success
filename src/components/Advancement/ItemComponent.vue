@@ -1,28 +1,40 @@
 <script setup>
-import {ref, defineProps, onMounted, onBeforeUnmount, defineEmits} from 'vue';
-import SelectionComponent from "@/components/UniversalComponents/SelectionComponent.vue";
-import CommentComponent from "@/components/Advancement/CommentComponent.vue";
-import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
-import EditCommentComponent from "@/components/Advancement/EditCommentComponent.vue";
+import {ref, defineProps, onMounted, onBeforeUnmount, computed} from 'vue';
+import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
+import CommentComponent from "@/components/Universal/CommentComponent.vue";
+import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
+import Cookies from "js-cookie";
+import {fetchDELETE, fetchGET, fetchPOST, fetchPUT} from "@/main.js";
 
 const props = defineProps({
-  idea : String,
-  task: String,
-  taskContent: {
+  task : {
     type: Object,
     required: false
-  }
+  },
+  requirement : {
+    type: Object,
+    required: false
+  },
+  idea : String,
 })
 
-const content = ref(props.taskContent?.content);
-const selectedText = ref(props.idea);
-const addComment = ref(false);
+  let editedTask = props.task || {
+  "rankInProgressId": Cookies.get("rankInProgressId") || null,
+  "requirementId": props.requirement?.id || null,
+  "content": "",
+  "status": "DRAFT",
+  "partIdea": props.idea || "",
+  "comments": []
+}
+
+const showCommentAdding = ref(false);
 
 const onTextHighlighted = (data) => {
   if (data.reset)
-    selectedText.value = props.idea;
+    editedTask.partIdea = props.idea;
   else
-    selectedText.value = data.text;
+    editedTask.partIdea = data.text;
 
 };
 
@@ -46,17 +58,63 @@ onBeforeUnmount(() => {
     observer.unobserve(contentRef.value);
   }
 });
+
+// User
+const getUserName = computed(() => {
+  fetchGET(`/api/user/${Cookies.get('userId')}`).then(data => {
+    return data.fullName;
+  }).catch(() => {
+    return null;
+  });
+})
+
+// Comment edit
+function addComment(comment) {
+
+  if (!editedTask.id) {
+    fetchPOST('/api/task', editedTask).then((data) => {
+      editedTask = data;
+      comment.taskId = data.id;
+      console.log(data)
+      fetchPOST('/api/comment', comment)
+          .then(response => {
+            editedTask.comments.push(response.id);
+          })
+
+    }).catch(error => {
+      console.error("Error updating task:", error);
+    });
+  }
+}
+
+function saveComment(comment) {
+  fetchPUT('/api/comment', comment)
+      .then(response => {
+        editedTask.comments.push(response.id);
+      }).catch(error => {
+    console.error("Error adding comment:", error);
+  });
+}
+
+function deleteComment(comment) {
+  fetchDELETE('/api/comment', comment.id)
+      .then(() => {
+        editedTask.comments = editedTask.comments.filter(c => c.id !== comment.id);
+      }).catch(error => {
+    console.error("Error deleting comment:", error);
+  });
+}
 </script>
 
 <template>
   <div class="rank-item-components">
     <div class="rank-item-component-content rank-item-component"
          ref="contentRef" >
-      <h3>{{props.task}}</h3>
-      <textarea class="rank-item-component-content-value" v-model="content"></textarea>
+      <h3>{{props.requirement?.number}} {{ props.requirement?.content }}</h3>
+      <textarea class="rank-item-component-content-value" v-model="editedTask.content"></textarea>
       <selection-component
-          v-if="selectedText"
-          :text="selectedText"
+          v-if="editedTask.partIdea"
+          :text="editedTask.partIdea"
           :original-text="props.idea"
           @text-highlighted="onTextHighlighted"
       />
@@ -64,10 +122,33 @@ onBeforeUnmount(() => {
     <div class="rank-item-component-comments rank-item-component"
          :style="{ height: contentHeight + 'px' }"
     >
-      <comment-component v-if="props.taskContent" v-for="currentTask in props.taskContent?.comments" :comment="currentTask" :key="currentTask.id" />
-      <edit-comment-component v-if="addComment" comment="" @close="addComment = false" />
-      <p v-if="!props.taskContent && !addComment" style="align-self: center">{{ $t("advancement.comment.noComments") }}</p>
-      <button-component style="align-self: center" :button-text="$t('advancement.comment.add')" buttonStyle="default" @click="addComment = true"/>
+      <comment-component
+          v-if="editedTask"
+          v-for="currentComment in editedTask?.comments"
+          :comment="currentComment" :key="currentComment.id"
+          :userName="getUserName"
+          @save="comment => saveComment(comment)"
+          @delete="commentId => deleteComment(commentId)"
+      />
+
+      <edit-comment-component
+          v-if="showCommentAdding"
+          :comment=null
+          :userName="getUserName"
+          @close="showCommentAdding = false"
+          @save="comment => addComment(comment)"
+      />
+
+      <p v-if="editedTask && editedTask.comments" style="align-self: center">
+        {{ $t("advancement.comment.noComments") }}
+      </p>
+
+      <button-component
+          style="align-self: center"
+          :button-text="$t('advancement.comment.add')"
+          buttonStyle="default"
+          @click="showCommentAdding = true"
+      />
     </div>
   </div>
 </template>
