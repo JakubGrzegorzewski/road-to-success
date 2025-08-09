@@ -1,31 +1,26 @@
 <script setup>
 import { defineProps, ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
-import EditCommentComponent from "@/components/UniversalComponents/EditCommentComponent.vue";
+import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
 
 const props = defineProps({
-  comment: { type: Object, required: true }
+  comment: { type: Object, required: true },
+  userName: { type: String, required: false }
 });
 
 const { t } = useI18n();
 const showCommentEdit = ref(false);
 
-const displayName = computed(() => {
-  const user = props.comment?.user?.value;
-  return user?.first_name && user?.last_name
-    ? `${user.first_name} ${user.last_name}`
-    : user?.first_name || t('user.you');
-});
 </script>
 
 <template>
   <div class="comment-component" v-if="!showCommentEdit">
     <div class="comment-header">
-      <h3 class="comment-author">{{ displayName }}</h3>
+      <h3 class="comment-author">{{ userName || t('user.you') }}</h3>
       <span class="comment-date">{{ props.comment.date }}</span>
     </div>
-    <p class="comment-text">{{ props.comment.text }}</p>
+    <p class="comment-text">{{ props.comment.content }}</p>
     <div class="comment-actions">
       <button-component
         @click="showCommentEdit = true"
@@ -41,7 +36,7 @@ const displayName = computed(() => {
   </div>
   <edit-comment-component
     v-if="showCommentEdit"
-    :displayName="displayName"
+    :displayName="userName"
     :comment="props.comment"
     @close="showCommentEdit = false"
     @save="$emit('save', $event)"

@@ -1,6 +1,6 @@
 <script setup>
   import { computed, ref, nextTick, onUnmounted, onMounted } from 'vue'
-  import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
+  import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
   const props = defineProps({
     text: { type: String, required: true },

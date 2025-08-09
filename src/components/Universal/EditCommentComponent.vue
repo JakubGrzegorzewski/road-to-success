@@ -1,34 +1,37 @@
 <script setup>
-  import { computed, defineProps, ref } from 'vue';
+import {defineProps, onMounted} from 'vue';
   import { useI18n } from 'vue-i18n';
-  import ButtonComponent from "@/components/UniversalComponents/ButtonComponent.vue";
+  import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+  import Cookies from "js-cookie";
+import ObjectTemplates from "@/scripts/objectTemplates.js";
 
   const props = defineProps({
-    comment: { type: Object, required: true }
+    comment: { type: Object, required: false },
+    userName: { type: String, required: false }
   });
 
-  const text = ref(props.comment.text);
+
+  let editComment = props.comment || ObjectTemplates.CommentDto;
+
+  onMounted(() => {
+    editComment.userId = Cookies.get("userId") || null;
+  })
+
+
   const { t } = useI18n();
-
-  const displayName = computed(() => {
-    const user = props.comment?.user?.value;
-    return user?.first_name && user?.last_name
-      ? `${user.first_name} ${user.last_name}`
-      : user?.first_name || t('user.you');
-  });
 </script>
 
 <template>
     <div class="comment-component">
       <div class="comment-header">
-        <h3 class="comment-author">{{ displayName }}</h3>
-        <span class="comment-date">{{ props.comment.date }}</span>
+        <h3 class="comment-author">{{ userName || t('user.you') }}</h3>
+        <span class="comment-date">{{ editComment.date }}</span>
       </div>
-      <textarea class="comment-text" v-model="text" />
+      <textarea class="comment-text" v-model="editComment.content" />
       <div class="comment-actions">
         <button-component
           buttonStyle="success"
-          @click="$emit('close'); $emit('save', text)"
+          @click="$emit('close'); $emit('save', editComment)"
           :button-text="$t('edit.save')"
         />
         <button-component
