@@ -7,10 +7,10 @@ const props = defineProps(['id'])
 const selectedRank = ref(null);
 
 onMounted(() => {
-  fetchGET(`/api/rankInProgress/${props.id}`)
-      .then(data => {
-        selectedRank.value = data
-      })
+  // fetchGET(`/api/rankInProgress/${props.id}`)
+  //     .then(data => {
+  //       selectedRank.value = data
+  //     })
 })
 
 </script>
