@@ -13,6 +13,7 @@
     "add": "Add"
   },
   "advancement": {
+    "generate": "Generate advancement's PDF",
     "idea": "Rank idea",
     "add": "Add New Advancement",
     "select": "Select advancement",

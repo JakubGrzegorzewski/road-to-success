@@ -13,6 +13,7 @@
     "add": "Dodaj"
   },
   "advancement": {
+    "generate": "Generuj PDF próby",
     "idea": "Idea stopnia",
     "add": "Dodaj nową próbę",
     "select": "Wybierz próbę",
