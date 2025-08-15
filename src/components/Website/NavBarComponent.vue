@@ -23,11 +23,9 @@ onMounted(() => {
 
 <template>
   <nav>
-    <img class="nav-logo" src="../../assets/logo.svg" alt="logo">
+    <router-link class="" to="/"><img class="nav-logo" src="../../assets/logo.svg" alt="logo"></router-link>
+
     <div class="nav-buttons">
-      <router-link class="btn-primary btn" to="/">{{ $t('nav.home') }}</router-link>
-      <router-link class="btn-primary btn" to="/Advancements">{{ $t('nav.myAdvancement') }}</router-link>
-      <router-link class="btn-primary btn" to="/menteesAdvancements">{{ $t('nav.menteesAdvancements') }}</router-link>
       <div class="text-selection-component">
         <select @change="changeLocale" v-model="currentLocale">
           <option value="en">English</option>
