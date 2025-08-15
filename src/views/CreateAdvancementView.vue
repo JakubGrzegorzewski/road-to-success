@@ -72,7 +72,7 @@
 
 <template>
   <div class="rank-select-panel">
-    <h3>Wybierz stopień</h3>
+    <h3> {{ $t('advancement.select') }} </h3>
     <div class="text-selection-component">
       <select v-model="selectedRankShortName" @change="onRankChange">
         <option v-for="thisRank in allRanks" :value="thisRank.shortName"> {{ thisRank.fullName }} </option>
