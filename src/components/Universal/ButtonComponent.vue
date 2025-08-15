@@ -1,13 +1,24 @@
-<script setup lang="ts">
+<script setup>
+  import {computed} from "vue";
   const props = defineProps({
-    buttonText: { type: String, required: true },
+    buttonText: { type: String, required: false },
+    buttonIcon: { type: String, default: '', required: false },
     buttonStyle: { type: String, default: 'default' }
   })
+
+  const resolvedImageSrc = computed(() => {
+    if (props.buttonIcon) {
+      return new URL(props.buttonIcon.replace('@', '../..'), import.meta.url).href
+    }
+    return ''
+  })
+
 </script>
 
 <template>
     <div :class="[props.buttonStyle, 'button']">
-      <span>{{ props.buttonText }}</span>
+      <span v-if="buttonText">{{ props.buttonText }}</span>
+      <img v-if="props.buttonIcon" :src="resolvedImageSrc" alt="Button Icon" style="width: 16px; height: 16px; object-fit: contain;">
     </div>
 </template>
 
