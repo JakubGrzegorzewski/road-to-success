@@ -19,23 +19,24 @@ const props = defineProps({
   idea : String,
 })
 
-  let editedTask = props.task || {
+const showCommentAdding = ref(false);
+
+const editedTask = ref(props.task || {
   "rankInProgressId": Cookies.get("rankInProgressId") || null,
   "requirementId": props.requirement?.id || null,
   "content": "",
   "status": "DRAFT",
   "partIdea": props.idea || "",
   "comments": []
-}
-
-const showCommentAdding = ref(false);
+});
 
 const onTextHighlighted = (data) => {
   if (data.reset)
-    editedTask.partIdea = props.idea;
+    editedTask.value.partIdea = props.idea;
   else
-    editedTask.partIdea = data.text;
+    editedTask.value.partIdea = data.text;
 
+  updateTask();
 };
 
 const contentRef = ref(null);
@@ -59,6 +60,24 @@ onBeforeUnmount(() => {
   }
 });
 
+// Task
+function updateTask() {
+  if (editedTask.value.id) {
+    fetchPUT('/api/task', editedTask.value).then((data) => {
+      editedTask.value = data;
+    }).catch(error => {
+      console.error("Error updating task:", error);
+    });
+  } else {
+    fetchPOST('/api/task', editedTask.value).then((data) => {
+      editedTask.value = data;
+    }).catch(error => {
+      console.error("Error updating task:", error);
+    });
+  }
+
+}
+
 // User
 const getUserName = computed(() => {
   fetchGET(`/api/user/${Cookies.get('userId')}`).then(data => {
@@ -71,14 +90,14 @@ const getUserName = computed(() => {
 // Comment edit
 function addComment(comment) {
 
-  if (!editedTask.id) {
-    fetchPOST('/api/task', editedTask).then((data) => {
-      editedTask = data;
+  if (!editedTask.value.id) {
+    fetchPOST('/api/task', editedTask.value).then((data) => {
+      editedTask.value = data;
       comment.taskId = data.id;
       console.log(data)
       fetchPOST('/api/comment', comment)
           .then(response => {
-            editedTask.comments.push(response.id);
+            editedTask.value.comments.push(response.id);
           })
 
     }).catch(error => {
@@ -90,7 +109,7 @@ function addComment(comment) {
 function saveComment(comment) {
   fetchPUT('/api/comment', comment)
       .then(response => {
-        editedTask.comments.push(response.id);
+        editedTask.value.comments.push(response.id);
       }).catch(error => {
     console.error("Error adding comment:", error);
   });
@@ -99,7 +118,7 @@ function saveComment(comment) {
 function deleteComment(comment) {
   fetchDELETE('/api/comment', comment.id)
       .then(() => {
-        editedTask.comments = editedTask.comments.filter(c => c.id !== comment.id);
+        editedTask.value.comments = editedTask.value.comments.filter(c => c.id !== comment.id);
       }).catch(error => {
     console.error("Error deleting comment:", error);
   });
@@ -111,7 +130,7 @@ function deleteComment(comment) {
     <div class="rank-item-component-content rank-item-component"
          ref="contentRef" >
       <h3>{{props.requirement?.number}} {{ props.requirement?.content }}</h3>
-      <textarea class="rank-item-component-content-value" v-model="editedTask.content"></textarea>
+      <textarea class="rank-item-component-content-value" v-model="editedTask.content" @change="updateTask"></textarea>
       <selection-component
           v-if="editedTask.partIdea"
           :text="editedTask.partIdea"
