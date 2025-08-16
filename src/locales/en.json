@@ -14,8 +14,11 @@
   },
   "advancement": {
     "generate": "Generate advancement's PDF",
+    "changeStatus": "Change Status",
+    "changeMentor": "Change Mentor",
     "idea": "Rank idea",
     "add": "Add New Advancement",
+    "delete": "Delete Advancement",
     "select": "Select advancement",
     "noAdvancements": "No advancements to display",
     "comment": {
@@ -26,6 +29,11 @@
       "save": "Save Comment",
       "cancel": "Cancel",
       "noComments": "No comments to display"
+    },
+    "options": {
+      "selectIdeaForTask": "Select idea for task",
+      "multipleTasksForRequirement": "Multiple tasks for requirement",
+      "oneTaskForMultipleRequirements": "One task for multiple requirements"
     }
   },
   "status": "Status",

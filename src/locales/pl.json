@@ -14,8 +14,11 @@
   },
   "advancement": {
     "generate": "Generuj PDF próby",
+    "changeStatus": "Zmień status",
+    "changeMentor": "Zmień opiekuna",
     "idea": "Idea stopnia",
     "add": "Dodaj nową próbę",
+    "delete": "Usuń próbę",
     "select": "Wybierz próbę",
     "noAdvancements": "Brak prób do wyświetlenia",
     "comment": {
@@ -26,6 +29,11 @@
       "save": "Zapisz komentarz",
       "cancel": "Anuluj",
       "noComments": "Brak komentarzy do wyświetlenia"
+    },
+    "options": {
+      "selectIdeaForTask": "Zaznacz ideę dla zadania",
+      "multipleTasksForRequirement": "Wiele zadań może być przypisanych do jednego wymogu",
+      "oneTaskForMultipleRequirements": "Jedno zadanie może być przypisane do wielu wymogów"
     }
   },
   "status": "Status",
