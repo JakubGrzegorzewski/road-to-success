@@ -3,19 +3,18 @@ import {ref, onMounted, defineProps} from 'vue';
 import ItemComponent from "@/components/Advancement/ItemComponent.vue";
 import {fetchGET} from "@/main.js";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import ManagingBubbleComponent from "@/components/Advancement/ManagingBubbleComponent.vue";
 const props = defineProps(['id'])
 
 const selectedRank = ref(null);
 const rankBasedOn = ref(null);
 const tasksData = ref([]);
 const requirements = ref([]);
-const generating = ref(false);
 
 onMounted(() => {
   fetchGET(`/api/rankInProgress/${props.id}`)
     .then(data => {
       selectedRank.value = data;
-      console.log(data);
       return Promise.all(data.taskIds.map(task => fetchGET(`/api/task/${task}`)));
     })
     .then(tasks => {
@@ -32,35 +31,6 @@ onMounted(() => {
 });
 
 
-async function generatePDF() {
-generating.value = true;
-try {
-  const response = await fetch(`/api/rankInProgress/${props.id}/generatePDF`, {
-    method: "GET",
-    headers: {
-      'Accept': 'application/pdf'
-    }
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const blob = await response.blob();
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Próba-${rankBasedOn.value.shortName}.pdf`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  generating.value = false;
-  window.URL.revokeObjectURL(url);
-} catch (err) {
-  console.error('Error generating PDF:', err);
-}
-}
-
 </script>
 
 <template>
@@ -68,10 +38,6 @@ try {
     <div class="rank-details-info">
       <h2>{{ rankBasedOn.fullName }}</h2>
       <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rankBasedOn.idea }}</p>
-      <button-component v-if="!generating" button-style="success" @click="generatePDF" :button-text="$t('advancement.generate')"></button-component>
-
-      <button-component v-if="generating" button-style="success" button-icon="@/assets/images/loading.gif"></button-component>
-
     </div>
     <item-component
         v-for="item in requirements"
@@ -82,6 +48,8 @@ try {
     >
     </item-component>
   </div>
+  <managing-bubble-component :rank-in-progress="selectedRank"></managing-bubble-component>
+
 </template>
 
 <style scoped>

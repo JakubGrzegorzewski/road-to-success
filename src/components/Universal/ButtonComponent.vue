@@ -72,4 +72,8 @@
   .info {
     background-color: var(--accent-info);
   }
+  .white {
+    background-color: white;
+    color: var(--primary-color-dark);
+  }
 </style>

@@ -1,11 +1,11 @@
 <script setup>
-import {ref, defineProps, onMounted, onBeforeUnmount, computed} from 'vue';
 import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
-import Cookies from "js-cookie";
+import {ref, defineProps, onMounted, onBeforeUnmount, computed} from 'vue';
 import {fetchDELETE, fetchGET, fetchPOST, fetchPUT} from "@/main.js";
+import Cookies from "js-cookie";
 
 const props = defineProps({
   task : {
@@ -27,7 +27,47 @@ const editedTask = ref(props.task || {
   "content": "",
   "status": "DRAFT",
   "partIdea": props.idea || "",
-  "comments": []
+  "commentIds": []
+});
+
+const taskContent = ref(editedTask.value.content || "");
+const taskComments = ref([]);
+
+const getUserName = computed(() => {
+  fetchGET(`/api/user/${Cookies.get('userId')}`)
+      .then(response => {
+        return response.fullName;
+      })
+      .catch(error => {
+        console.error("Error fetching user name:", error);
+        return "Unknown User";
+      });
+});
+
+const contentRef = ref(null);
+const contentHeight = ref(0);
+let observer;
+
+onMounted(() => {
+  if (!props.task){
+    fetchPOST("/api/task", editedTask.value)
+        .then(response => {
+          editedTask.value = response;
+        })
+        .catch(error => {
+          console.error("Error saving task:", error);
+        });
+  }
+
+  Promise.all(editedTask.value.commentIds.map(id => fetchGET(`/api/comment/${id}`)))
+      .then(comments => {
+        taskComments.value = comments;
+      })
+      .catch(error => {
+        console.error("Error fetching comments:", error);
+      });
+
+  sizeObserver()
 });
 
 const onTextHighlighted = (data) => {
@@ -39,11 +79,7 @@ const onTextHighlighted = (data) => {
   updateTask();
 };
 
-const contentRef = ref(null);
-const contentHeight = ref(0);
-let observer;
-
-onMounted(() => {
+function sizeObserver() {
   if (contentRef.value) {
     observer = new ResizeObserver(entries => {
       for (let entry of entries) {
@@ -52,76 +88,54 @@ onMounted(() => {
     });
     observer.observe(contentRef.value);
   }
-});
+}
 
-onBeforeUnmount(() => {
-  if (observer && contentRef.value) {
-    observer.unobserve(contentRef.value);
-  }
-});
-
-// Task
 function updateTask() {
-  if (editedTask.value.id) {
-    fetchPUT('/api/task', editedTask.value).then((data) => {
-      editedTask.value = data;
-    }).catch(error => {
-      console.error("Error updating task:", error);
-    });
-  } else {
-    fetchPOST('/api/task', editedTask.value).then((data) => {
-      editedTask.value = data;
-    }).catch(error => {
-      console.error("Error updating task:", error);
-    });
-  }
-
-}
-
-// User
-const getUserName = computed(() => {
-  fetchGET(`/api/user/${Cookies.get('userId')}`).then(data => {
-    return data.fullName;
-  }).catch(() => {
-    return null;
-  });
-})
-
-// Comment edit
-function addComment(comment) {
-
-  if (!editedTask.value.id) {
-    fetchPOST('/api/task', editedTask.value).then((data) => {
-      editedTask.value = data;
-      comment.taskId = data.id;
-      console.log(data)
-      fetchPOST('/api/comment', comment)
-          .then(response => {
-            editedTask.value.comments.push(response.id);
-          })
-
-    }).catch(error => {
-      console.error("Error updating task:", error);
-    });
-  }
-}
-
-function saveComment(comment) {
-  fetchPUT('/api/comment', comment)
+  editedTask.value.content = taskContent.value.replace(/\n/g, " ");
+  fetchPUT("/api/task", editedTask.value)
       .then(response => {
-        editedTask.value.comments.push(response.id);
-      }).catch(error => {
-    console.error("Error adding comment:", error);
-  });
+        editedTask.value = response;
+      })
+      .catch(error => {
+        console.error("Error updating task:", error);
+      });
+}
+
+function updateComment(comment) {
+  comment.taskId = editedTask.value.id;
+  if (comment.id) {
+    fetchPUT(`/api/comment/${comment.id}`, comment)
+        .then(response => {
+          const index = taskComments.value.findIndex(c => c.id === comment.id);
+          if (index !== -1) {
+            taskComments.value[index] = response;
+          }
+        })
+        .catch(error => {
+          console.error("Error updating comment:", error);
+        });
+  } else {
+    fetchPOST("/api/comment", comment)
+        .then(response => {
+          taskComments.value.push(response);
+          editedTask.value.commentIds.push(response.id);
+        })
+        .catch(error => {
+          console.error("Error adding comment:", error);
+        });
+  }
 }
 
 function deleteComment(comment) {
-  fetchDELETE('/api/comment', comment.id)
+  fetchDELETE(`/api/comment/${comment.id}`)
       .then(() => {
-        editedTask.value.comments = editedTask.value.comments.filter(c => c.id !== comment.id);
-      }).catch(error => {
-    console.error("Error deleting comment:", error);
-  });
+        taskComments.value = taskComments.value.filter(c => c.id !== comment.id);
+        editedTask.value.commentIds = editedTask.value.commentIds.filter(id => id !== comment.id);
+      })
+      .catch(error => {
+        console.error("Error deleting comment:", error);
+      });
+
 }
 </script>
 
@@ -129,8 +143,8 @@ function deleteComment(comment) {
   <div class="rank-item-components">
     <div class="rank-item-component-content rank-item-component"
          ref="contentRef" >
-      <h3>{{props.requirement?.number}} {{ props.requirement?.content }}</h3>
-      <textarea class="rank-item-component-content-value" v-model="editedTask.content" @change="updateTask"></textarea>
+      <h3>{{props.requirement?.number}}. {{ props.requirement?.content }}</h3>
+      <textarea class="rank-item-component-content-value" v-model="taskContent" @change="updateTask"></textarea>
       <selection-component
           v-if="editedTask.partIdea"
           :text="editedTask.partIdea"
@@ -142,12 +156,13 @@ function deleteComment(comment) {
          :style="{ height: contentHeight + 'px' }"
     >
       <comment-component
-          v-if="editedTask"
-          v-for="currentComment in editedTask?.comments"
-          :comment="currentComment" :key="currentComment.id"
+          v-if="taskComments"
+          v-for="currentComment in taskComments"
+          :comment="currentComment"
+          :key="currentComment.id"
           :userName="getUserName"
-          @save="comment => saveComment(comment)"
-          @delete="commentId => deleteComment(commentId)"
+          @save="comment => updateComment(comment)"
+          @delete="comment => deleteComment(comment)"
       />
 
       <edit-comment-component
@@ -155,10 +170,10 @@ function deleteComment(comment) {
           :comment=null
           :userName="getUserName"
           @close="showCommentAdding = false"
-          @save="comment => addComment(comment)"
+          @save="comment => updateComment(comment)"
       />
 
-      <p v-if="editedTask && editedTask.comments" style="align-self: center">
+      <p v-if="taskComments.length === 0" style="align-self: center">
         {{ $t("advancement.comment.noComments") }}
       </p>
 

@@ -28,7 +28,7 @@ const showCommentEdit = ref(false);
         :button-text="$t('edit.edit')"
       />
       <button-component
-        @click="$emit('delete')"
+        @click="$emit('delete', comment)"
         buttonStyle="error"
         :button-text="$t('edit.delete')"
       />
