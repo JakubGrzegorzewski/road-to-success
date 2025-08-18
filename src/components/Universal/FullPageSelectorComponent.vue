@@ -9,7 +9,10 @@ const props = defineProps({
   },
   options: {
     type: Array,
-    default: () => ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5']
+    default: () => [{
+      "name": "Option 1",
+      "translation": "Option1"
+    }]
   }
 });
 
@@ -46,14 +49,14 @@ const handleBackdropClick = (event) => {
 
       <h1>{{ props.title }}</h1>
       <select v-model="selectedOption" class="selector">
-        <option v-for="(option, index) in props.options" :key="index" :value="option">
-          {{ option }}
+        <option v-for="(option, index) in props.options" :key="index" :value="option.name">
+          {{ option.translation }}
         </option>
       </select>
       <button-component
           :button-text="$t('edit.save')"
           button-style="success"
-          @click="$emit('close'); $emit('option-selected', selectedOption)"
+          @click="$emit('close'); $emit('optionSelected', selectedOption)"
       />
     </div>
   </div>

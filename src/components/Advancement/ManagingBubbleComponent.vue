@@ -1,9 +1,12 @@
 <script setup>
 import {ref, defineProps} from 'vue';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {fetchDELETE} from "@/main.js";
+import {fetchDELETE, fetchGET, fetchPUT} from "@/main.js";
 import FullPageSelectorComponent from "@/components/Universal/FullPageSelectorComponent.vue";
 import CheckmarkComponent from "@/components/Universal/CheckmarkComponent.vue";
+import {useI18n} from "vue-i18n";
+import Cookies from "js-cookie";
+const { t } = useI18n();
 
 const props = defineProps({
   rankInProgress : {
@@ -52,6 +55,46 @@ function deleteRank() {
   fetchDELETE(`/api/rankInProgress/${rankInProgress.value.id}`);
 }
 
+function updateRankStatus(status){
+  fetchGET(`/api/rankInProgress/${Cookies.get("rankInProgressId")}`).then(
+      response => {
+          const rankInProgress = response;
+          rankInProgress.status = status.toUpperCase();
+          fetchPUT(`/api/rankInProgress`, rankInProgress)
+          .catch(error => {
+            console.error('Error updating rank status:', error);
+          });
+      }
+  )
+}
+
+const statusOptions =
+  [
+    {
+      name: 'draft',
+      translation: t(`statusOptions.draft`)
+    },
+    {
+      name: 'created',
+      translation: t(`statusOptions.created`)
+    },
+    {
+      name: 'pending',
+      translation: t(`statusOptions.pending`)
+    },
+    {
+      name: 'inProgress',
+      translation: t(`statusOptions.in_progress`)
+    },
+    {
+      name: 'completed',
+      translation: t(`statusOptions.completed`)
+    },
+    {
+      name: 'failed',
+      translation: t(`statusOptions.failed`)
+    }
+  ];
 </script>
 
 <template>
@@ -109,9 +152,10 @@ function deleteRank() {
   </div>
   <full-page-selector-component
       v-if="isStatusSelectorOpen"
-      @close="isStatusSelectorOpen = false"
       :title="$t('advancement.changeStatus')"
-      :options="['W trakcie', 'Zakończone', 'Anulowane']"
+      :options="statusOptions"
+      @close="isStatusSelectorOpen = false"
+      @optionSelected="status => updateRankStatus(status)"
   />
 </template>
 
