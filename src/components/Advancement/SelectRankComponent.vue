@@ -90,7 +90,7 @@ function selectColor(status) {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 0 2px 8px var(--shadow-light);
