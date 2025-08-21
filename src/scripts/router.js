@@ -17,16 +17,6 @@ const routes = [
         component: () => import('../views/AdvancementDetailView.vue'),
         props: true
     },
-    {
-        path: '/menteesAdvancements',
-        name: 'MenteesAdvancements',
-        component: () => import('../views/MenteesAdvancementsView.vue')
-    },
-    {
-        path: '/CreateAdvancement',
-        name: 'CreateAdvancement',
-        component: () => import('../views/CreateAdvancementView.vue')
-    }
 ]
 
 const router = createRouter({

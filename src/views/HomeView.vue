@@ -4,74 +4,33 @@ import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import ObjectTemplates from "@/scripts/objectTemplates.js";
 import CheckmarkComponent from "@/components/Universal/CheckmarkComponent.vue";
 import {ref, onMounted} from 'vue';
-import {fetchDELETE, fetchGET, fetchPOST} from "@/main.js";
+import {fetchGET, fetchPOST} from "@/main.js";
 import Cookies from 'js-cookie';
 
-const userRanks = ref([]);
 const userRanksInProgress = ref([]);
-const mentorRanks = ref([]);
 const mentorRanksInProgress = ref([]);
-
-
-onMounted(() => {
-  fetchGET(`/api/rankInProgress/user/${Cookies.get('userId')}`).then(data => {
-    for (let rank of data) {
-      userRanks.value.push(rank);
-      fetchGET(`/api/rank/${rank.rankId}`).then(rankData => {
-        userRanksInProgress.value.push(rankData);
-      })
-    }
-  });
-  fetchGET(`/api/rankInProgress/mentor/${Cookies.get('userId')}`).then(data => {
-    for (let rank of data) {
-      mentorRanks.value.push(rank);
-      fetchGET(`/api/rank/${rank.rankId}`).then(rankData => {
-        mentorRanksInProgress.value.push(rankData);
-      })
-    }
-  });
-})
-
 
 const allRanks = ref([]);
 const selectedRank = ref({});
-const requirements = ref([]);
 const selectedRankShortName = ref('pwd');
 const rankInProgress = ref({})
 
 onMounted(() => {
+  fetchGET(`/api/rankInProgress/user/${Cookies.get('userId')}/basic`)
+        .then(data => userRanksInProgress.value = data);
+
+  fetchGET(`/api/rankInProgress/mentor/${Cookies.get('userId')}/basic`)
+      .then(data => mentorRanksInProgress.value = data);
+
   fetchGET('/api/rank')
       .then(data => {
         allRanks.value = data;
         selectedRank.value = data.find(r => r.shortName === selectedRankShortName.value);
-        if (Cookies.get('rankInProgressId') === undefined)
-          addRankInProgress();
-        else
-          fetchGET(`/api/rankInProgress/${Cookies.get('rankInProgressId')}`)
-              .then(data => {
-                rankInProgress.value = data;
-                selectedRankShortName.value = selectedRank.value.shortName;
-              }).catch( () => {
-                Cookies.set("rankInProgressId", undefined, { expires: 1 });
-                addRankInProgress();
-              }
-          );
-        getRequirements();
       })
-});
+})
 
 const onRankChange = () => {
   selectedRank.value = allRanks.value.find(r => r.shortName === selectedRankShortName.value) || null;
-  saveRank();
-}
-
-async function getRequirements() {
-  const requirementPromises = selectedRank.value.requirementIds.map(id =>
-      fetchGET(`/api/requirement/${id}`)
-  );
-
-  const requirementData = await Promise.all(requirementPromises);
-  requirements.value = requirementData.sort((a, b) => a.id - b.id);
 }
 
 // Rank edit
@@ -87,13 +46,6 @@ function addRankInProgress() {
   })
 }
 
-function saveRank() {
-  fetchPOST('/api/rankInProgress', rankInProgress.value)
-}
-
-function deleteRank() {
-  fetchDELETE(`/api/rankInProgress/${rankInProgress.value.id}`);
-}
 
 </script>
 
@@ -101,34 +53,32 @@ function deleteRank() {
   <div class="home">
     <div>
       <h2>Realizowane próby</h2>
-      <div class="all-ranks" v-if="userRanks">
+      <div class="all-ranks" v-if="userRanksInProgress">
         <SelectRankComponent
-            v-if="userRanks.length > 0"
-            v-for="rank in userRanks"
-            :key="rank.id"
-            :rankName="userRanksInProgress.find( r => r.id === rank.rankId)?.fullName || 'rank not found'"
-            :rankImage="`@/assets/images/${userRanksInProgress.find( r => r.id === rank.rankId)?.shortName}.png`"
+            v-if="userRanksInProgress.length > 0"
+            v-for="rank in userRanksInProgress"
+            :key="rank.rankInProgressId"
+            :rankName="rank.fullName || 'rank not found'"
+            :rankImage="`@/assets/images/${rank.shortName}.png`"
             :rankStatus="rank.status"
-            @click="$router.push(`/Advancement/${rank.id}`)"
-        >
-        </SelectRankComponent>
+            @click="$router.push(`/Advancement/${rank.rankInProgressId}`)"
+        />
       </div>
     </div>
 
     <div>
       <h2>Podopieczni:</h2>
-      <div class="mentee-ranks" v-if="userRanks">
+      <div class="mentee-ranks" v-if="mentorRanksInProgress">
         <SelectRankComponent
-            v-if="mentorRanks.length > 0"
-            v-for="rank in mentorRanks"
-            :key="rank.id"
-            :rankName="mentorRanksInProgress.find( r => r.id === rank.rankId)?.fullName || 'rank not found'"
-            :rankImage="`@/assets/images/${mentorRanksInProgress.find( r => r.id === rank.rankId)?.shortName}.png`"
-            rankOwner="test"
+            v-if="mentorRanksInProgress.length > 0"
+            v-for="rank in mentorRanksInProgress"
+            :key="rank.rankInProgressId"
+            :rankName="rank.fullName || 'rank not found'"
+            :rankImage="`@/assets/images/${rank.shortName}.png`"
             :rankStatus="rank.status"
-            @click="$router.push(`/Advancement/${rank.id}`)"
-        >
-        </SelectRankComponent>
+            :rank-owner="rank.mentorName"
+            @click="$router.push(`/Advancement/${rank.rankInProgressId}`)"
+        />
       </div>
     </div>
 
@@ -159,7 +109,7 @@ function deleteRank() {
         />
         <button-component
             buttonStyle="success"
-            @click="saveRank"
+            @click="addRankInProgress"
             :button-text="$t('edit.save')"
         />
       </div>

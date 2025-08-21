@@ -216,7 +216,7 @@ function deleteComment(comment) {
   border-radius: 8px;
   padding: 20px;
   gap: 10px;
-  border: 1px solid var(--shadow-light);
+  background: white;
 }
 
 .rank-item-component-content h3 {
