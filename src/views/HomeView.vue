@@ -42,7 +42,6 @@ function addRankInProgress() {
 
   fetchPOST('/api/rankInProgress', defaultRank).then(data => {
     rankInProgress.value = data;
-    Cookies.set("rankInProgressId", rankInProgress.value.id);
   })
 }
 

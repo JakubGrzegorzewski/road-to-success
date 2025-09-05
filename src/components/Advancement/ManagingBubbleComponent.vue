@@ -5,7 +5,6 @@ import {fetchDELETE, fetchGET, fetchPUT} from "@/main.js";
 import FullPageSelectorComponent from "@/components/Universal/FullPageSelectorComponent.vue";
 import CheckmarkComponent from "@/components/Universal/CheckmarkComponent.vue";
 import {useI18n} from "vue-i18n";
-import Cookies from "js-cookie";
 const { t } = useI18n();
 
 const props = defineProps({
@@ -56,7 +55,7 @@ function deleteRank() {
 }
 
 function updateRankStatus(status){
-  fetchGET(`/api/rankInProgress/${Cookies.get("rankInProgressId")}`).then(
+  fetchGET(`/api/rankInProgress/${props.rankInProgress.id}`).then(
       response => {
           const rankInProgress = response;
           rankInProgress.status = status.toUpperCase();

@@ -45,6 +45,7 @@ onMounted(() => {
         :task="tasksData.find(task => task.requirementId === item.id) || null"
         :requirement="item"
         :idea="rankBasedOn.idea"
+        :rankInProgressId="props.id"
     >
     </item-component>
   </div>

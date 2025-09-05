@@ -17,12 +17,13 @@ const props = defineProps({
     required: false
   },
   idea : String,
+  rankInProgressId: String,
 })
 
 const showCommentAdding = ref(false);
 
 const editedTask = ref(props.task || {
-  "rankInProgressId": Cookies.get("rankInProgressId") || null,
+  "rankInProgressId": props.rankInProgressId,
   "requirementId": props.requirement?.id || null,
   "content": "",
   "status": "DRAFT",

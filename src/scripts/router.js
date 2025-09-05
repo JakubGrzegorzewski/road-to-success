@@ -17,6 +17,16 @@ const routes = [
         component: () => import('../views/AdvancementDetailView.vue'),
         props: true
     },
+    {
+        path: '/register',
+        name: 'Register',
+        component: () => import('../views/RegisterView.vue'),
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('../views/LoginView.vue'),
+    },
 ]
 
 const router = createRouter({
