@@ -2,7 +2,6 @@
 import {ref, onMounted, defineProps} from 'vue';
 import ItemComponent from "@/components/Advancement/ItemComponent.vue";
 import {fetchGET} from "@/main.js";
-import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import ManagingBubbleComponent from "@/components/Advancement/ManagingBubbleComponent.vue";
 const props = defineProps(['id'])
 

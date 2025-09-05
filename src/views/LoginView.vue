@@ -1,9 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {fetchPOST} from "@/main.js";
 import ObjectTemplates from "@/scripts/objectTemplates.js";
-import router from "@/scripts/router.js";
 
 const fullName = ref('')
 const email = ref('')

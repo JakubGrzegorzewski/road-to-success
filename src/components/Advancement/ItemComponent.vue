@@ -3,7 +3,7 @@ import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
-import {ref, defineProps, onMounted, onBeforeUnmount, computed} from 'vue';
+import {ref, defineProps, onMounted, computed} from 'vue';
 import {fetchDELETE, fetchGET, fetchPOST, fetchPUT} from "@/main.js";
 import Cookies from "js-cookie";
 

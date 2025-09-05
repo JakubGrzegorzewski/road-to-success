@@ -17,9 +17,9 @@ const handleSubmit = () => {
   user.password = password.value
   user.role = role.value
 
-  fetchPOST("/api/user", user).then(response => {
-    router.push("/");
-  })
+  fetchPOST("/api/user", user).then(
+    router.push("/")
+  )
 }
 </script>
 
