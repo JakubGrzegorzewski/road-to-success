@@ -57,5 +57,24 @@
     "editUser": "Edit User",
     "deleteUser": "Delete User",
     "you" : "Yourself"
+  },
+  "register": {
+    "registerUser": "Register User",
+    "register": "Register",
+    "loginUser" : "Login",
+    "login" : "Login",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "email": "Email",
+    "emailRequired": "Email is required",
+    "usernameRequired": "Username is required",
+    "passwordRequired": "Password is required",
+    "registrationSuccess": "Registration successful",
+    "registrationFailed": "Registration failed",
+    "userExists": "User already exists",
+    "invalidEmail": "Invalid email address",
+    "emailAlreadyExists": "Email already exists"
   }
 }

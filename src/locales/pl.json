@@ -57,5 +57,24 @@
     "editUser": "Edytuj użytkownika",
     "deleteUser": "Usuń użytkownika",
     "you" : "Ty"
+  },
+  "register": {
+    "registerUser": "Zarestruj użytkownika",
+    "register": "Zarejestruj",
+    "loginUser" : "Zaloguj",
+    "login" : "Zaloguj",
+    "username": "Nazwa użytkownika",
+    "password": "Hasło",
+    "confirmPassword": "Potwierdź hasło",
+    "passwordMismatch": "Hasła nie pasują do siebie",
+    "email": "Email",
+    "emailRequired": "Email jest wymagany",
+    "usernameRequired": "Nazwa użytkownika jest wymagana",
+    "passwordRequired": "Hasło jest wymagane",
+    "registrationSuccess": "Rejestracja zakończona sukcesem",
+    "registrationFailed": "Rejestracja nie powiodła się",
+    "userExists": "Użytkownik o tej nazwie już istnieje",
+    "invalidEmail": "Nieprawidłowy adres email",
+    "emailAlreadyExists": "Email już istnieje"
   }
 }
