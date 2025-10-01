@@ -10,7 +10,8 @@
     "save": "Zapisz",
     "cancel": "Anuluj",
     "delete": "Usuń",
-    "add": "Dodaj"
+    "add": "Dodaj",
+    "options": "Opcje"
   },
   "advancement": {
     "generate": "Generuj PDF próby",
@@ -20,6 +21,7 @@
     "add": "Dodaj nową próbę",
     "delete": "Usuń próbę",
     "select": "Wybierz próbę",
+    "selectMentor": "Wybierz opiekuna",
     "noAdvancements": "Brak prób do wyświetlenia",
     "comment": {
       "add": "Dodaj komentarz",

@@ -10,7 +10,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "add": "Add"
+    "add": "Add",
+    "options": "Options"
   },
   "advancement": {
     "generate": "Generate advancement's PDF",
@@ -20,6 +21,7 @@
     "add": "Add New Advancement",
     "delete": "Delete Advancement",
     "select": "Select advancement",
+    "selectMentor": "Select mentor",
     "noAdvancements": "No advancements to display",
     "comment": {
       "add": "Add Comment",

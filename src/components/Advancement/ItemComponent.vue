@@ -31,7 +31,7 @@ const editedTask = ref(props.task || {
   "commentIds": []
 });
 
-const taskContent = ref(editedTask.value.content || "");
+const taskContent = ref(editedTask.value.content.replace(/<br\s*\/?>/gi, "\n") || "");
 const taskComments = ref([]);
 
 const getUserName = computed(() => {
@@ -92,7 +92,7 @@ function sizeObserver() {
 }
 
 function updateTask() {
-  editedTask.value.content = taskContent.value.replace(/\n/g, " ");
+  editedTask.value.content = taskContent.value.replace(/\n/g, "<br/>");
   fetchPUT("/api/task", editedTask.value)
       .then(response => {
         editedTask.value = response;
@@ -155,6 +155,7 @@ function deleteComment(comment) {
     </div>
     <div class="rank-item-component-comments rank-item-component"
          :style="{ height: contentHeight + 'px' }"
+         v-if="false"
     >
       <comment-component
           v-if="taskComments"

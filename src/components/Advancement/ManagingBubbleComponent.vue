@@ -16,6 +16,7 @@ const props = defineProps({
 
 const generating = ref(false);
 const isOpen = ref(false);
+const rankStyle = ref('NONE');
 
 const isStatusSelectorOpen = ref(false);
 const isMentorSelectorOpen = ref(false);
@@ -55,12 +56,41 @@ function updateRankStatus(status){
       response => {
           const rankInProgress = response;
           rankInProgress.status = status.toUpperCase();
+          rankInProgress.style = rankStyle.value;
           fetchPUT(`/api/rankInProgress`, rankInProgress)
           .catch(error => {
             console.error('Error updating rank status:', error);
           });
       }
   )
+}
+
+const styleTransitions = {
+  IDEA_SELECTION: {
+    IDEA_SELECTION: 'NONE',
+    NONE: 'IDEA_SELECTION',
+    MULTI_TASK_ONE_REQUIREMENT: 'IDEA_SELECTION',
+    ONE_TASK_MULTI_REQUIREMENTS: 'ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA',
+    ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA: 'ONE_TASK_MULTI_REQUIREMENTS',
+  },
+  MULTI_TASK_ONE_REQUIREMENT: {
+    MULTI_TASK_ONE_REQUIREMENT: 'NONE',
+    default: 'MULTI_TASK_ONE_REQUIREMENT',
+  },
+  ONE_TASK_MULTI_REQUIREMENTS: {
+    ONE_TASK_MULTI_REQUIREMENTS: 'NONE',
+    ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA: 'IDEA_SELECTION',
+    IDEA_SELECTION: 'ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA',
+    NONE: 'ONE_TASK_MULTI_REQUIREMENTS',
+    MULTI_TASK_ONE_REQUIREMENT: 'ONE_TASK_MULTI_REQUIREMENTS',
+  },
+};
+
+function determineStyle(whatClicked) {
+  const current = rankStyle.value;
+  const transitions = styleTransitions[whatClicked];
+  if (!transitions) return;
+  rankStyle.value = transitions[current] ?? transitions.default ?? current;
 }
 
 const statusOptions =
@@ -130,14 +160,20 @@ const statusOptions =
       <checkmark-component
           :button-text="$t('advancement.options.selectIdeaForTask')"
           button-style="white"
+          :isChecked = "rankStyle === 'IDEA_SELECTION' || rankStyle === 'ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA'"
+          @toggle="determineStyle('IDEA_SELECTION')"
       />
       <checkmark-component
           :button-text="$t('advancement.options.multipleTasksForRequirement')"
           button-style="white"
+          :isChecked = "rankStyle === 'MULTI_TASK_ONE_REQUIREMENT'"
+          @toggle="determineStyle('MULTI_TASK_ONE_REQUIREMENT')"
       />
       <checkmark-component
           :button-text="$t('advancement.options.oneTaskForMultipleRequirements')"
           button-style="white"
+          :isChecked = "rankStyle === 'ONE_TASK_MULTI_REQUIREMENTS' || rankStyle === 'ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA'"
+          @toggle="determineStyle('ONE_TASK_MULTI_REQUIREMENTS')"
       />
 
     </div>
