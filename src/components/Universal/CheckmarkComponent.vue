@@ -3,15 +3,13 @@ import {ref} from "vue";
 
 const props = defineProps({
   buttonText: { type: String, required: false },
-  buttonStyle: { type: String, default: 'default' }
+  buttonStyle: { type: String, default: 'default' },
 })
-
-const isChecked = ref(false);
-</script>
+const isCheckedVar = defineModel('isChecked', { default: false });</script>
 
 <template>
-  <div :class="[props.buttonStyle, 'button']" @click="isChecked = !isChecked; $emit('toggle', isChecked)">
-    <input type="checkbox" v-model="isChecked"/>
+  <div :class="[props.buttonStyle, 'button']" @click="isCheckedVar = !isCheckedVar; $emit('toggle', isCheckedVar)">
+    <input type="checkbox" v-model="isCheckedVar"/>
     <span v-if="buttonText" style="max-width: 150px">{{ props.buttonText }}</span>
   </div>
 </template>
