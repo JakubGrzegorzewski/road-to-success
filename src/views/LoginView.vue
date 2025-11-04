@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import ObjectTemplates from "@/scripts/objectTemplates.js";
 
 const fullName = ref('')
 const email = ref('')
@@ -9,7 +8,7 @@ const password = ref('')
 const role = ref('')
 
 const handleSubmit = () => {
-  let user = ObjectTemplates.AppUserDto
+  let user = {}
   user.fullName = fullName.value
   user.email = email.value
   user.password = password.value

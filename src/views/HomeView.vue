@@ -1,7 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import SelectRankComponent from "@/components/Advancement/SelectRankComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import ObjectTemplates from "@/scripts/objectTemplates.js";
 import CheckmarkComponent from "@/components/Universal/CheckmarkComponent.vue";
 import {ref, onMounted} from 'vue';
 import {fetchGET, fetchPOST} from "@/main.js";
@@ -46,7 +45,7 @@ const onRankChange = () => {
 
 // Rank edit
 function addRankInProgress() {
-  let defaultRank = ObjectTemplates.RankInProgressDto;
+  let defaultRank = {};
   defaultRank.rankId = selectedRank.value.id;
   defaultRank.userId = Cookies.get("userId") || null;
   defaultRank.status = "DRAFT";

@@ -36,7 +36,22 @@
       "selectIdeaForTask": "Select idea for task",
       "multipleTasksForRequirement": "Multiple tasks for requirement",
       "oneTaskForMultipleRequirements": "One task for multiple requirements"
-    }
+    },
+    "task": {
+      "add": "Add Task",
+      "edit": "Edit Task",
+      "delete": "Delete Task",
+      "placeholder": "Write your task here...",
+      "save": "Save Task",
+      "cancel": "Cancel",
+      "noTasks": "No tasks to display"
+    },
+    "requirement": {
+      "selected": "Selected requirements:",
+      "add": "Add Requirements:",
+      "remove": "Delete Requirement"
+    },
+    "requirements": "Requirements"
   },
   "status": "Status",
   "statusOptions": {

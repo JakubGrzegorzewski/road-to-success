@@ -36,7 +36,22 @@
       "selectIdeaForTask": "Zaznacz ideę dla zadania",
       "multipleTasksForRequirement": "Wiele zadań może być przypisanych do jednego wymogu",
       "oneTaskForMultipleRequirements": "Jedno zadanie może być przypisane do wielu wymogów"
-    }
+    },
+    "task" : {
+      "add": "Dodaj zadanie",
+      "edit": "Edytuj zadanie",
+      "delete": "Usuń zadanie",
+      "placeholder": "Napisz swoje zadanie tutaj...",
+      "save": "Zapisz zadanie",
+      "cancel": "Anuluj",
+      "noTasks": "Brak zadań do wyświetlenia"
+    },
+    "requirement" : {
+      "selected": "Zaznaczone wymagania:",
+      "add" : "Dodaj wymaganie:",
+      "remove" : "Usuń wymóg"
+    },
+    "requirements": "Wymagania"
   },
   "status": "Status",
   "statusOptions": {

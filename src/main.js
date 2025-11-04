@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './scripts/router.js'
 import i18n from './scripts/i18n.js'
-import objectTemplates from './scripts/objectTemplates.js'
 
 const app = createApp(App)
 
@@ -70,7 +69,6 @@ export async function fetchPOST(url, data) {
 
 app.use(router)
 app.use(i18n)
-app.use(objectTemplates)
 app.config.globalProperties.$fetch = fetchGET;
 app.config.globalProperties.$delete = fetchDELETE;
 app.config.globalProperties.$put = fetchPUT;

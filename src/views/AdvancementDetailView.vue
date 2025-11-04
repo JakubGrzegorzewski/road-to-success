@@ -1,54 +1,64 @@
-<script setup>
-import {ref, onMounted, defineProps} from 'vue';
-import ItemComponent from "@/components/Advancement/ItemComponent.vue";
-import {fetchGET} from "@/main.js";
-import ManagingBubbleComponent from "@/components/Advancement/ManagingBubbleComponent.vue";
-const props = defineProps(['id'])
+<script setup lang="ts">
+import {RankInProgress, Status, Style, Task} from "@/scripts/objectTemplates";
+import {rankInProgress} from "@/scripts/testObjects"
+import RequirementBasedTaskComponent from "@/components/Advancement/RequirementBasedTaskComponent.vue";
+import {ref, Ref} from "vue";
+import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
+import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
-const selectedRank = ref(null);
-const rankBasedOn = ref(null);
-const tasksData = ref([]);
-const requirements = ref([]);
+// const props = defineProps<{ rankInProgress: RankInProgress }>();
 
-onMounted(() => {
-  fetchGET(`/api/rankInProgress/${props.id}`)
-    .then(data => {
-      selectedRank.value = data;
-      return Promise.all(data.taskIds.map(task => fetchGET(`/api/task/${task}`)));
-    })
-    .then(tasks => {
-      tasksData.value = tasks;
-      return fetchGET(`/api/rank/${selectedRank.value.rankId}`);
-    })
-    .then(rankData => {
-      rankBasedOn.value = rankData;
-      return Promise.all(rankData.requirementIds.map(reqId => fetchGET(`/api/requirement/${reqId}`)));
-    })
-    .then(requirementsData => {
-      requirements.value = requirementsData.sort((a, b) => a.id - b.id);
-    })
-});
+const editedRankInProgress : Ref<RankInProgress> = ref(rankInProgress);
 
-
+function addTask() {
+  let task : Task;
+  task = {
+    id: 0,
+    status: Status.CREATED,
+    requirements: [],
+    rankInProgress: editedRankInProgress.value,
+    content: "",
+    partIdea: editedRankInProgress.value.rank.idea,
+    comments: []
+  };
+  editedRankInProgress.value.tasks?.push(task);
+}
 </script>
 
 <template>
-  <div class="rank-details" v-if="rankBasedOn && requirements">
+  <div class="rank-details" v-if="editedRankInProgress">
     <div class="rank-details-info">
-      <h2>{{ rankBasedOn.fullName }}</h2>
-      <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rankBasedOn.idea }}</p>
+      <h2>{{ editedRankInProgress.rank.fullName }}</h2>
+      <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rankInProgress.rank.idea }}</p>
     </div>
-    <item-component
-        v-for="item in requirements"
-        :key="item.id"
-        :task="tasksData.find(task => task.requirementId === item.id) || null"
-        :requirement="item"
-        :idea="rankBasedOn.idea"
-        :rankInProgressId="props.id"
-    >
-    </item-component>
+    <RequirementBasedTaskComponent
+        v-if="editedRankInProgress.style === Style.ONE_TASK_MULTI_REQUIREMENTS"
+        v-for="requirement in editedRankInProgress.rank.requirements"
+        :key="requirement.id"
+        :requirement="requirement"
+        :rank-in-progress="editedRankInProgress"
+        :tasks="editedRankInProgress.tasks?.filter(el => el.requirements.find(req => req.id === requirement.id)) || null"
+        @update:rank-in-progress="editedRank => editedRankInProgress = editedRank"
+    />
+    <div v-if="editedRankInProgress.style === Style.IDEA_SELECTION" style="display: flex; flex-direction: column;">
+      <IdeaBasedTaskComponent
+          v-for="task in editedRankInProgress.tasks"
+          :key="task.id"
+          :rank-in-progress="editedRankInProgress"
+          :task="task"
+          @update:rank-in-progress="editedRank => editedRankInProgress = editedRank"
+      />
+      <ButtonComponent
+          class="add-task-button"
+          :button-text="$t('advancement.task.add')"
+          buttonStyle="default"
+          @click="addTask"
+      />
+    </div>
+
+
   </div>
-  <managing-bubble-component :rank-in-progress="selectedRank"></managing-bubble-component>
+<!--  <managing-bubble-component :rank-in-progress="rankInProgress"></managing-bubble-component>-->
 
 </template>
 
@@ -60,5 +70,11 @@ onMounted(() => {
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
+}
+.add-task-button {
+  align-self: center;
+  justify-self: center;
+  margin: 10px;
+  width: 800px;
 }
 </style>

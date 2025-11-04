@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {ref, defineProps} from 'vue';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {fetchDELETE, fetchGET, fetchPUT} from "@/main.js";

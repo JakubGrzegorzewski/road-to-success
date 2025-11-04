@@ -1,13 +1,19 @@
-<script setup>
-import { defineProps, ref } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
+import {AppUser, Task, TaskComment} from '@/scripts/objectTemplates';
 
-const props = defineProps({
-  comment: { type: Object, required: true },
-  userName: { type: String, required: false }
-});
+const props = defineProps<{
+  comment: TaskComment,
+  user: AppUser
+}>();
+
+const emits = defineEmits<{
+  (e: 'update', payload: TaskComment): void;
+  (e: 'delete', payload: TaskComment): void;
+}>();
 
 const { t } = useI18n();
 const showCommentEdit = ref(false);
@@ -17,29 +23,30 @@ const showCommentEdit = ref(false);
 <template>
   <div class="comment-component" v-if="!showCommentEdit">
     <div class="comment-header">
-      <h3 class="comment-author">{{ userName || t('user.you') }}</h3>
+      <h3 class="comment-author">{{ user.fullName || t('user.you') }}</h3>
       <span class="comment-date">{{ props.comment.date }}</span>
     </div>
     <p class="comment-text">{{ props.comment.content }}</p>
     <div class="comment-actions">
-      <button-component
+      <ButtonComponent
         @click="showCommentEdit = true"
         buttonStyle="default"
         :button-text="$t('edit.edit')"
       />
-      <button-component
-        @click="$emit('delete', comment)"
+      <ButtonComponent
+        @click="emits('delete', comment)"
         buttonStyle="error"
         :button-text="$t('edit.delete')"
       />
     </div>
   </div>
-  <edit-comment-component
+  <EditCommentComponent
     v-if="showCommentEdit"
-    :displayName="userName"
+    :user="user"
     :comment="props.comment"
+    :task="props.comment.task"
     @close="showCommentEdit = false"
-    @save="$emit('save', $event)"
+    @save="element => emits('update', element)"
   />
 </template>
 

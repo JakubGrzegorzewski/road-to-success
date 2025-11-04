@@ -12,7 +12,7 @@ const routes = [
         component: () => import('../views/AdvancementsView.vue')
     },
     {
-        path: '/Advancement/:id',
+        path: '/Advancement',
         name: 'AdvancementDetail',
         component: () => import('../views/AdvancementDetailView.vue'),
         props: true
