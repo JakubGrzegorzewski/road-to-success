@@ -3,7 +3,7 @@ import {RankInProgress, Status, Style} from "@/scripts/objectTemplates";
 const rankInProgress: RankInProgress = {
     id: 1,
     status: Status.IN_PROGRESS,
-    style: Style.IDEA_SELECTION,
+    style: Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
 
     rank: {
         id: 1,
