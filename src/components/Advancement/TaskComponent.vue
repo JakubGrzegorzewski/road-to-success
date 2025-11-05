@@ -6,9 +6,12 @@ import EditCommentComponent from "@/components/Universal/EditCommentComponent.vu
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   originalTask: Task
-}>();
+  showDeleteTaskButton: boolean
+}>(), {
+  showDeleteTaskButton: true
+});
 
 const emits = defineEmits<{
   (e: 'update:task', payload: Task): void;
@@ -63,7 +66,7 @@ function deleteComment(comment: TaskComment) {
 <div class="task">
   <div class="task-content" ref="contentDivRef">
     <slot/>
-    <ButtonComponent class="task-delete" button-style="error" :button-text="$t('advancement.task.delete')" @click="emits('delete:task', editedTask)"/>
+    <ButtonComponent v-if="showDeleteTaskButton" class="task-delete" button-style="error" :button-text="$t('advancement.task.delete')" @click="emits('delete:task', editedTask)"/>
   </div>
   <div class="comments"  v-if="editedTask.comments">
     <CommentComponent

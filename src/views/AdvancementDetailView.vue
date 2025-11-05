@@ -13,7 +13,7 @@ const editedRankInProgress : Ref<RankInProgress> = ref(rankInProgress);
 function addTask() {
   let task : Task;
   task = {
-    id: 0,
+    id: Math.floor(Math.random()*1000000000000000),
     status: Status.CREATED,
     requirements: [],
     rankInProgress: editedRankInProgress.value,
@@ -29,10 +29,22 @@ function addTask() {
   <div class="rank-details" v-if="editedRankInProgress">
     <div class="rank-details-info">
       <h2>{{ editedRankInProgress.rank.fullName }}</h2>
+      <div class="nav-buttons">
+        <div class="text-selection-component">
+          <select v-model="editedRankInProgress.style">
+            <option v-for="currentStyle in Style" :value="currentStyle">{{ $t('advancement.style.'+currentStyle) }}</option>
+          </select>
+        </div>
+      </div>
       <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rankInProgress.rank.idea }}</p>
     </div>
     <RequirementBasedTaskComponent
-        v-if="editedRankInProgress.style === Style.ONE_TASK_MULTI_REQUIREMENTS"
+        v-if="[Style.ONE_TASK_ONE_REQUIREMENT,
+            Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA,
+            Style.MULTI_TASK_ONE_REQUIREMENT,
+            Style.MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA,
+          ].indexOf(editedRankInProgress.style) !== -1"
+
         v-for="requirement in editedRankInProgress.rank.requirements"
         :key="requirement.id"
         :requirement="requirement"
@@ -40,7 +52,13 @@ function addTask() {
         :tasks="editedRankInProgress.tasks?.filter(el => el.requirements.find(req => req.id === requirement.id)) || null"
         @update:rank-in-progress="editedRank => editedRankInProgress = editedRank"
     />
-    <div v-if="editedRankInProgress.style === Style.IDEA_SELECTION" style="display: flex; flex-direction: column;">
+    <div v-if="[Style.IDEA_SELECTION,
+            Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
+            Style.ONE_TASK_MULTI_REQUIREMENTS
+          ].indexOf(editedRankInProgress.style) !== -1"
+        style="display: flex; flex-direction: column; gap: 20px;"
+    >
+
       <IdeaBasedTaskComponent
           v-for="task in editedRankInProgress.tasks"
           :key="task.id"
@@ -77,4 +95,11 @@ function addTask() {
   margin: 10px;
   width: 800px;
 }
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 </style>

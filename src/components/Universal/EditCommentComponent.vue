@@ -18,7 +18,7 @@ const emits = defineEmits<{
 const editComment : Ref<TaskComment> = ref(
     props.comment ||
     {
-      id: 0,
+      id: Math.floor(Math.random()*1000000000000000),
       date: new Date().toISOString().split('T')[0],
       user: props.user,
       content: "",

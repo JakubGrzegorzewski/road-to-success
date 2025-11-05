@@ -32,10 +32,13 @@
       "cancel": "Cancel",
       "noComments": "No comments to display"
     },
-    "options": {
-      "selectIdeaForTask": "Select idea for task",
-      "multipleTasksForRequirement": "Multiple tasks for requirement",
-      "oneTaskForMultipleRequirements": "One task for multiple requirements"
+    "style": {
+      "NONE" : "NONE",
+      "IDEA_SELECTION" : "Idea Selection",
+      "ONE_TASK_ONE_REQUIREMENT" : "One task, one requirement.",
+      "ONE_TASK_MULTI_REQUIREMENTS" : "One task, multiple requirements.",
+      "ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA" : "One task, multiple requirements, with idea.",
+      "MULTI_TASK_ONE_REQUIREMENT" : "Multiple tasks, one requirement."
     },
     "task": {
       "add": "Add Task",

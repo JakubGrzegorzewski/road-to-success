@@ -32,10 +32,15 @@
       "cancel": "Anuluj",
       "noComments": "Brak komentarzy do wyświetlenia"
     },
-    "options": {
-      "selectIdeaForTask": "Zaznacz ideę dla zadania",
-      "multipleTasksForRequirement": "Wiele zadań może być przypisanych do jednego wymogu",
-      "oneTaskForMultipleRequirements": "Jedno zadanie może być przypisane do wielu wymogów"
+    "style": {
+      "NONE" : "NONE",
+      "MULTI_TASK_ONE_REQUIREMENT" : "Wiele zadań opartych na wymaganiu.",
+      "MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA" : "Wiele zadań opartych na wymaganiu, z przypisywaniem idei.",
+      "ONE_TASK_MULTI_REQUIREMENTS" : "Zadanie oparte na wielu wymaganiach.",
+      "ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA" : "Zadanie oparte na idei, z przypisywaniem wielu wymagań.",
+      "ONE_TASK_ONE_REQUIREMENT" : "Zadanie oparte na wymaganiu.",
+      "ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA" : "Zadanie oparte na wymaganiu, z przypisywaniem idei.",
+      "IDEA_SELECTION" : "Zadanie oparte na idei."
     },
     "task" : {
       "add": "Dodaj zadanie",

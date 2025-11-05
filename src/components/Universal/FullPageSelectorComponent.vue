@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 

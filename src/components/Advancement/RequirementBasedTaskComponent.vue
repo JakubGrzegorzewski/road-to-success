@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import TaskComponent from "@/components/Advancement/TaskComponent.vue";
-import {RankInProgress, Requirement, Status, Task} from "@/scripts/objectTemplates";
+import {RankInProgress, Requirement, Status, Style, Task} from "@/scripts/objectTemplates";
 import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import {doShowAddTaskButton, doShowDeleteTaskButton, doShowIdea} from "@/scripts/whatToShow";
 
 const props = defineProps<{
   requirement: Requirement,
@@ -28,7 +29,7 @@ function onTextHighlighted (reset: boolean, text: string, task: Task) {
 function addTask() {
   let task : Task;
   task = {
-    id: 0,
+    id: Math.floor(Math.random()*1000000000000000),
     status: Status.CREATED,
     requirements: [props.requirement],
     rankInProgress: props.rankInProgress,
@@ -37,8 +38,8 @@ function addTask() {
     comments: []
   };
   editedRankInProgress.value.tasks?.push(task);
+  console.log(task);
   emits('update:rankInProgress', editedRankInProgress.value);
-  console.log(editedRankInProgress.value)
 }
 
 function updateTask(task : Task) {
@@ -51,15 +52,27 @@ function deleteTask(task : Task) {
   emits('update:rankInProgress', editedRankInProgress.value);
 }
 
+onMounted(() => {
+  if (props.tasks === null || props.tasks.length === 0) {
+    addTask();
+  }
+})
+
 </script>
 
 <template>
   <h3 style="margin: 0;">{{requirement.number}}. {{ requirement.content }}</h3>
   <div v-for="task in tasks" style="display: flex; flex-direction: column;">
-    <TaskComponent :original-task="task" @update:task="updateTask" @delete:task="deleteTask">
+    <TaskComponent
+        :original-task="task"
+        @update:task="updateTask"
+        @delete:task="deleteTask"
+        :show-delete-task-button="doShowDeleteTaskButton(editedRankInProgress)"
+    >
+
       <textarea class="task-text-value" v-model="task.content" @change="updateTask(task)"/>
       <SelectionComponent
-          v-if="task.partIdea"
+          v-if="task.partIdea && doShowIdea(editedRankInProgress)"
           :text="task.partIdea"
           :original-text="task.rankInProgress.rank.idea"
           @text-highlighted="data => onTextHighlighted(data.reset, data.text, task)"
@@ -67,7 +80,7 @@ function deleteTask(task : Task) {
 
     </TaskComponent>
     <ButtonComponent
-        v-if="tasks && tasks.indexOf(task) >= tasks.length - 1"
+        v-if="tasks && tasks.indexOf(task) >= tasks.length - 1 && doShowAddTaskButton(editedRankInProgress)"
         class="add-task-button"
         :button-text="$t('advancement.task.add')"
         buttonStyle="default"
@@ -80,7 +93,7 @@ function deleteTask(task : Task) {
 .add-task-button {
   align-self: center;
   margin: 10px;
-  width: 100%;
+  width: 800px;
 }
 
 .task-text-value{

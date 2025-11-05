@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TaskComponent from "@/components/Advancement/TaskComponent.vue";
-import {RankInProgress, Requirement, Task} from "@/scripts/objectTemplates";
+import {RankInProgress, Requirement, Style, Task} from "@/scripts/objectTemplates";
 import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
 import {ref} from "vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
@@ -50,17 +50,17 @@ function isRequirementSelected(requirement: Requirement) {
 
 <template>
   <div style="display: flex; flex-direction: column;">
-    <TaskComponent :original-task="props.task" @update:task="updateTask" @delete:task="deleteTask">
+    <TaskComponent :original-task="props.task" @update:task="updateTask" @delete:task="deleteTask" :show-delete-task-button="true">
       <div class="task-content">
         <SelectionComponent
-            v-if="props.task.partIdea"
+            v-if="props.task.partIdea && props.rankInProgress.style !== Style.ONE_TASK_MULTI_REQUIREMENTS"
             :text="props.task.partIdea"
             :original-text="props.task.rankInProgress.rank.idea"
             @text-highlighted="data => onTextHighlighted(data.reset, data.text, props.task)"
         />
         <textarea class="task-text-value" v-model="text" @change="updateTask(props.task)"/>
-        <h3> {{$t("advancement.requirements")}}</h3>
-        <div class="task-requirements">
+        <h3 v-if="props.rankInProgress.style !== Style.IDEA_SELECTION"> {{$t("advancement.requirements")}}</h3>
+        <div class="task-requirements" v-if="props.rankInProgress.style !== Style.IDEA_SELECTION">
           <ButtonComponent
               v-for="requirement in rankInProgress.rank.requirements"
               :key="requirement.id"
