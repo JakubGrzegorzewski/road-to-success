@@ -25,7 +25,7 @@ onMounted(() => {
   <nav>
     <router-link class="" to="/"><img class="nav-logo" src="../../assets/logo.svg" alt="logo"></router-link>
 
-    <div class="nav-buttons">
+    <div class="rank-select-style">
       <div class="text-selection-component">
         <select @change="changeLocale" v-model="currentLocale">
           <option value="en">English</option>
@@ -50,7 +50,7 @@ onMounted(() => {
     width: 64px;
   }
 
-  .nav-buttons {
+  .rank-select-style {
     display: flex;
     align-items: center;
     gap: 20px;

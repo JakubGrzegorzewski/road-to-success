@@ -26,16 +26,16 @@ function addTask() {
 </script>
 
 <template>
-  <div class="rank-details" v-if="editedRankInProgress">
-    <div class="rank-details-info">
-      <h2>{{ editedRankInProgress.rank.fullName }}</h2>
-      <div class="nav-buttons">
+  <div class="rank" v-if="editedRankInProgress">
+    <div class="rank-details">
+      <div class="rank-select-style">
         <div class="text-selection-component">
           <select v-model="editedRankInProgress.style">
             <option v-for="currentStyle in Style" :value="currentStyle">{{ $t('advancement.style.'+currentStyle) }}</option>
           </select>
         </div>
       </div>
+      <h2>{{ editedRankInProgress.rank.fullName }}</h2>
       <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rankInProgress.rank.idea }}</p>
     </div>
     <RequirementBasedTaskComponent
@@ -81,7 +81,7 @@ function addTask() {
 </template>
 
 <style scoped>
-.rank-details {
+.rank {
   padding: 40px;
   font-family: 'Museo', sans-serif;
   display: flex;
@@ -96,7 +96,7 @@ function addTask() {
   width: 800px;
 }
 
-.nav-buttons {
+.rank-select-style {
   display: flex;
   align-items: center;
   gap: 20px;
