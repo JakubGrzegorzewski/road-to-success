@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import {Task, TaskComment} from "@/scripts/objectTemplates";
-import {onMounted, ref, Ref} from "vue";
-import {rankInProgress} from "@/scripts/testObjects";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import {onMounted, ref, Ref} from "vue";
+import {Task, TaskDTO} from "@/scripts/Model/Task";
+import {CommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
 
 const props = withDefaults(defineProps<{
-  originalTask: Task
+  taskId: number
   showDeleteTaskButton: boolean
 }>(), {
   showDeleteTaskButton: true
 });
 
 const emits = defineEmits<{
-  (e: 'update:task', payload: Task): void;
-  (e: 'delete:task', payload: Task): void;
+  (e: 'delete:task', task: TaskDTO): void;
 }>();
 
-let editedTask : Ref<Task> = ref(props.originalTask);
+let editedTask : Ref<TaskDTO | undefined> = ref();
+let comments : Ref<CommentDTO[] | undefined> = ref();
 
 const showCommentAdding = ref(false);
 const contentDivRef = ref(null);
@@ -37,58 +37,58 @@ function sizeObserver() {
 
 onMounted(() => {
   sizeObserver()
+  Task.getById(props.taskId)
+      .then(task => {editedTask.value = task})
+      .then(()=>{
+        if (editedTask.value) {
+          editedTask.value?.commentIds.forEach(commentId => {
+            TaskComment.getById(commentId)
+                .then(comment => {
+                  if (!comments.value) {
+                    comments.value = [];
+                  }
+                  comments.value.push(comment);
+                });
+          });
+        }
+      })
+
 });
 
-function addComment(comment: TaskComment) {
-  editedTask.value.comments.push(comment);
-  emits('update:task', editedTask.value);
-  showCommentAdding.value = false;
-}
-
-function updateComment(comment: TaskComment) {
-  let index = editedTask.value.comments.findIndex(c => c.id === comment.id);
-  if (index !== -1) {
-    editedTask.value.comments[index] = comment;
-    emits('update:task', editedTask.value);
-  }
-}
-
-function deleteComment(comment: TaskComment) {
-  let index = editedTask.value.comments.findIndex(c => c.id === comment.id);
-  if (index !== -1) {
-    editedTask.value.comments.splice(index, 1);
-    emits('update:task', editedTask.value);
-  }
-}
 </script>
 
 <template>
 <div class="task">
   <div class="task-content" ref="contentDivRef">
     <slot/>
-    <ButtonComponent v-if="showDeleteTaskButton" class="task-delete" button-style="error" :button-text="$t('advancement.task.delete')" @click="emits('delete:task', editedTask)"/>
+    <ButtonComponent
+        v-if="showDeleteTaskButton && editedTask"
+        class="task-delete"
+        button-style="error"
+        :button-text="$t('advancement.task.delete')"
+        @click="emits('delete:task', editedTask)"
+    />
   </div>
-  <div class="comments"  v-if="editedTask.comments">
+  <div class="comments" v-if="comments">
     <CommentComponent
-        v-if="editedTask.comments"
-        v-for="currentComment in editedTask.comments"
-        :key="currentComment.id"
+        v-for="currentComment in comments"
         :comment="currentComment"
-        :user="currentComment.user"
-        @update="updateComment"
-        @delete="deleteComment"
+        :taskId="props.taskId"
+        :currentUser="currentComment.id"
+        @comment:update="TaskComment.update"
+        @comment:delete="comment => TaskComment.deleteObject(comment.id, props.taskId)"
     />
 
     <EditCommentComponent
         v-if="showCommentAdding"
         :comment=null
-        :task="editedTask"
-        :user="rankInProgress.user"
-        @close="showCommentAdding = false"
-        @save="addComment"
+        :taskId="props.taskId"
+        :userId="0"
+        @comment:close="showCommentAdding = false"
+        @comment:save="comment => TaskComment.add(comment, props.taskId)"
     />
 
-    <p v-if="editedTask.comments.length === 0" style="align-self: center">
+    <p v-if="comments && comments.length === 0" style="align-self: center">
       {{ $t("advancement.comment.noComments") }}
     </p>
 

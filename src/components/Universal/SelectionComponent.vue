@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, nextTick, onUnmounted, onMounted, type Ref } from 'vue'
+import {computed, ref, nextTick, onUnmounted, onMounted} from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
 const props = defineProps<{ text: string; originalText: string }>();

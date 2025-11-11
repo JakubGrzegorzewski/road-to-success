@@ -1,52 +1,68 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {onMounted, Ref, ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
-import {AppUser, Task, TaskComment} from '@/scripts/objectTemplates';
+import {CommentDTO} from "@/scripts/Model/TaskComment";
+import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 
 const props = defineProps<{
-  comment: TaskComment,
-  user: AppUser
+  comment: CommentDTO | undefined;
+  taskId: number;
+  currentUser: number
 }>();
 
 const emits = defineEmits<{
-  (e: 'update', payload: TaskComment): void;
-  (e: 'delete', payload: TaskComment): void;
+  (e: 'comment:update', comment: CommentDTO): void;
+  (e: 'comment:delete', comment: CommentDTO): void;
 }>();
+
+const user : Ref<AppUserDTO | undefined > = ref()
+
 
 const { t } = useI18n();
 const showCommentEdit = ref(false);
 
+onMounted(() => {
+  if (!props.comment) {
+    return;
+  }
+  AppUser.getById(props.comment.userId)
+      .then(fetchedUser => {
+        user.value = fetchedUser
+      })
+})
 </script>
 
 <template>
-  <div class="comment-component" v-if="!showCommentEdit">
+  <div class="comment-component" v-if="!showCommentEdit && comment && user" >
     <div class="comment-header">
       <h3 class="comment-author">{{ user.fullName || t('user.you') }}</h3>
-      <span class="comment-date">{{ props.comment.date }}</span>
+      <span class="comment-date">{{ comment.date }}</span>
     </div>
-    <p class="comment-text">{{ props.comment.content }}</p>
+    <p class="comment-text">{{ comment.content }}</p>
     <div class="comment-actions">
       <ButtonComponent
-        @click="showCommentEdit = true"
-        buttonStyle="default"
-        :button-text="$t('edit.edit')"
+          v-if="user && user.id === props.currentUser"
+          @click="showCommentEdit = true"
+          buttonStyle="default"
+          :button-text="$t('edit.edit')"
       />
       <ButtonComponent
-        @click="emits('delete', comment)"
-        buttonStyle="error"
-        :button-text="$t('edit.delete')"
+          v-if="props.comment"
+          @click="emits('comment:delete', props.comment);"
+          buttonStyle="error"
+          :button-text="$t('edit.delete')"
       />
     </div>
   </div>
   <EditCommentComponent
-    v-if="showCommentEdit"
-    :user="user"
+    v-if="showCommentEdit && props.comment"
+    :userId="currentUser"
     :comment="props.comment"
-    :task="props.comment.task"
-    @close="showCommentEdit = false"
-    @save="element => emits('update', element)"
+    :taskId="taskId"
+    @comment:close="showCommentEdit = false"
+    @comment:save="emits('comment:update', $event);"
   />
 </template>
 

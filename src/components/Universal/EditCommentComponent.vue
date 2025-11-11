@@ -1,50 +1,61 @@
 <script setup lang="ts">
-import { ref, Ref} from 'vue';
+import {onMounted, ref, Ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {AppUser, Task, TaskComment} from "@/scripts/objectTemplates";
+import {CommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
+import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
+
 
 const props = defineProps<{
-  comment: TaskComment | null;
-  task: Task;
-  user: AppUser;
+  comment: CommentDTO | null;
+  taskId: number;
+  userId: number
 }>();
 
 const emits = defineEmits<{
-  (e: 'close'): void;
-  (e: 'save', payload: TaskComment): void;
+  (e: 'comment:close'): void;
+  (e: 'comment:save', comment: CommentDTO): void;
 }>();
 
-const editComment : Ref<TaskComment> = ref(
+const editComment : Ref<CommentDTO> = ref(
     props.comment ||
     {
       id: Math.floor(Math.random()*1000000000000000),
       date: new Date().toISOString().split('T')[0],
-      user: props.user,
+      userId: props.userId,
       content: "",
-      task: props.task,
+      taskId: props.taskId,
     }
 );
 
+const user : Ref<AppUserDTO | undefined > = ref()
+
 const { t } = useI18n();
+
+onMounted(() => {
+  AppUser.getById(props.userId)
+      .then(fetchedUser => {
+        user.value = fetchedUser
+      })
+})
 </script>
 
 <template>
 <div class="comment-component">
   <div class="comment-header">
-    <h3 class="comment-author">{{ user.fullName || t('user.you') }}</h3>
+    <h3 class="comment-author" v-if="user">{{ user.fullName || t('user.you') }}</h3>
     <span class="comment-date">{{ editComment.date }}</span>
   </div>
   <textarea class="comment-text" v-model="editComment.content" />
   <div class="comment-actions">
     <ButtonComponent
       buttonStyle="success"
-      @click="emits('close'); emits('save', editComment)"
+      @click="emits('comment:close'); emits('comment:save', editComment);"
       :button-text="$t('edit.save')"
     />
     <ButtonComponent
       buttonStyle="warning"
-      @click="emits('close')"
+      @click="emits('comment:close')"
       :button-text="$t('edit.cancel')"
     />
   </div>

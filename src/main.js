@@ -1,7 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './scripts/router.js'
-import i18n from './scripts/i18n.js'
+import router from './scripts/router.ts'
+import i18n from './scripts/i18n.ts'
+import seedDatabase from "@/scripts/seedDatabase.ts";
 
 const app = createApp(App)
 

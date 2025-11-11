@@ -1,16 +1,21 @@
-<script setup>
-import {ref} from "vue";
-
-const props = defineProps({
+<script setup lang="ts">
+const props = defineProps<{
   buttonText: { type: String, required: false },
   buttonStyle: { type: String, default: 'default' },
-})
-const isCheckedVar = defineModel('isChecked', { default: false });</script>
+}>();
+
+const emits = defineEmits<{
+  (e: 'toggle', isChecked: boolean): void;
+}>();
+
+const isCheckedVar = defineModel('isChecked', { default: false });
+
+</script>
 
 <template>
-  <div :class="[props.buttonStyle, 'button']" @click="isCheckedVar = !isCheckedVar; $emit('toggle', isCheckedVar)">
+  <div :class="[props.buttonStyle, 'button']" @click="isCheckedVar = !isCheckedVar; emits('toggle', isCheckedVar)">
     <input type="checkbox" v-model="isCheckedVar"/>
-    <span v-if="buttonText" style="max-width: 150px">{{ props.buttonText }}</span>
+    <span v-if="props.buttonText" style="max-width: 150px">{{ props.buttonText }}</span>
   </div>
 </template>
 
