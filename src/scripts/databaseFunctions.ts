@@ -2,13 +2,13 @@ import {RankDTO} from "@/scripts/Model/Rank";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Status} from "@/scripts/Model/Status";
 
-export function addTask(rankInProgressId : number, rank : RankDTO) : void {
+export function addTask(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : void {
     if (rank === undefined)
         return;
     let task: TaskDTO = {
         id: Math.floor(Math.random() * 1000000000000000),
         rankInProgressId: rankInProgressId,
-        requirementsIds: [],
+        requirementsIds: requirements,
         content: "",
         status: Status.CREATED,
         partIdea: rank.idea,

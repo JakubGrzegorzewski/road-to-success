@@ -65,7 +65,7 @@ onMounted(() => {
       class="add-task-button"
       :button-text="$t('advancement.task.add')"
       buttonStyle="default"
-      @click="addTask(rankInProgress.id, rank)"
+      @click="addTask(rankInProgress.id, rank, [requirement.id])"
   />
 </template>
 
