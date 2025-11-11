@@ -1,13 +1,38 @@
-import {RankInProgress, Style} from "@/scripts/objectTemplates";
+import {Style} from "@/scripts/Model/Style";
 
-function doShowIdea (rankInProgress : RankInProgress) : boolean {
-    return [Style.IDEA_SELECTION, Style.MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA, Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA, Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA].indexOf(rankInProgress.style) !== -1;
+function doShowIdea (style : Style) : boolean {
+    return [Style.IDEA_SELECTION,
+        Style.MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA,
+        Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
+        Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA]
+        .indexOf(style) !== -1;
 }
 
-function doShowDeleteTaskButton (rankInProgress : RankInProgress) : boolean {
-    return [Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA, Style.ONE_TASK_ONE_REQUIREMENT].indexOf(rankInProgress.style) === -1;
+function doShowDeleteTaskButton (style : Style) : boolean {
+    return [Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA,
+        Style.ONE_TASK_ONE_REQUIREMENT]
+        .indexOf(style) === -1;
 }
-function doShowAddTaskButton (rankInProgress : RankInProgress) : boolean {
-    return [Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA, Style.ONE_TASK_ONE_REQUIREMENT].indexOf(rankInProgress.style) === -1;
+
+function doShowAddTaskButton (style : Style) : boolean {
+    return [Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA,
+        Style.ONE_TASK_ONE_REQUIREMENT
+    ].indexOf(style) === -1;
 }
-export {doShowIdea, doShowDeleteTaskButton, doShowAddTaskButton}
+
+function doShowRequirementBasedTaskComponent(style : Style) : boolean{
+    return [Style.ONE_TASK_ONE_REQUIREMENT,
+        Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA,
+        Style.MULTI_TASK_ONE_REQUIREMENT,
+        Style.MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA,
+    ].indexOf(style) !== -1
+}
+
+function doShowIdeaBasedTaskComponent(style : Style) : boolean{
+    return [Style.IDEA_SELECTION,
+        Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
+        Style.ONE_TASK_MULTI_REQUIREMENTS
+    ].indexOf(style) !== -1
+}
+
+export {doShowIdea, doShowDeleteTaskButton, doShowAddTaskButton, doShowRequirementBasedTaskComponent, doShowIdeaBasedTaskComponent}
