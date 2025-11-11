@@ -1,5 +1,4 @@
 import {RankDTO} from "@/scripts/Model/Rank";
-import {RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Status} from "@/scripts/Model/Status";
 

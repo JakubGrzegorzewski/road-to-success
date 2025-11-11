@@ -2,7 +2,7 @@
 import {onMounted, ref, Ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {CommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
+import {CommentDTO} from "@/scripts/Model/TaskComment";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 
 
