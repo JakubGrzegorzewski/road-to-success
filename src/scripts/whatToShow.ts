@@ -20,7 +20,7 @@ function doShowAddTaskButton (style : Style) : boolean {
     ].indexOf(style) === -1;
 }
 
-function doShowRequirementBasedTaskComponent(style : Style) : boolean{
+function isRequirementBased(style : Style) : boolean{
     return [Style.ONE_TASK_ONE_REQUIREMENT,
         Style.ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA,
         Style.MULTI_TASK_ONE_REQUIREMENT,
@@ -28,11 +28,11 @@ function doShowRequirementBasedTaskComponent(style : Style) : boolean{
     ].indexOf(style) !== -1
 }
 
-function doShowIdeaBasedTaskComponent(style : Style) : boolean{
+function isIdeaBased(style : Style) : boolean{
     return [Style.IDEA_SELECTION,
         Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
         Style.ONE_TASK_MULTI_REQUIREMENTS
     ].indexOf(style) !== -1
 }
 
-export {doShowIdea, doShowDeleteTaskButton, doShowAddTaskButton, doShowRequirementBasedTaskComponent, doShowIdeaBasedTaskComponent}
+export {doShowIdea, doShowDeleteTaskButton, doShowAddTaskButton, isRequirementBased, isIdeaBased}
