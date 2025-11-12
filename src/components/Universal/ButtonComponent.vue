@@ -59,13 +59,19 @@ const hintStyle = computed(() => {
   }
 
   .default {
-    background-color: var(--primary-color-dark);
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+  }
+
+  .default-light{
+    background-color: var(--primary-color-light);
     color: white;
     font-weight: 500;
   }
 
   .primary {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     color: white;
     font-weight: 500;
   }
@@ -96,9 +102,10 @@ const hintStyle = computed(() => {
 
   .white {
     background-color: white;
-    color: var(--primary-color-dark);
+    color: var(--primary-color);
     font-weight: 700;
   }
+
   .button-hint {
     font-size: 10px;
     font-weight: 500;

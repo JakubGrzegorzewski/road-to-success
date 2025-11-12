@@ -41,7 +41,7 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--primary-color-dark);
+    background-color: var(--primary-color);
     box-shadow: 0 10px 10px var(--shadow-light);
     padding: 0 20px;
   }

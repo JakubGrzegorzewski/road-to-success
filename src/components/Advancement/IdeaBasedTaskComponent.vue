@@ -65,7 +65,7 @@ function isRequirementSelected(requirement: RequirementDTO) {
             :original-text="rank?.idea"
             @text-highlighted="data => onTextHighlighted(data.reset, data.text)"
         />
-        <textarea class="task-text-value" v-model="props.task.content" @change="emits('update:task', props.task)"/>
+        <textarea class="multiline-text-input" v-model="props.task.content" @change="emits('update:task', props.task)"/>
 
         <h3 v-if="props.rankInProgress.style !== Style.IDEA_SELECTION"> {{$t("advancement.requirements")}}</h3>
 
@@ -96,14 +96,6 @@ h3{
   padding: 20px;
   align-items: stretch;
   gap: 20px;
-}
-
-.task-text-value{
-  resize: none;
-  overflow: visible;
-  min-height: 150px;
-  font-family: "Museo", sans-serif;
-  font-size: 14px;
 }
 
 .task-requirements {

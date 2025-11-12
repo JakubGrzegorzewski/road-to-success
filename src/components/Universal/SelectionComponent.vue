@@ -125,7 +125,12 @@ onUnmounted(() => {
 .snipped-text {
   font-size: 1.1em;
   line-height: 1.6;
-  color: #333;
+  @media (prefers-color-scheme: dark) {
+    color: var(--background-color);
+  }
+  @media (prefers-color-scheme: light) {
+    color: var(--primary-color);
+  }
   display: flex;
   justify-content: left;
   flex-wrap: wrap;

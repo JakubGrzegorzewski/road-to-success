@@ -48,11 +48,11 @@ const isCheckedVar = defineModel('isChecked', { default: false });
 }
 
 .default {
-  background-color: var(--primary-color-dark);
+  background-color: var(--primary-color);
 }
 
 .primary {
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color);
 }
 
 .success {
@@ -72,6 +72,6 @@ const isCheckedVar = defineModel('isChecked', { default: false });
 }
 .white {
   background-color: white;
-  color: var(--primary-color-dark);
+  color: var(--primary-color);
 }
 </style>

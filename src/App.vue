@@ -43,5 +43,13 @@ onMounted(() => {
 body {
   margin: 0;
   padding: 0;
+  @media (prefers-color-scheme: dark) {
+    color: var(--background-color);
+    background: var(--primary-color);
+  }
+  @media (prefers-color-scheme: light) {
+    color: var(--primary-color);
+    background: var(--background-color);
+  }
 }
 </style>

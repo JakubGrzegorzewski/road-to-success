@@ -125,6 +125,11 @@ function deleteTask(task: TaskDTO) {
   Task.deleteObject(task.id, currentRankInProgress.value.id);
 }
 
+function isDarkMode(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 </script>
 
 <template>
@@ -180,7 +185,7 @@ function deleteTask(task: TaskDTO) {
       <ButtonComponent
           class="add-task-button"
           :button-text="$t('advancement.task.add')"
-          buttonStyle="default"
+          :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
           @click="addTask"
       />
     </div>

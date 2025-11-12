@@ -38,10 +38,15 @@ onMounted(() => {
   }
 })
 
+function isDarkMode(): boolean {
+  if (typeof window === 'undefined' || !window.matchMedia) return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 </script>
 
 <template>
-  <h3 style="margin: 0;">{{requirement.number}}. {{ requirement.content }}</h3>
+  <h3 style="margin: 0; padding: 0 5px 20px 5px;">{{requirement.number}}. {{ requirement.content }}</h3>
   <div v-for="task in tasks" style="display: flex; flex-direction: column;">
     <TaskComponent
         v-if="props.rankInProgress"
@@ -51,7 +56,7 @@ onMounted(() => {
         :show-delete-task-button="doShowDeleteTaskButton(props.rankInProgress.style)"
     >
 
-      <textarea class="task-text-value" v-model="task.content" @change="emits('update:task', task)"/>
+      <textarea class="multiline-text-input" v-model="task.content" @change="emits('update:task', task)"/>
       <SelectionComponent
           v-if="rank && task.partIdea && doShowIdea(props.rankInProgress.style)"
           :text="task.partIdea"
@@ -65,7 +70,7 @@ onMounted(() => {
       v-if="doShowAddTaskButton(props.rankInProgress.style) && rank"
       class="add-task-button"
       :button-text="$t('advancement.task.add')"
-      buttonStyle="default"
+      :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
       @click="emits('add:task', [requirement.id])"
   />
 </template>
@@ -73,16 +78,8 @@ onMounted(() => {
 <style scoped>
 .add-task-button {
   align-self: center;
+  justify-self: center;
   margin: 10px;
   width: 800px;
 }
-
-.task-text-value{
-  resize: none;
-  overflow: visible;
-  min-height: 150px;
-  font-family: "Museo", sans-serif;
-  font-size: 14px;
-}
-
 </style>

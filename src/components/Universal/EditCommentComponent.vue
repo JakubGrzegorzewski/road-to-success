@@ -31,12 +31,12 @@ const { t } = useI18n();
 </script>
 
 <template>
-<div class="comment-component">
+<div class="comment-component box-shadow">
   <div class="comment-header">
     <h3 class="comment-author" v-if="user">{{ user.fullName || t('user.you') }}</h3>
     <span class="comment-date">{{ editComment.date }}</span>
   </div>
-  <textarea class="comment-text" v-model="editComment.content" />
+  <textarea class="comment-text multiline-text-input" v-model="editComment.content" />
   <div class="comment-actions">
     <ButtonComponent
       buttonStyle="success"
@@ -54,11 +54,18 @@ const { t } = useI18n();
 
 <style scoped>
 .comment-component {
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--primary-color-light);
+    color: var(--background-color);
+  }
+  @media (prefers-color-scheme: light) {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+  }
   border: 1px solid var(--shadow-light);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
-  background-color: white;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -74,12 +81,10 @@ const { t } = useI18n();
 .comment-author {
   margin: 0;
   font-weight: bold;
-  color: var(--primary-color-dark);
 }
 
 .comment-date {
   font-size: 0.9em;
-  color: var(--primary-color-dark);
 }
 
 .comment-text {

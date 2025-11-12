@@ -23,7 +23,7 @@ const showCommentEdit = ref(false);
 </script>
 
 <template>
-  <div class="comment-component" v-if="!showCommentEdit && comment && user" >
+  <div class="comment-component box-shadow" v-if="!showCommentEdit && comment && user" >
     <div class="comment-header">
       <h3 class="comment-author">{{ user.fullName || t('user.you') }}</h3>
       <span class="comment-date">{{ comment.date }}</span>
@@ -60,6 +60,14 @@ const showCommentEdit = ref(false);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
+    @media (prefers-color-scheme: dark) {
+      background-color: var(--primary-color-light);
+      color: var(--background-color);
+    }
+    @media (prefers-color-scheme: light) {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+    }
   }
 
   .comment-header {
@@ -72,12 +80,10 @@ const showCommentEdit = ref(false);
   .comment-author {
     margin: 0;
     font-weight: bold;
-    color: var(--primary-color-dark);
   }
 
   .comment-date {
     font-size: 0.9em;
-    color: var(--primary-color-dark);
   }
 
   .comment-text {

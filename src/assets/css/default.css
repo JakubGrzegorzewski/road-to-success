@@ -1,12 +1,15 @@
 :root {
-    --primary-color: #329ED5;
-    --primary-color-dark: #262F33;
-    --secondary-color: #496E81;
+    --primary-color: #262F33;
+    --primary-color-light: #405058;
+    --secondary-color: #329ED5;
+
 
     --accent-success: #10B981;
     --accent-warning: #F59E0B;
     --accent-error: #EF4444;
     --accent-info: #3B82F6;
+
+    --background-color: #F3F6F4;
 
     /* Add shadow colors for consistency */
     --shadow-light: rgba(0, 0, 0, 0.1);
@@ -16,7 +19,6 @@
 body {
     margin: 0;
     padding: 0;
-    background: #F3F6F4;
 }
 
 @font-face {

@@ -76,7 +76,7 @@ function deleteComment(updatedComment: CommentDTO) {
 
 <template>
 <div class="task">
-  <div class="task-content" ref="contentDivRef">
+  <div class="task-content box-shadow" ref="contentDivRef">
     <slot/>
     <ButtonComponent
         v-if="showDeleteTaskButton && task"
@@ -86,7 +86,7 @@ function deleteComment(updatedComment: CommentDTO) {
         @click="emits('delete:task', task)"
     />
   </div>
-  <div class="comments" v-if="comments">
+  <div class="comments box-shadow" v-if="comments">
     <CommentComponent
         v-for="currentComment in comments"
         :comment="currentComment"
@@ -132,9 +132,16 @@ function deleteComment(updatedComment: CommentDTO) {
   padding: 20px;
   gap: 10px;
   margin-right: 20px;
-  background: white;
   flex: 2;
   align-items: stretch;
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--primary-color-light);
+    color: var(--background-color);
+  }
+  @media (prefers-color-scheme: light) {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+  }
 }
 
 .task-delete {
@@ -144,12 +151,19 @@ function deleteComment(updatedComment: CommentDTO) {
 }
 
 .comments {
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--primary-color-light);
+    color: var(--background-color);
+  }
+  @media (prefers-color-scheme: light) {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+  }
   flex: 1;
   overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: white;
   border-radius: 8px;
   padding: 20px;
   max-width: 400px;
