@@ -12,7 +12,7 @@ import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
 import seedDatabase from "@/scripts/seedDatabase";
 import {addTaskToDB} from "@/scripts/databaseFunctions";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
-import {computed, onMounted, ref, Ref} from "vue";
+import {onMounted, ref, Ref} from "vue";
 
 const currentRankInProgress : Ref<RankInProgressDTO> = ref({
   id: Math.floor(Math.random()*1000000000000000),
@@ -176,7 +176,7 @@ function rankImage(){
           :user="user"
           @update:task="updateTask"
           @delete:task="deleteTask"
-          @add:task="addTask"
+          @add:task="req => addTask(req)"
       />
     </div>
     <div v-if="isIdeaBased(currentRankInProgress.style)" style="display: flex; flex-direction: column; gap: 20px;">
@@ -195,7 +195,7 @@ function rankImage(){
           class="add-task-button"
           :button-text="$t('advancement.task.add')"
           :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
-          @click="addTask"
+          @click="addTask()"
       />
     </div>
   </div>

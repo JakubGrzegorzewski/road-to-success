@@ -1,5 +1,6 @@
-import { Status } from "./Status";
-import { Style } from "./Style";
+import {Status} from "@/scripts/Model/Status.js";
+import {Style} from "@/scripts/Model/Style.js";
+
 
 let ranksInProgress : RankInProgressDTO[] = []
 

@@ -1,5 +1,5 @@
-import { Status } from "./Status";
-import {RankInProgress} from "@/scripts/Model/RankInProgress";
+import {Status} from "@/scripts/Model/Status.js";
+import {RankInProgress} from "@/scripts/Model/RankInProgress.js";
 
 let tasks : TaskDTO[] = []
 

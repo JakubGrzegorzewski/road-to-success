@@ -1,5 +1,4 @@
-import {Rank} from "@/scripts/Model/Rank";
-
+import { Rank } from "./Rank.js";
 let requirements : RequirementDTO[] = []
 
 export interface RequirementDTO {

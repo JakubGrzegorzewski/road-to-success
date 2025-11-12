@@ -1,4 +1,4 @@
-import {Task} from "@/scripts/Model/Task";
+import {Task} from "@/scripts/Model/Task.js";
 
 let comments : CommentDTO[] = []
 

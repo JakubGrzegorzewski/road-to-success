@@ -7,7 +7,7 @@ import {RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import {RankDTO} from "@/scripts/Model/Rank";
 import {Style} from "@/scripts/Model/Style";
 import {RequirementDTO} from "@/scripts/Model/Requirement";
-import {doShowIdea, isIdeaBased} from "@/scripts/whatToShow";
+import {doShowIdea} from "@/scripts/whatToShow";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
 
 const props = defineProps<{
@@ -34,6 +34,8 @@ function onTextHighlighted (reset: boolean, text: string) {
 }
 
 function toggleRequirement(requirement: RequirementDTO) {
+  console.log("Toggle requirement", props.task.requirementsIds, requirement.id,);
+  if (!Array.isArray(props.task.requirementsIds)) return;
   if (isRequirementSelected(requirement))
     props.task.requirementsIds = props.task.requirementsIds.filter(req => req !== requirement.id);
   else
