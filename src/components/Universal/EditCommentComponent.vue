@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import {onMounted, ref, Ref} from 'vue';
+import {ref, Ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {CommentDTO} from "@/scripts/Model/TaskComment";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
+import {AppUserDTO} from "@/scripts/Model/AppUser";
 
 
 const props = defineProps<{
   comment: CommentDTO | null;
   taskId: number;
-  userId: number
+  user: AppUserDTO
 }>();
 
 const emits = defineEmits<{
-  (e: 'comment:close'): void;
   (e: 'comment:save', comment: CommentDTO): void;
+  (e: 'comment:close'): void;
 }>();
 
 const editComment : Ref<CommentDTO> = ref(
@@ -22,22 +22,12 @@ const editComment : Ref<CommentDTO> = ref(
     {
       id: Math.floor(Math.random()*1000000000000000),
       date: new Date().toISOString().split('T')[0],
-      userId: props.userId,
+      userId: props.user.id,
       content: "",
       taskId: props.taskId,
     }
 );
-
-const user : Ref<AppUserDTO | undefined > = ref()
-
 const { t } = useI18n();
-
-onMounted(() => {
-  AppUser.getById(props.userId)
-      .then(fetchedUser => {
-        user.value = fetchedUser
-      })
-})
 </script>
 
 <template>

@@ -1,75 +1,74 @@
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
 import TaskComponent from "@/components/Advancement/TaskComponent.vue";
-import {Task, TaskDTO} from "@/scripts/Model/Task";
+import {TaskDTO} from "@/scripts/Model/Task";
 import {RankInProgressDTO} from "@/scripts/Model/RankInProgress";
-import {Rank, RankDTO} from "@/scripts/Model/Rank";
+import {RankDTO} from "@/scripts/Model/Rank";
 import {Style} from "@/scripts/Model/Style";
-import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
+import {RequirementDTO} from "@/scripts/Model/Requirement";
+import {doShowIdea, isIdeaBased} from "@/scripts/whatToShow";
+import {AppUserDTO} from "@/scripts/Model/AppUser";
 
 const props = defineProps<{
   task: TaskDTO
   rankInProgress: RankInProgressDTO
+  rank : RankDTO,
+  requirements : RequirementDTO[]
+  user: AppUserDTO
 }>();
 
-const rank : Ref<RankDTO | undefined> = ref();
-const requirements : Ref<RequirementDTO[]> = ref([]);
+const emits = defineEmits<{
+  (e: 'delete:task', task: TaskDTO): void;
+  (e: 'update:task', task: TaskDTO): void;
+}>();
 
-function onTextHighlighted (reset: boolean, text: string, task: TaskDTO) {
-  if (rank.value === undefined)
+function onTextHighlighted (reset: boolean, text: string) {
+  if (props.rank === undefined)
     return
-
   if (reset)
-    task.partIdea = rank.value.idea;
+    props.task.partIdea = props.rank.idea;
   else
-    task.partIdea = text;
-  Task.update(task);
+    props.task.partIdea = text;
+  emits('update:task', props.task)
 }
-
-const text = ref("");
 
 function toggleRequirement(requirement: RequirementDTO) {
   if (isRequirementSelected(requirement))
     props.task.requirementsIds = props.task.requirementsIds.filter(req => req !== requirement.id);
   else
     props.task.requirementsIds.push(requirement.id);
-  Task.update(props.task);
+  emits('update:task', props.task)
 }
+
+function getReqIds(): number[] {
+  return Array.isArray(props.task.requirementsIds) ? props.task.requirementsIds : [];
+}
+
 function isRequirementSelected(requirement: RequirementDTO) {
-  return props.task.requirementsIds.find(req => req === requirement.id) !== undefined;
+  return getReqIds().find(req => req === requirement.id) !== undefined;
 }
-
-
-onMounted(() => {
-  Rank.getById(props.rankInProgress.rankId).then(fetchedRank => {
-    rank.value = fetchedRank;
-    const requirementIds = rank.value?.requirementIds ?? [];
-    const requirementPromises = requirementIds.map(id => Requirement.getById(id));
-    return Promise.all(requirementPromises);
-  }).then(fetchedRequirements => {
-    requirements.value = fetchedRequirements;
-  }).catch(() => {
-    requirements.value = [];
-  });
-})
-
-
 </script>
 
 <template>
   <div style="display: flex; flex-direction: column;">
-    <TaskComponent :taskId="props.task.id" @update:task="Task.update" @delete:task="thisTask => Task.deleteObject(thisTask.id, props.rankInProgress.id)" :show-delete-task-button="true">
+    <TaskComponent
+        :task="props.task"
+        :user="user"
+        :show-delete-task-button="true"
+        @delete:task="emits('delete:task', $event)"
+    >
       <div class="task-content">
         <SelectionComponent
-            v-if="rank && props.task.partIdea && props.rankInProgress.style !== Style.ONE_TASK_MULTI_REQUIREMENTS"
+            v-if="doShowIdea(rankInProgress.style)"
             :text="props.task.partIdea"
             :original-text="rank?.idea"
-            @text-highlighted="data => onTextHighlighted(data.reset, data.text, props.task)"
+            @text-highlighted="data => onTextHighlighted(data.reset, data.text)"
         />
-        <textarea class="task-text-value" v-model="text" @change="Task.update(props.task)"/>
+        <textarea class="task-text-value" v-model="props.task.content" @change="emits('update:task', props.task)"/>
+
         <h3 v-if="props.rankInProgress.style !== Style.IDEA_SELECTION"> {{$t("advancement.requirements")}}</h3>
+
         <div class="task-requirements" v-if="props.rankInProgress.style !== Style.IDEA_SELECTION">
           <ButtonComponent
               v-for="requirement in requirements"
@@ -82,6 +81,7 @@ onMounted(() => {
           <span v-if="requirements.length === 0"></span>
         </div>
       </div>
+
     </TaskComponent>
   </div>
 </template>

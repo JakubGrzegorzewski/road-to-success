@@ -2,12 +2,14 @@
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {onMounted, ref, Ref} from "vue";
-import {Task, TaskDTO} from "@/scripts/Model/Task";
+import {onMounted, Ref, ref} from "vue";
+import {TaskDTO} from "@/scripts/Model/Task";
+import {AppUserDTO} from "@/scripts/Model/AppUser";
 import {CommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
 
 const props = withDefaults(defineProps<{
-  taskId: number
+  task : TaskDTO,
+  user : AppUserDTO
   showDeleteTaskButton: boolean
 }>(), {
   showDeleteTaskButton: true
@@ -17,8 +19,7 @@ const emits = defineEmits<{
   (e: 'delete:task', task: TaskDTO): void;
 }>();
 
-let editedTask : Ref<TaskDTO | undefined> = ref();
-let comments : Ref<CommentDTO[] | undefined> = ref();
+const comments : Ref<CommentDTO[] | []> = ref([]);
 
 const showCommentAdding = ref(false);
 const contentDivRef = ref(null);
@@ -37,23 +38,39 @@ function sizeObserver() {
 
 onMounted(() => {
   sizeObserver()
-  Task.getById(props.taskId)
-      .then(task => {editedTask.value = task})
-      .then(()=>{
-        if (editedTask.value) {
-          editedTask.value?.commentIds.forEach(commentId => {
-            TaskComment.getById(commentId)
-                .then(comment => {
-                  if (!comments.value) {
-                    comments.value = [];
-                  }
-                  comments.value.push(comment);
-                });
-          });
-        }
-      })
-
+  props.task.commentIds.forEach(commentId => {
+    TaskComment.getById(commentId).then(comment => {
+      console.log("Comment loaded:", comment);
+      if (comment) {
+        console.log("Comment loaded:", comment);
+        comments.value = [comment, ...comments.value || [] ];
+      }
+    });
+  })
 });
+
+function updateComment(updatedComment: CommentDTO) {
+  if (comments.value) {
+    const index = comments.value.findIndex(comment => comment.id === updatedComment.id);
+    if (index !== -1) {
+      comments.value[index] = updatedComment;
+      TaskComment.update(updatedComment);
+    }
+  }
+}
+
+function addComment(newComment: CommentDTO) {
+  if (comments.value) {
+    comments.value = [newComment, ...comments.value || [] ];
+    TaskComment.add(newComment, props.task.id);
+  }
+}
+
+function deleteComment(updatedComment: CommentDTO) {
+  comments.value = comments.value?.filter(comment => comment.id !== updatedComment.id).map(comment => comment);
+  TaskComment.deleteObject(updatedComment.id, props.task.id);
+}
+
 
 </script>
 
@@ -62,30 +79,30 @@ onMounted(() => {
   <div class="task-content" ref="contentDivRef">
     <slot/>
     <ButtonComponent
-        v-if="showDeleteTaskButton && editedTask"
+        v-if="showDeleteTaskButton && task"
         class="task-delete"
         button-style="error"
         :button-text="$t('advancement.task.delete')"
-        @click="emits('delete:task', editedTask)"
+        @click="emits('delete:task', task)"
     />
   </div>
   <div class="comments" v-if="comments">
     <CommentComponent
         v-for="currentComment in comments"
         :comment="currentComment"
-        :taskId="props.taskId"
-        :currentUser="currentComment.id"
-        @comment:update="TaskComment.update"
-        @comment:delete="comment => TaskComment.deleteObject(comment.id, props.taskId)"
+        :taskId="props.task.id"
+        :user="user"
+        @comment:update="updateComment"
+        @comment:delete="deleteComment"
     />
 
     <EditCommentComponent
         v-if="showCommentAdding"
         :comment=null
-        :taskId="props.taskId"
-        :userId="0"
+        :taskId="props.task.id"
+        :user="user"
         @comment:close="showCommentAdding = false"
-        @comment:save="comment => TaskComment.add(comment, props.taskId)"
+        @comment:save="addComment"
     />
 
     <p v-if="comments && comments.length === 0" style="align-self: center">

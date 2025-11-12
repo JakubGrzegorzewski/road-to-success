@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import {onMounted, Ref, ref} from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
 import {CommentDTO} from "@/scripts/Model/TaskComment";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
+import {AppUserDTO} from "@/scripts/Model/AppUser";
 
 const props = defineProps<{
-  comment: CommentDTO | undefined;
+  comment: CommentDTO;
+  user: AppUserDTO
   taskId: number;
-  currentUser: number
 }>();
 
 const emits = defineEmits<{
@@ -17,21 +17,9 @@ const emits = defineEmits<{
   (e: 'comment:delete', comment: CommentDTO): void;
 }>();
 
-const user : Ref<AppUserDTO | undefined > = ref()
-
 
 const { t } = useI18n();
 const showCommentEdit = ref(false);
-
-onMounted(() => {
-  if (!props.comment) {
-    return;
-  }
-  AppUser.getById(props.comment.userId)
-      .then(fetchedUser => {
-        user.value = fetchedUser
-      })
-})
 </script>
 
 <template>
@@ -43,7 +31,7 @@ onMounted(() => {
     <p class="comment-text">{{ comment.content }}</p>
     <div class="comment-actions">
       <ButtonComponent
-          v-if="user && user.id === props.currentUser"
+          v-if="user.id === comment.userId"
           @click="showCommentEdit = true"
           buttonStyle="default"
           :button-text="$t('edit.edit')"
@@ -58,7 +46,7 @@ onMounted(() => {
   </div>
   <EditCommentComponent
     v-if="showCommentEdit && props.comment"
-    :userId="currentUser"
+    :user="user"
     :comment="props.comment"
     :taskId="taskId"
     @comment:close="showCommentEdit = false"
