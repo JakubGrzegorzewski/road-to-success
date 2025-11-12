@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "lib": ["ES2015", "DOM"],
-    "target": "es2016",
-    "module": "commonjs",
+    "lib": ["ES2020", "DOM"],
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

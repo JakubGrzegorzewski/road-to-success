@@ -3,7 +3,6 @@ import RequirementBasedTaskComponent from "@/components/Advancement/RequirementB
 import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {isIdeaBased, isRequirementBased} from "@/scripts/whatToShow";
-import {onMounted, Ref, ref} from "vue";
 import {Status} from "@/scripts/Model/Status";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import {Style} from "@/scripts/Model/Style";
@@ -13,6 +12,7 @@ import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
 import seedDatabase from "@/scripts/seedDatabase";
 import {addTaskToDB} from "@/scripts/databaseFunctions";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
+import {computed, onMounted, ref, Ref} from "vue";
 
 const currentRankInProgress : Ref<RankInProgressDTO> = ref({
   id: Math.floor(Math.random()*1000000000000000),
@@ -130,6 +130,10 @@ function isDarkMode(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
+function rankImage(){
+  if (!rank.value) return;
+  return new URL(`../assets/images/${rank.value.shortName}.png`, import.meta.url).href;
+}
 </script>
 
 <template>
@@ -138,7 +142,7 @@ function isDarkMode(): boolean {
       <div style="display: flex; flex-direction: row; gap: 20px; align-items: center; justify-content: left;">
         <div class="selector-style">
           <div class="text-selection-component">
-            <select v-model="currentRankInProgress.rankId">
+            <select v-model="currentRankInProgress.rankId" @change="reload">
               <option v-for="rank in allRanks" :value="rank.id">{{ rank.fullName }}</option>
             </select>
           </div>
@@ -150,6 +154,11 @@ function isDarkMode(): boolean {
             </select>
           </div>
         </div>
+        <ButtonComponent
+        button-text="Generuj PDF'a"
+        buttonStyle="primary"
+        @click="RankInProgress.update(currentRankInProgress)"
+        />
       </div>
 
 
@@ -190,8 +199,7 @@ function isDarkMode(): boolean {
       />
     </div>
   </div>
-
-</template>
+  <img v-if="rank" :src="rankImage()" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/></template>
 
 <style scoped>
 .rank {

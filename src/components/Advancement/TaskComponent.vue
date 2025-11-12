@@ -142,6 +142,11 @@ function deleteComment(updatedComment: CommentDTO) {
     background-color: var(--background-color);
     color: var(--primary-color);
   }
+  background-image: url("@/assets/images/background.svg");
+  background-repeat: no-repeat;
+  background-size: 600px;
+  background-position: left bottom;
+  background-position-x: -150px;
 }
 
 .task-delete {
@@ -151,6 +156,11 @@ function deleteComment(updatedComment: CommentDTO) {
 }
 
 .comments {
+  background-image: url("@/assets/images/chatBubble.svg");
+  background-repeat: no-repeat;
+  background-size: 300px;
+  background-position: bottom;
+  background-position-x: 170px;
   @media (prefers-color-scheme: dark) {
     background-color: var(--primary-color-light);
     color: var(--background-color);
