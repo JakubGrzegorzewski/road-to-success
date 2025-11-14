@@ -19,12 +19,17 @@ export class Requirement {
     }
 
     static add(requirement: RequirementDTO, rankId : number): Promise<RequirementDTO> {
-        requirements.push(requirement)
-        Rank.getById(rankId).then(rank => {
-            rank.requirementIds.push(requirement.id);
-            Rank.update(rank);
-        })
-        return Promise.resolve(requirement)
+        const exists = requirements.some(r => r.id === requirement.id);
+        if (!exists) {
+            requirements.push(requirement);
+            Rank.getById(rankId).then(rank => {
+                if (!rank.requirementIds.includes(requirement.id)) {
+                    rank.requirementIds.push(requirement.id);
+                    Rank.update(rank);
+                }
+            });
+        }
+        return Promise.resolve(requirement);
     }
 
     static update(requirement: RequirementDTO): Promise<RequirementDTO | undefined> {

@@ -19,13 +19,19 @@ export class TaskComment {
         return Promise.resolve(<CommentDTO>comments.find(comment => comment.id === id));
     }
 
-    static add(comment: CommentDTO, taskId : number): Promise<CommentDTO> {
-        comments.push(comment)
-        Task.getById(taskId).then(task => {
-            task.commentIds.push(comment.id);
-            Task.update(task);
-        })
-        return Promise.resolve(comment)
+    static add(comment: CommentDTO, taskId: number): Promise<CommentDTO> {
+        const exists = comments.some(c => c.id === comment.id);
+        if (!exists) {
+            comments.push(comment);
+            Task.getById(taskId).then(task => {
+                if (!task) return;
+                if (!task.commentIds.includes(comment.id)) {
+                    task.commentIds.push(comment.id);
+                    Task.update(task);
+                }
+            });
+        }
+        return Promise.resolve(comment);
     }
 
     static update(comment: CommentDTO): Promise<CommentDTO | undefined> {

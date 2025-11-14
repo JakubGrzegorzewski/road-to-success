@@ -24,8 +24,11 @@ export class RankInProgress {
     }
 
     static add(rankInProgress: RankInProgressDTO): Promise<RankInProgressDTO> {
-        ranksInProgress.push(rankInProgress)
-        return Promise.resolve(rankInProgress)
+        const exists = ranksInProgress.some(r => r.id === rankInProgress.id);
+        if (!exists) {
+            ranksInProgress.push(rankInProgress);
+        }
+        return Promise.resolve(rankInProgress);
     }
 
     static update(rankInProgress: RankInProgressDTO): Promise<RankInProgressDTO | undefined> {

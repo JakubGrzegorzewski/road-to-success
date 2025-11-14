@@ -22,13 +22,19 @@ export class Task {
         return Promise.resolve(<TaskDTO>tasks.find(task => task.id === id));
     }
 
-    static add(task: TaskDTO, rankInProgressId : number): Promise<TaskDTO> {
-        tasks.push(task)
-        RankInProgress.getById(rankInProgressId).then(rankInProgress => {
-            rankInProgress.taskIds.push(task.id);
-            RankInProgress.update(rankInProgress);
-        })
-        return Promise.resolve(task)
+    static add(task: TaskDTO, rankInProgressId: number): Promise<TaskDTO> {
+        const exists = tasks.some(t => t.id === task.id);
+        if (!exists) {
+            tasks.push(task);
+            RankInProgress.getById(rankInProgressId).then(rankInProgress => {
+                if (!rankInProgress) return;
+                if (!rankInProgress.taskIds.includes(task.id)) {
+                    rankInProgress.taskIds.push(task.id);
+                    RankInProgress.update(rankInProgress);
+                }
+            });
+        }
+        return Promise.resolve(task);
     }
 
     static update(task: TaskDTO): Promise<TaskDTO | undefined> {

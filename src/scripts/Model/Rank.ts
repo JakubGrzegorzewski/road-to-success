@@ -21,8 +21,11 @@ export class Rank {
     }
 
     static add(rank: RankDTO): Promise<RankDTO> {
-        ranks.push(rank)
-        return Promise.resolve(rank)
+        const exists = ranks.some(r => r.id === rank.id);
+        if (!exists) {
+            ranks.push(rank);
+        }
+        return Promise.resolve(rank);
     }
 
     static update(rank: RankDTO): Promise<RankDTO | undefined> {

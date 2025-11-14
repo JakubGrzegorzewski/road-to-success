@@ -21,8 +21,11 @@ export class AppUser {
     }
 
     static add(user: AppUserDTO): Promise<AppUserDTO> {
-        appUser.push(user)
-        return Promise.resolve(user)
+        const exists = appUser.some(u => u.id === user.id);
+        if (!exists) {
+            appUser.push(user);
+        }
+        return Promise.resolve(user);
     }
 
     static update(user: AppUserDTO): Promise<AppUserDTO | undefined> {
