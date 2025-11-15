@@ -3,26 +3,20 @@ import RequirementBasedTaskComponent from "@/components/Advancement/RequirementB
 import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {isIdeaBased, isRequirementBased} from "@/scripts/whatToShow";
-import {Status} from "@/scripts/Model/Status";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import {Style} from "@/scripts/Model/Style";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Rank, RankDTO} from "@/scripts/Model/Rank";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
-import seedDatabase from "@/scripts/seedDatabase";
-import {addTaskToDB} from "@/scripts/databaseFunctions";
+import {addTaskToDB, loadDatabaseData, saveDatabaseData} from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 import {onMounted, ref, Ref} from "vue";
 
-const currentRankInProgress : Ref<RankInProgressDTO> = ref({
-  id: Math.floor(Math.random()*1000000000000000),
-  rankId: 1,
-  userId : 1,
-  mentorId : 2,
-  status: Status.CREATED,
-  style: Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
-  taskIds: []
-});
+const props = defineProps<{
+  id: number,
+}>();
+
+const editedRankInProgress : Ref<RankInProgressDTO> = ref(null as unknown as RankInProgressDTO);
 
 const tasks : Ref<TaskDTO[]> = ref([]);
 const requirements : Ref<RequirementDTO[]> = ref([]);
@@ -31,6 +25,7 @@ const user : Ref<AppUserDTO | undefined> = ref(undefined);
 const rank : Ref<RankDTO | undefined> = ref();
 const allRanks : Ref<RankDTO[]> = ref([]);
 
+const isLoadingData = ref(false);
 
 function unconventionalSort(a: RequirementDTO, b: RequirementDTO) {
     if (Math.floor(parseFloat(a.number)) === Math.floor(parseFloat(b.number))) {
@@ -51,62 +46,65 @@ function unconventionalSort(a: RequirementDTO, b: RequirementDTO) {
 }
 
 onMounted(() => {
-  RankInProgress.getById(currentRankInProgress.value.id).then(fetchedRankInProgress => {
-    if (fetchedRankInProgress) {
-      currentRankInProgress.value = fetchedRankInProgress;
-      console.log("Rank in progress loaded:", fetchedRankInProgress);
-    }
-    else {
-      console.log("Rank in progress not loaded");
-      RankInProgress.add(currentRankInProgress.value).then(
-        () => {
-          console.log("Rank in progress created:", currentRankInProgress.value);
-        }
-      )
-    }
-  }).then(() => { seedDatabase().then(reload) });
+  console.log("Mounted with id:", props.id);
+  if (!props.id) return;
+  // Load ranks in progress
+  loadDatabaseData().then(()=>{
+    RankInProgress.getById(props.id)
+        .then(rankInProgress => {
+          editedRankInProgress.value = rankInProgress;
+          console.log("Rank in progress loaded:", rankInProgress);
+        })
+        .then(reload)
+  })
 })
 
 async function reload() {
+  if (isLoadingData.value) return;
+
+  isLoadingData.value = true;
   console.log("Reloading...");
+  tasks.value = [];
+  requirements.value = [];
 
   try {
     // Load user
     AppUser.getById(1).then(fetchedUser => {
-      console.log("User loaded:", fetchedUser);
+      console.info("User loaded:", fetchedUser);
       user.value = fetchedUser
     })
 
     // Load ranks
     allRanks.value = await Rank.getAll();
-    rank.value = allRanks.value.find((el) => el.id === currentRankInProgress.value.rankId);
-    console.log("Rank loaded:", rank.value);
+    rank.value = allRanks.value.find((el) => el.id === editedRankInProgress.value.rankId);
+    console.info("Rank loaded:", rank.value);
 
     // Load requirements
     const requirementIds = rank.value?.requirementIds ?? [];
     requirements.value = await Promise.all(
         requirementIds.map(id => Requirement.getById(id))
     );
-    console.log("Requirements loaded:", requirements.value);
+    console.info("Requirements loaded:", requirements.value);
 
     // Load tasks
-    const taskIds = currentRankInProgress.value.taskIds ?? [];
+    const taskIds = editedRankInProgress.value.taskIds ?? [];
     tasks.value = await Promise.all(
         taskIds.map(id => Task.getById(id))
     );
-    console.log("Tasks loaded:", tasks.value);
+    console.info("Tasks loaded:", tasks.value);
   } catch (error) {
     console.error("Error reloading:", error);
+  } finally {
+    isLoadingData.value = false;
   }
 }
 
 function addTask(thisReq : number[] = []) {
   if (!rank.value) return;
 
-  addTaskToDB(currentRankInProgress.value.id, rank.value, thisReq)?.then(task => {
+  addTaskToDB(editedRankInProgress.value.id, rank.value, thisReq)?.then(task => {
     if (task) {
       tasks.value = [...tasks.value, { ...task }];
-      currentRankInProgress.value.taskIds = [...currentRankInProgress.value.taskIds, task.id];
     }
   });
 }
@@ -121,8 +119,7 @@ function updateTask(updatedTask: TaskDTO) {
 
 function deleteTask(task: TaskDTO) {
   tasks.value = tasks.value.filter(t => t.id !== task.id);
-  currentRankInProgress.value.taskIds = currentRankInProgress.value.taskIds.filter(id => id !== task.id);
-  Task.deleteObject(task.id, currentRankInProgress.value.id);
+  Task.deleteObject(task.id, editedRankInProgress.value.id);
 }
 
 function isDarkMode(): boolean {
@@ -137,19 +134,19 @@ function rankImage(){
 </script>
 
 <template>
-  <div class="rank" v-if="currentRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
+  <div class="rank" v-if="editedRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
     <div class="rank-details">
       <div style="display: flex; flex-direction: row; gap: 20px; align-items: center; justify-content: left;">
         <div class="selector-style">
           <div class="text-selection-component">
-            <select v-model="currentRankInProgress.rankId" @change="reload">
+            <select v-model="editedRankInProgress.rankId" @change="reload">
               <option v-for="rank in allRanks" :value="rank.id">{{ rank.fullName }}</option>
             </select>
           </div>
         </div>
         <div class="selector-style">
           <div class="text-selection-component">
-            <select v-model="currentRankInProgress.style">
+            <select v-model="editedRankInProgress.style">
               <option v-for="currentStyle in Style" :value="currentStyle">{{ $t('advancement.style.'+currentStyle) }}</option>
             </select>
           </div>
@@ -157,7 +154,7 @@ function rankImage(){
         <ButtonComponent
         button-text="Generuj PDF'a"
         buttonStyle="primary"
-        @click="RankInProgress.update(currentRankInProgress)"
+        @click="RankInProgress.update(editedRankInProgress)"
         />
       </div>
 
@@ -165,12 +162,12 @@ function rankImage(){
       <h2>{{ rank.fullName }}</h2>
       <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rank.idea }}</p>
     </div>
-    <div v-if="isRequirementBased(currentRankInProgress.style)">
+    <div v-if="isRequirementBased(editedRankInProgress.style)">
       <RequirementBasedTaskComponent
           v-for="requirement in requirements.sort(unconventionalSort)"
           :key="requirement.id"
           :requirement="requirement"
-          :rank-in-progress="currentRankInProgress"
+          :rank-in-progress="editedRankInProgress"
           :tasks="tasks.filter(el => Array.isArray(el.requirementsIds) ? el.requirementsIds.indexOf(requirement.id) !== -1 : false)"
           :rank="rank"
           :user="user"
@@ -179,12 +176,12 @@ function rankImage(){
           @add:task="req => addTask(req)"
       />
     </div>
-    <div v-if="isIdeaBased(currentRankInProgress.style)" style="display: flex; flex-direction: column; gap: 20px;">
+    <div v-if="isIdeaBased(editedRankInProgress.style)" style="display: flex; flex-direction: column; gap: 20px;">
       <IdeaBasedTaskComponent
           v-for="task in tasks"
           :key="task.id"
           :task="task"
-          :rank-in-progress="currentRankInProgress"
+          :rank-in-progress="editedRankInProgress"
           :rank="rank"
           :requirements="requirements"
           :user="user"

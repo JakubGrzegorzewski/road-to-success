@@ -1,3 +1,5 @@
+import {saveDatabaseData} from "@/scripts/helperFunctions.js";
+
 let ranks : RankDTO[] = []
 
 export interface RankDTO {
@@ -25,6 +27,7 @@ export class Rank {
         if (!exists) {
             ranks.push(rank);
         }
+        window.localStorage.setItem("Ranks", JSON.stringify(ranks));
         return Promise.resolve(rank);
     }
 
@@ -32,13 +35,16 @@ export class Rank {
         const index = ranks.findIndex(u => u.id === rank.id)
         if (index !== -1) {
             ranks[index] = rank;
+            window.localStorage.setItem("Ranks", JSON.stringify(ranks));
             return Promise.resolve(rank);
         }
+        window.localStorage.setItem("Ranks", JSON.stringify(ranks));
         return Promise.resolve(undefined);
     }
 
     static deleteObject(id: number): void {
         ranks = ranks.filter(rank => rank.id !== id)
+        window.localStorage.setItem("Ranks", JSON.stringify(ranks));
     }
 }
 

@@ -1,8 +1,8 @@
 import {Task} from "@/scripts/Model/Task.js";
 
-let comments : CommentDTO[] = []
+let taskComments : TaskCommentDTO[] = []
 
-export interface CommentDTO {
+export interface TaskCommentDTO {
     id: number;
     date: string;
     content: string;
@@ -11,18 +11,18 @@ export interface CommentDTO {
 }
 
 export class TaskComment {
-    static getAll(): Promise<CommentDTO[]> {
-        return Promise.resolve(comments);
+    static getAll(): Promise<TaskCommentDTO[]> {
+        return Promise.resolve(taskComments);
     }
 
-    static getById(id: number): Promise<CommentDTO> {
-        return Promise.resolve(<CommentDTO>comments.find(comment => comment.id === id));
+    static getById(id: number): Promise<TaskCommentDTO> {
+        return Promise.resolve(<TaskCommentDTO>taskComments.find(comment => comment.id === id));
     }
 
-    static add(comment: CommentDTO, taskId: number): Promise<CommentDTO> {
-        const exists = comments.some(c => c.id === comment.id);
+    static add(comment: TaskCommentDTO, taskId: number): Promise<TaskCommentDTO> {
+        const exists = taskComments.some(c => c.id === comment.id);
         if (!exists) {
-            comments.push(comment);
+            taskComments.push(comment);
             Task.getById(taskId).then(task => {
                 if (!task) return;
                 if (!task.commentIds.includes(comment.id)) {
@@ -31,24 +31,28 @@ export class TaskComment {
                 }
             });
         }
+        window.localStorage.setItem("TaskComments", JSON.stringify(taskComments));
         return Promise.resolve(comment);
     }
 
-    static update(comment: CommentDTO): Promise<CommentDTO | undefined> {
-        const index = comments.findIndex(u => u.id === comment.id)
+    static update(comment: TaskCommentDTO): Promise<TaskCommentDTO | undefined> {
+        const index = taskComments.findIndex(u => u.id === comment.id)
         if (index !== -1) {
-            comments[index] = comment;
+            taskComments[index] = comment;
+            window.localStorage.setItem("TaskComments", JSON.stringify(taskComments));
             return Promise.resolve(comment);
         }
+        window.localStorage.setItem("TaskComments", JSON.stringify(taskComments));
         return Promise.resolve(undefined);
     }
 
     static deleteObject(id: number, taskId : number): void {
-        comments = comments.filter(comment => comment.id !== id)
+        taskComments = taskComments.filter(comment => comment.id !== id)
         Task.getById(taskId).then(task => {
             task.commentIds = task.commentIds.filter(commentId => commentId !== id);
             Task.update(task);
         })
+        window.localStorage.setItem("TaskComments", JSON.stringify(taskComments));
     }
 }
 

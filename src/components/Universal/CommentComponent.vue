@@ -3,18 +3,18 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
-import {CommentDTO} from "@/scripts/Model/TaskComment";
+import {TaskCommentDTO} from "@/scripts/Model/TaskComment";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
 
 const props = defineProps<{
-  comment: CommentDTO;
+  comment: TaskCommentDTO;
   user: AppUserDTO
   taskId: number;
 }>();
 
 const emits = defineEmits<{
-  (e: 'comment:update', comment: CommentDTO): void;
-  (e: 'comment:delete', comment: CommentDTO): void;
+  (e: 'comment:update', comment: TaskCommentDTO): void;
+  (e: 'comment:delete', comment: TaskCommentDTO): void;
 }>();
 
 

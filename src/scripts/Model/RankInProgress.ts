@@ -28,6 +28,7 @@ export class RankInProgress {
         if (!exists) {
             ranksInProgress.push(rankInProgress);
         }
+        window.localStorage.setItem("RanksInProgress", JSON.stringify(ranksInProgress));
         return Promise.resolve(rankInProgress);
     }
 
@@ -35,13 +36,16 @@ export class RankInProgress {
         const index = ranksInProgress.findIndex(u => u.id === rankInProgress.id)
         if (index !== -1) {
             ranksInProgress[index] = rankInProgress;
+            window.localStorage.setItem("RanksInProgress", JSON.stringify(ranksInProgress));
             return Promise.resolve(rankInProgress);
         }
+        window.localStorage.setItem("RanksInProgress", JSON.stringify(ranksInProgress));
         return Promise.resolve(undefined);
     }
 
     static deleteObject(id: number): void {
         ranksInProgress = ranksInProgress.filter(rankInProgress => rankInProgress.id !== id)
+        window.localStorage.setItem("RanksInProgress", JSON.stringify(ranksInProgress));
     }
 }
 

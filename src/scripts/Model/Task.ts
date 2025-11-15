@@ -1,5 +1,6 @@
 import {Status} from "@/scripts/Model/Status.js";
 import {RankInProgress} from "@/scripts/Model/RankInProgress.js";
+import {saveDatabaseData} from "@/scripts/helperFunctions.js";
 
 let tasks : TaskDTO[] = []
 
@@ -34,6 +35,7 @@ export class Task {
                 }
             });
         }
+        window.localStorage.setItem("Tasks", JSON.stringify(tasks));
         return Promise.resolve(task);
     }
 
@@ -41,8 +43,10 @@ export class Task {
         const index = tasks.findIndex(u => u.id === task.id)
         if (index !== -1) {
             tasks[index] = task;
+            window.localStorage.setItem("Tasks", JSON.stringify(tasks));
             return Promise.resolve(task);
         }
+        window.localStorage.setItem("Tasks", JSON.stringify(tasks));
         return Promise.resolve(undefined);
     }
 
@@ -52,6 +56,7 @@ export class Task {
             rankInProgress.taskIds = rankInProgress.taskIds.filter(taskId => taskId !== id);
             RankInProgress.update(rankInProgress);
         })
+        window.localStorage.setItem("Tasks", JSON.stringify(tasks));
     }
 }
 

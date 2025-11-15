@@ -25,6 +25,7 @@ export class AppUser {
         if (!exists) {
             appUser.push(user);
         }
+        window.localStorage.setItem("Users", JSON.stringify(appUser));
         return Promise.resolve(user);
     }
 
@@ -32,13 +33,16 @@ export class AppUser {
         const index = appUser.findIndex(u => u.id === user.id)
         if (index !== -1) {
             appUser[index] = user;
+            window.localStorage.setItem("Users", JSON.stringify(appUser));
             return Promise.resolve(user);
         }
+        window.localStorage.setItem("Users", JSON.stringify(appUser));
         return Promise.resolve(undefined);
     }
 
     static deleteObject(id: number): void {
         appUser = appUser.filter(user => user.id !== id)
+        window.localStorage.setItem("Users", JSON.stringify(appUser));
     }
 }
 

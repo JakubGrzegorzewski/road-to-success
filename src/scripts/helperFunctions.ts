@@ -4,7 +4,7 @@ import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
-import {CommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
+import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
@@ -67,7 +67,7 @@ export async function loadDatabaseData() : Promise<void>{
     parseStored<RequirementDTO>("Requirements").forEach((requirement) => promises.push(Requirement.add(requirement, requirement.rankId)));
     parseStored<RankInProgressDTO>("RanksInProgress").forEach((rip) => promises.push(RankInProgress.add(rip)));
     parseStored<TaskDTO>("Tasks").forEach((task) => promises.push(Task.add(task, task.rankInProgressId)));
-    parseStored<CommentDTO>("TaskComments").forEach((comment) => promises.push(TaskComment.add(comment, comment.taskId)));
+    parseStored<TaskCommentDTO>("TaskComments").forEach((comment) => promises.push(TaskComment.add(comment, comment.taskId)));
 
     return Promise.all(promises).then(() => console.log("Loaded data from local storage"));
 }

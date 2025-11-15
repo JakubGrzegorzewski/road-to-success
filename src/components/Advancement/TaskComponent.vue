@@ -5,7 +5,7 @@ import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {onMounted, Ref, ref} from "vue";
 import {TaskDTO} from "@/scripts/Model/Task";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
-import {CommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
+import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
 
 const props = withDefaults(defineProps<{
   task : TaskDTO,
@@ -19,7 +19,7 @@ const emits = defineEmits<{
   (e: 'delete:task', task: TaskDTO): void;
 }>();
 
-const comments : Ref<CommentDTO[] | []> = ref([]);
+const comments : Ref<TaskCommentDTO[] | []> = ref([]);
 
 const showCommentAdding = ref(false);
 const contentDivRef = ref(null);
@@ -49,7 +49,7 @@ onMounted(() => {
   })
 });
 
-function updateComment(updatedComment: CommentDTO) {
+function updateComment(updatedComment: TaskCommentDTO) {
   if (comments.value) {
     const index = comments.value.findIndex(comment => comment.id === updatedComment.id);
     if (index !== -1) {
@@ -59,14 +59,14 @@ function updateComment(updatedComment: CommentDTO) {
   }
 }
 
-function addComment(newComment: CommentDTO) {
+function addComment(newComment: TaskCommentDTO) {
   if (comments.value) {
     comments.value = [newComment, ...comments.value || [] ];
     TaskComment.add(newComment, props.task.id);
   }
 }
 
-function deleteComment(updatedComment: CommentDTO) {
+function deleteComment(updatedComment: TaskCommentDTO) {
   comments.value = comments.value?.filter(comment => comment.id !== updatedComment.id).map(comment => comment);
   TaskComment.deleteObject(updatedComment.id, props.task.id);
 }

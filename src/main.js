@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './scripts/router.ts'
+import router from './scripts/router.js'
 import i18n from './scripts/i18n.ts'
 
 const app = createApp(App)

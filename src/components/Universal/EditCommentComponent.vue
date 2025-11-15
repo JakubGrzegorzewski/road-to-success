@@ -2,22 +2,22 @@
 import {ref, Ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {CommentDTO} from "@/scripts/Model/TaskComment";
+import {TaskCommentDTO} from "@/scripts/Model/TaskComment";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
 
 
 const props = defineProps<{
-  comment: CommentDTO | null;
+  comment: TaskCommentDTO | null;
   taskId: number;
   user: AppUserDTO
 }>();
 
 const emits = defineEmits<{
-  (e: 'comment:save', comment: CommentDTO): void;
+  (e: 'comment:save', comment: TaskCommentDTO): void;
   (e: 'comment:close'): void;
 }>();
 
-const editComment : Ref<CommentDTO> = ref(
+const editComment : Ref<TaskCommentDTO> = ref(
     props.comment ||
     {
       id: Math.floor(Math.random()*1000000000000000),

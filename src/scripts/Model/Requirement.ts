@@ -1,4 +1,5 @@
 import { Rank } from "./Rank.js";
+import {saveDatabaseData} from "@/scripts/helperFunctions.js";
 let requirements : RequirementDTO[] = []
 
 export interface RequirementDTO {
@@ -29,6 +30,7 @@ export class Requirement {
                 }
             });
         }
+        window.localStorage.setItem("Requirements", JSON.stringify(requirements));
         return Promise.resolve(requirement);
     }
 
@@ -38,6 +40,7 @@ export class Requirement {
             requirements[index] = requirement;
             return Promise.resolve(requirement);
         }
+        window.localStorage.setItem("Requirements", JSON.stringify(requirements));
         return Promise.resolve(undefined);
     }
 
@@ -47,6 +50,7 @@ export class Requirement {
             rank.requirementIds = rank.requirementIds.filter(requirementId => requirementId !== id);
             Rank.update(rank);
         })
+        window.localStorage.setItem("Requirements", JSON.stringify(requirements));
     }
 }
 
