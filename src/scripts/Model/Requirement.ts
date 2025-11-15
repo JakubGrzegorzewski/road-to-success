@@ -1,5 +1,4 @@
 import { Rank } from "./Rank.js";
-import {saveDatabaseData} from "@/scripts/helperFunctions.js";
 let requirements : RequirementDTO[] = []
 
 export interface RequirementDTO {

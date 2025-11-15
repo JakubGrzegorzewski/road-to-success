@@ -8,7 +8,7 @@ import {Style} from "@/scripts/Model/Style";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Rank, RankDTO} from "@/scripts/Model/Rank";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
-import {addTaskToDB, loadDatabaseData, saveDatabaseData} from "@/scripts/helperFunctions.js";
+import {addTaskToDB, loadDatabaseData} from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 import {onMounted, ref, Ref} from "vue";
 

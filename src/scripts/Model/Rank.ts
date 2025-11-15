@@ -1,5 +1,3 @@
-import {saveDatabaseData} from "@/scripts/helperFunctions.js";
-
 let ranks : RankDTO[] = []
 
 export interface RankDTO {

@@ -1,6 +1,5 @@
 import {Status} from "@/scripts/Model/Status.js";
 import {RankInProgress} from "@/scripts/Model/RankInProgress.js";
-import {saveDatabaseData} from "@/scripts/helperFunctions.js";
 
 let tasks : TaskDTO[] = []
 
