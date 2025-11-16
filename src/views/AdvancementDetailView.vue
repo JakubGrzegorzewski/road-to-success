@@ -11,6 +11,7 @@ import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
 import {addTaskToDB, loadDatabaseData} from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 import {onMounted, ref, Ref} from "vue";
+import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 
 const props = defineProps<{
   id: number,
@@ -137,20 +138,17 @@ function rankImage(){
   <div class="rank" v-if="editedRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
     <div class="rank-details">
       <div style="display: flex; flex-direction: row; gap: 20px; align-items: center; justify-content: left;">
-        <div class="selector-style">
-          <div class="text-selection-component">
-            <select v-model="editedRankInProgress.rankId" @change="reload">
-              <option v-for="rank in allRanks" :value="rank.id">{{ rank.fullName }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="selector-style">
-          <div class="text-selection-component">
-            <select v-model="editedRankInProgress.style">
-              <option v-for="currentStyle in Style" :value="currentStyle">{{ $t('advancement.style.'+currentStyle) }}</option>
-            </select>
-          </div>
-        </div>
+        <DropDownSelectionComponent
+            v-model="editedRankInProgress.rankId"
+            :options="allRanks.map(r => ({ value: r.id, label: r.fullName }))"
+            placeholder="Select rank"
+            @update:modelValue="reload"
+        />
+        <DropDownSelectionComponent
+            v-model="editedRankInProgress.style"
+            :options="Object.values(Style).map(s => ({ value: s, label: $t('advancement.style.'+s) }))"
+            placeholder="Select style"
+        />
         <ButtonComponent
         button-text="Generuj PDF'a"
         buttonStyle="primary"
@@ -212,12 +210,6 @@ function rankImage(){
   justify-self: center;
   margin: 10px;
   width: 800px;
-}
-
-.selector-style {
-  display: flex;
-  align-items: center;
-  gap: 20px;
 }
 
 </style>
