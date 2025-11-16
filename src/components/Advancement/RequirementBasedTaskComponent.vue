@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TaskComponent from "@/components/Advancement/TaskComponent.vue";
-import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
+import TextSelectionComponent from "@/components/Universal/TextSelectionComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {onMounted} from "vue";
 import {doShowAddTaskButton, doShowDeleteTaskButton, doShowIdea} from "@/scripts/whatToShow";
@@ -57,7 +57,7 @@ function isDarkMode(): boolean {
     >
 
       <textarea class="multiline-text-input" v-model="task.content" @change="emits('update:task', task)"/>
-      <SelectionComponent
+      <TextSelectionComponent
           v-if="rank && task.partIdea && doShowIdea(props.rankInProgress.style)"
           :text="task.partIdea"
           :original-text="rank.idea"

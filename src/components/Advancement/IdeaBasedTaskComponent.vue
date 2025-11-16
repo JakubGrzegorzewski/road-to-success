@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import SelectionComponent from "@/components/Universal/SelectionComponent.vue";
+import TextSelectionComponent from "@/components/Universal/TextSelectionComponent.vue";
 import TaskComponent from "@/components/Advancement/TaskComponent.vue";
 import {TaskDTO} from "@/scripts/Model/Task";
 import {RankInProgressDTO} from "@/scripts/Model/RankInProgress";
@@ -61,7 +61,7 @@ function isRequirementSelected(requirement: RequirementDTO) {
         @delete:task="emits('delete:task', $event)"
     >
       <div class="task-content">
-        <SelectionComponent
+        <TextSelectionComponent
             v-if="doShowIdea(rankInProgress.style)"
             :text="props.task.partIdea"
             :original-text="rank?.idea"
