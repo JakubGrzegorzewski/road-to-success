@@ -1,4 +1,4 @@
-import {Style} from "@/scripts/Model/Style";
+import {Style} from "@/scripts/Model/Style.js";
 
 function doShowIdea (style : Style) : boolean {
     return [Style.IDEA_SELECTION,
