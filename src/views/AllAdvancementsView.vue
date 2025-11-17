@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import {onMounted, ref, Ref} from "vue";
-import {loadDatabaseData, saveDatabaseData} from "@/scripts/helperFunctions.js";
+import {loadDatabaseData} from "@/scripts/helperFunctions.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
-import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 
 const ranksInProgress : Ref<RankInProgressDTO[]> = ref([]);

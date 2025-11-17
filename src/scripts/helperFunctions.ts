@@ -5,7 +5,6 @@ import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
-import {Ref} from "vue";
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
