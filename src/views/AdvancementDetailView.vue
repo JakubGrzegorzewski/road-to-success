@@ -8,7 +8,7 @@ import {Style} from "@/scripts/Model/Style";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Rank, RankDTO} from "@/scripts/Model/Rank";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
-import {addTaskToDB, loadDatabaseData} from "@/scripts/helperFunctions.js";
+import {addTaskToDB, isDarkMode, loadDatabaseData, rankImage} from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
@@ -122,16 +122,6 @@ function deleteTask(task: TaskDTO) {
   tasks.value = tasks.value.filter(t => t.id !== task.id);
   Task.deleteObject(task.id, editedRankInProgress.value.id);
 }
-
-function isDarkMode(): boolean {
-  if (typeof window === 'undefined' || !window.matchMedia) return false;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
-}
-
-function rankImage(){
-  if (!rank.value) return;
-  return new URL(`../assets/images/${rank.value.shortName}.png`, import.meta.url).href;
-}
 </script>
 
 <template>
@@ -194,7 +184,8 @@ function rankImage(){
       />
     </div>
   </div>
-  <img v-if="rank" :src="rankImage()" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/></template>
+  <img v-if="rank" :src="rankImage(rank)" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
+</template>
 
 <style scoped>
 .rank {

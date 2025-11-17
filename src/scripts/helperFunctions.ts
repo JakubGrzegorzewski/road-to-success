@@ -5,6 +5,7 @@ import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
+import {Ref} from "vue";
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
@@ -70,4 +71,14 @@ export async function loadDatabaseData() : Promise<void>{
     parseStored<TaskCommentDTO>("TaskComments").forEach((comment) => promises.push(TaskComment.add(comment, comment.taskId)));
 
     return Promise.all(promises).then(() => console.log("Loaded data from local storage"));
+}
+
+export function rankImage(rank : RankDTO) : string{
+    if (!rank || !rank.shortName) return '';
+    return new URL(`../assets/images/${rank.shortName}.png`, import.meta.url).href;
+}
+
+export function isDarkMode(): boolean {
+    if (typeof window === 'undefined' || !window.matchMedia) return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
