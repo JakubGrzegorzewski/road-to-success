@@ -71,7 +71,7 @@
     "name": "Imię",
     "email": "Email",
     "role": "Rola",
-    "mentor": "Mentor",
+    "mentor": "Opiekun",
     "mentee": "Podopieczny",
     "admin": "Administrator",
     "addUser": "Dodaj użytkownika",
