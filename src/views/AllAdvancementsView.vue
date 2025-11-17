@@ -5,6 +5,7 @@ import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 
 const ranksInProgress : Ref<RankInProgressDTO[]> = ref([]);
 
@@ -20,12 +21,11 @@ onMounted(() => {
               id: Math.floor(Math.random()*1000000000000000),
               rankId: 1,
               userId : 1,
-              mentorId : 2,
+              mentorId : 1,
               status: Status.CREATED,
               style: Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
               taskIds: []
             });
-            saveDatabaseData();
             RankInProgress.add(ranksInProgress.value[0])
           }
         })
@@ -34,14 +34,24 @@ onMounted(() => {
 </script>
 
 <template>
-  <button-component
-      v-for="rankInProgress in ranksInProgress"
-      :button-text='rankInProgress.id + " " + rankInProgress.status + " " + rankInProgress.style'
-      button-style="default"
-      @click="$router.push('/advancement/' + rankInProgress.id)"
-  />
-</template>
+  <h1>All advancements</h1>
+  <div class="advancement-container">
+    <AdvancementCardComponent :rank-in-progress="rankInProgress" v-for="rankInProgress in ranksInProgress" :key="rankInProgress.id"/>
+    <AdvancementCardComponent/>
+  </div>
+  </template>
 
 <style scoped>
-
+  h1 {
+    text-align: center;
+    font-family: 'Museo', sans-serif;
+  }
+  .advancement-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 40px;
+  }
 </style>
