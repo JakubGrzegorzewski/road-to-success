@@ -1,9 +1,8 @@
 import {Task, TaskDTO} from "@/scripts/Model/Task.js";
 import {Status} from "@/scripts/Model/Status.js";
-import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
+import {RankDTO} from "@/scripts/Model/Rank.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
@@ -20,29 +19,6 @@ export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requireme
         commentIds: [],
     };
     return Task.add(task, rankInProgressId);
-}
-
-export async function saveDatabaseData(): Promise<void> {
-    const [users, ranks, requirements, ranksInProgress, tasks] = await Promise.all([
-        AppUser.getAll(),
-        Rank.getAll(),
-        Requirement.getAll(),
-        RankInProgress.getAll(),
-        Task.getAll()
-    ]);
-
-    console.log("Saving users to local storage:", users)
-    window.localStorage.setItem("Users", JSON.stringify(users));
-    console.log("Saving ranks to local storage:", ranks)
-    window.localStorage.setItem("Ranks", JSON.stringify(ranks));
-    console.log("Saving requirements to local storage:", requirements)
-    window.localStorage.setItem("Requirements", JSON.stringify(requirements));
-    console.log("Saving ranks in progress to local storage:", ranksInProgress)
-    window.localStorage.setItem("RanksInProgress", JSON.stringify(ranksInProgress));
-    console.log("Saving tasks to local storage:", tasks)
-    window.localStorage.setItem("Tasks", JSON.stringify(tasks));
-    console.log("Saving comments to local storage:", tasks)
-    window.localStorage.setItem("TaskComments", JSON.stringify(tasks));
 }
 
 export async function loadDatabaseData() : Promise<void>{
@@ -63,8 +39,6 @@ export async function loadDatabaseData() : Promise<void>{
     };
 
     parseStored<AppUserDTO>("Users").forEach((user) => promises.push(AppUser.add(user)));
-    parseStored<RankDTO>("Ranks").forEach((rank) => promises.push(Rank.add(rank)));
-    parseStored<RequirementDTO>("Requirements").forEach((requirement) => promises.push(Requirement.add(requirement, requirement.rankId)));
     parseStored<RankInProgressDTO>("RanksInProgress").forEach((rip) => promises.push(RankInProgress.add(rip)));
     parseStored<TaskDTO>("Tasks").forEach((task) => promises.push(Task.add(task, task.rankInProgressId)));
     parseStored<TaskCommentDTO>("TaskComments").forEach((comment) => promises.push(TaskComment.add(comment, comment.taskId)));
@@ -80,4 +54,66 @@ export function rankImage(rank : RankDTO) : string{
 export function isDarkMode(): boolean {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+export async function fetchGET(url : string) {
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        return await response.json();
+    } catch (err) {
+        console.error('Error fetching:', err);
+        return null;
+    }
+}
+
+export async function fetchDELETE(url : string) {
+    try {
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        return await response.json();
+    } catch (err) {
+        console.error('Error fetching:', err);
+        return null;
+    }
+}
+
+export async function fetchPUT(url : string, data : JSON) {
+    try {
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        return await response.json();
+    } catch (err) {
+        console.error('Error fetching:', err);
+        return null;
+    }
+}
+
+export async function fetchPOST(url : string, data : JSON) {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        return await response.json();
+    } catch (err) {
+        console.error('Error fetching:', err);
+        return null;
+    }
 }
