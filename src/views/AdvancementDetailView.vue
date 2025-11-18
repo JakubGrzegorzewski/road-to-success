@@ -8,7 +8,13 @@ import {Style} from "@/scripts/Model/Style";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Rank, RankDTO} from "@/scripts/Model/Rank";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
-import {addTaskToDB, isDarkMode, loadDatabaseData, rankImage} from "@/scripts/helperFunctions.js";
+import {
+  addTaskToDB,
+  isDarkMode,
+  loadDatabaseData,
+  rankImage,
+  requirementSort
+} from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
@@ -27,38 +33,6 @@ const rank : Ref<RankDTO | undefined> = ref();
 const allRanks : Ref<RankDTO[]> = ref([]);
 
 const isLoadingData = ref(false);
-
-function unconventionalSort(a: RequirementDTO, b: RequirementDTO) {
-    if (Math.floor(parseFloat(a.number)) === Math.floor(parseFloat(b.number))) {
-      const aNum = parseFloat(a.number.split('.')[1]);
-      const bNum = parseFloat(b.number.split('.')[1]);
-      if (isNaN(aNum) && isNaN(bNum)) {
-        return 0;
-      } else if (isNaN(aNum)) {
-        return -1;
-      } else if (isNaN(bNum)) {
-        return 1;
-      } else {
-        return aNum - bNum;
-      }
-    }else {
-      return parseFloat(a.number) - parseFloat(b.number)
-    }
-}
-
-onMounted(() => {
-  console.log("Mounted with id:", props.id);
-  if (!props.id) return;
-  // Load ranks in progress
-  loadDatabaseData().then(()=>{
-    RankInProgress.getById(props.id)
-        .then(rankInProgress => {
-          editedRankInProgress.value = rankInProgress;
-          console.log("Rank in progress loaded:", rankInProgress);
-        })
-        .then(reload)
-  })
-})
 
 async function reload() {
   if (isLoadingData.value) return;
@@ -122,6 +96,73 @@ function deleteTask(task: TaskDTO) {
   tasks.value = tasks.value.filter(t => t.id !== task.id);
   Task.deleteObject(task.id, editedRankInProgress.value.id);
 }
+
+async function generatePDF() {
+  const exportedTasks: object[] = tasks.value.map((task: TaskDTO) => {
+    const reqs = requirements.value
+        .filter((e: RequirementDTO) => Array.isArray(task.requirementsIds) && task.requirementsIds.indexOf(e.id) !== -1)
+        .map((e: RequirementDTO) => e.number + ". " + e.content);
+    return {
+      requirements: reqs,
+      ideaPart: task.partIdea,
+      content: task.content,
+    };
+  });
+
+  const exportedDocumentData : object = {
+    advancementName: rank.value?.fullName,
+    menteeName: user.value?.fullName,
+    mentorName: user.value?.fullName,
+    idea: rank.value?.idea,
+    themeColor: "#1E2F5C",
+    tasks: exportedTasks,
+    imagePath: "src/main/resources/images/pwd.png",
+    sideImagePath: "src/main/resources/images/side-pwd",
+    backgroundImagePath: "src/main/resources/images/instructor-background.png",
+  }
+
+  try {
+    const response = await fetch('/api/generate-pdf', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(exportedDocumentData),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to generate PDF:", response.statusText);
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${rank.value?.fullName || 'advancement'}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error("Error generating PDF:", err);
+  }
+}
+
+onMounted(() => {
+  console.log("Mounted with id:", props.id);
+  if (!props.id) return;
+  // Load ranks in progress
+  loadDatabaseData().then(()=>{
+    RankInProgress.getById(props.id)
+        .then(rankInProgress => {
+          editedRankInProgress.value = rankInProgress;
+          console.log("Rank in progress loaded:", rankInProgress);
+        })
+        .then(reload)
+  })
+})
+
 </script>
 
 <template>
@@ -142,7 +183,7 @@ function deleteTask(task: TaskDTO) {
         <ButtonComponent
         button-text="Generuj PDF'a"
         buttonStyle="primary"
-        @click="RankInProgress.update(editedRankInProgress)"
+        @click="generatePDF()"
         />
       </div>
 
@@ -152,7 +193,7 @@ function deleteTask(task: TaskDTO) {
     </div>
     <div v-if="isRequirementBased(editedRankInProgress.style)">
       <RequirementBasedTaskComponent
-          v-for="requirement in requirements.sort(unconventionalSort)"
+          v-for="requirement in requirements.sort(requirementSort)"
           :key="requirement.id"
           :requirement="requirement"
           :rank-in-progress="editedRankInProgress"

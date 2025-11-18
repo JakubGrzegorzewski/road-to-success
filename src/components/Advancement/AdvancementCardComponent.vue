@@ -48,7 +48,7 @@ function addNewRank() {
       class="box-shadow advancement-card-out"
       @click="router.push('/advancement/' + rankInProgress.id)">
     <div class="advancement-card-in"
-      :style="'background-image: url('+rankImage(rank)+')'"
+      :style="'background-image: url(https://jakubgrzegorzewski.github.io/ZHP/images/'+rank.shortName+'.png)'"
     >
       <h3> {{ $t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>

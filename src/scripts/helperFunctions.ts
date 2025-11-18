@@ -4,6 +4,7 @@ import {RankDTO} from "@/scripts/Model/Rank.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
+import {RequirementDTO} from "@/scripts/Model/Requirement.js";
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
@@ -56,6 +57,24 @@ export function isDarkMode(): boolean {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
+export function requirementSort(a: RequirementDTO, b: RequirementDTO) {
+    if (Math.floor(parseFloat(a.number)) === Math.floor(parseFloat(b.number))) {
+        const aNum = parseFloat(a.number.split('.')[1]);
+        const bNum = parseFloat(b.number.split('.')[1]);
+        if (isNaN(aNum) && isNaN(bNum)) {
+            return 0;
+        } else if (isNaN(aNum)) {
+            return -1;
+        } else if (isNaN(bNum)) {
+            return 1;
+        } else {
+            return aNum - bNum;
+        }
+    }else {
+        return parseFloat(a.number) - parseFloat(b.number)
+    }
+}
+
 export async function fetchGET(url : string) {
     try {
         const response = await fetch(url, {
@@ -86,7 +105,7 @@ export async function fetchDELETE(url : string) {
     }
 }
 
-export async function fetchPUT(url : string, data : JSON) {
+export async function fetchPUT(url : string, data : string) {
     try {
         const response = await fetch(url, {
             method: "PUT",
@@ -102,7 +121,7 @@ export async function fetchPUT(url : string, data : JSON) {
     }
 }
 
-export async function fetchPOST(url : string, data : JSON) {
+export async function fetchPOST(url : string, data : string) {
     try {
         const response = await fetch(url, {
             method: "POST",
