@@ -75,7 +75,7 @@ function isRequirementSelected(requirement: RequirementDTO) {
           <ButtonComponent
               v-for="requirement in requirements"
               :key="requirement.id"
-              :button-text="requirement.number + '.'"
+              :button-text="requirement.number"
               :buttonStyle="isRequirementSelected(requirement) ? 'primary' : 'default'"
               :button-hint="requirement.content"
               @click="toggleRequirement(requirement)"
