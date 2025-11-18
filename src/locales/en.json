@@ -22,7 +22,9 @@
     "add": "Add New Advancement",
     "delete": "Delete Advancement",
     "select": "Select advancement",
+    "selectMentee": "Select mentee",
     "selectMentor": "Select mentor",
+    "selectStyle": "Select style",
     "noAdvancements": "No advancements to display",
     "comment": {
       "add": "Add Comment",

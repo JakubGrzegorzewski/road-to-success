@@ -22,7 +22,9 @@
     "add": "Dodaj nową próbę",
     "delete": "Usuń próbę",
     "select": "Wybierz próbę",
+    "selectMentee": "Wybierz podopiecznego",
     "selectMentor": "Wybierz opiekuna",
+    "selectStyle": "Wybierz styl",
     "noAdvancements": "Brak prób do wyświetlenia",
     "comment": {
       "add": "Dodaj komentarz",
