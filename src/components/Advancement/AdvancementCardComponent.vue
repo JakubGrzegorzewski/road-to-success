@@ -4,7 +4,7 @@ import {useRouter} from "vue-router";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {isDarkMode, rankImage} from "@/scripts/helperFunctions.js";
+import {isDarkMode} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
