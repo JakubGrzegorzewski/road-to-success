@@ -33,7 +33,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>All advancements</h1>
+  <h1>{{ $t('advancement.your') }}</h1>
   <div class="advancement-container">
     <AdvancementCardComponent :rank-in-progress="rankInProgress" v-for="rankInProgress in ranksInProgress" :key="rankInProgress.id"/>
     <AdvancementCardComponent/>

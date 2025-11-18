@@ -14,6 +14,7 @@
     "options": "Options"
   },
   "advancement": {
+    "your": "Your advancements",
     "generate": "Generate advancement's PDF",
     "changeStatus": "Change Status",
     "changeMentor": "Change Mentor",

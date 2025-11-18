@@ -14,6 +14,7 @@
     "options": "Opcje"
   },
   "advancement": {
+    "your": "Twoje próby",
     "generate": "Generuj PDF próby",
     "changeStatus": "Zmień status",
     "changeMentor": "Zmień opiekuna",
