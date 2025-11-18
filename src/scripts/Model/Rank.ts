@@ -1,4 +1,4 @@
-import {fetchGET} from "@/scripts/helperFunctions.js";
+import {fetchGET, jsonSubPage} from "@/scripts/helperFunctions.js";
 
 export interface RankDTO {
     id: number;
@@ -13,11 +13,11 @@ export interface RankDTO {
 
 export class Rank {
     static getAll(): Promise<RankDTO[]> {
-        return fetchGET("/zhp/advancements.json");
+        return fetchGET(jsonSubPage+"advancements.json");
     }
 
     static async getById(id: number): Promise<RankDTO> {
-        return fetchGET("/zhp/advancements.json").then((ranks: RankDTO[]) => {
+        return fetchGET(jsonSubPage+"advancements.json").then((ranks: RankDTO[]) => {
             const rank = ranks.find(rank => rank.id === id);
             if (!rank) throw new Error(`Rank with id ${id} not found`);
             return rank;

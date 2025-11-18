@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import {projectSubPage} from "@/scripts/helperFunctions.ts";
 
 const routes = [
     {
-        path: '/road-to-success/',
+        path: projectSubPage,
         name: 'Home',
         component: () => import('@/views/AllAdvancementsView.vue')
     },
     {
-        path: '/road-to-success/advancement/:id',
+        path: projectSubPage+'advancement/:id',
         name: 'Advancement',
         component: () => import('@/views/AdvancementDetailView.vue'),
         props: route => ({ id: Number(route.params.id) })

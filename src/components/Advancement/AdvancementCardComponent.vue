@@ -4,7 +4,7 @@ import {useRouter} from "vue-router";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {isDarkMode} from "@/scripts/helperFunctions.js";
+import {imageSubPage, isDarkMode, projectSubPage} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
@@ -37,7 +37,7 @@ function addNewRank() {
     taskIds: []
   }
   RankInProgress.add(newRank).then(
-      rankInProgress => router.push('/advancement/' + rankInProgress.id)
+      rankInProgress => router.push(projectSubPage+'/advancement/' + rankInProgress.id)
   );
 
 }
@@ -46,9 +46,9 @@ function addNewRank() {
 <template>
   <div v-if="rankInProgress && rank && mentor && user"
       class="box-shadow advancement-card-out"
-      @click="router.push('/advancement/' + rankInProgress.id)">
+      @click="router.push(projectSubPage+'/advancement/' + rankInProgress.id)">
     <div class="advancement-card-in"
-      :style="'background-image: url(https://jakubgrzegorzewski.github.io/ZHP/images/'+rank.shortName+'.png)'"
+      :style="'background-image: url('imageSubPage+rank.shortName+'.png)'"
     >
       <h3> {{ $t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>
