@@ -48,7 +48,7 @@ function addNewRank() {
       class="box-shadow advancement-card-out"
       @click="router.push(projectSubPage+'/advancement/' + rankInProgress.id)">
     <div class="advancement-card-in"
-      :style="'background-image: url('imageSubPage+rank.shortName+'.png)'"
+      :style="'background-image: url('+imageSubPage+rank.shortName+'.png)'"
     >
       <h3> {{ $t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>
