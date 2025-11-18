@@ -1,1 +1,0 @@
-import{_ as l,c as r,a as n,F as o,o as t}from"./index-CwE1FoS9.js";const a={};function s(u,e){return t(),r(o,null,[e[0]||(e[0]=n("header",null,null,-1)),e[1]||(e[1]=n("main",null,null,-1))],64)}const c=l(a,[["render",s]]);export{c as default};
