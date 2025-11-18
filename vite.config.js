@@ -24,10 +24,6 @@ export default defineConfig({
                 target: 'http://localhost:8081',
                 changeOrigin: true
             },
-            '/ZHP': {
-                target: 'https://jakubgrzegorzewski.github.io',
-                changeOrigin: true,
-            }
         }
     }
 })
