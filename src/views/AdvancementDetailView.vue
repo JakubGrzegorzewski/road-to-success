@@ -29,6 +29,7 @@ const tasks : Ref<TaskDTO[]> = ref([]);
 const requirements : Ref<RequirementDTO[]> = ref([]);
 
 const user : Ref<AppUserDTO | undefined> = ref(undefined);
+const allUsers : Ref<AppUserDTO[]> = ref([]);
 const rank : Ref<RankDTO | undefined> = ref();
 const allRanks : Ref<RankDTO[]> = ref([]);
 
@@ -47,6 +48,11 @@ async function reload() {
     AppUser.getById(1).then(fetchedUser => {
       console.info("User loaded:", fetchedUser);
       user.value = fetchedUser
+    })
+
+    AppUser.getAll().then(fetchedUsers => {
+      console.info("Users loaded:", fetchedUsers);
+      allUsers.value = fetchedUsers
     })
 
     // Load ranks
@@ -168,25 +174,40 @@ onMounted(() => {
 <template>
   <div class="rank" v-if="editedRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
     <div class="rank-details">
-      <div style="display: flex; flex-direction: row; gap: 20px; align-items: center; justify-content: left;">
+      <div class="option-selection">
         <DropDownSelectionComponent
             v-model="editedRankInProgress.rankId"
+            :label="$t('advancement.select') + ':'"
             :options="allRanks.map(r => ({ value: r.id, label: r.fullName }))"
             placeholder="Select rank"
             @update:modelValue="reload"
         />
         <DropDownSelectionComponent
             v-model="editedRankInProgress.style"
+            :label="$t('advancement.selectStyle') + ':'"
             :options="Object.values(Style).map(s => ({ value: s, label: $t('advancement.style.'+s) }))"
             placeholder="Select style"
         />
-        <ButtonComponent
-        button-text="Generuj PDF'a"
-        buttonStyle="primary"
-        @click="generatePDF()"
+      </div>
+      <div class="option-selection">
+        <DropDownSelectionComponent
+            v-model="editedRankInProgress.userId"
+            :label="$t('advancement.selectMentee') + ':'"
+            :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
+            placeholder="Select mentee"
+        />
+        <DropDownSelectionComponent
+            v-model="editedRankInProgress.mentorId"
+            :label="$t('advancement.selectMentor') + ':'"
+            :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
+            placeholder="Select mentor"
         />
       </div>
-
+      <ButtonComponent
+          :button-text="$t('advancement.generate')"
+          buttonStyle="primary"
+          @click="generatePDF()"
+      />
 
       <h2>{{ rank.fullName }}</h2>
       <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rank.idea }}</p>
@@ -242,6 +263,14 @@ onMounted(() => {
   justify-self: center;
   margin: 10px;
   width: 800px;
+}
+.option-selection {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  justify-content: left;
+  margin-bottom: 20px;
 }
 
 </style>

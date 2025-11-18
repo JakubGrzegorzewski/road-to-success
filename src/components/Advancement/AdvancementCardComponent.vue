@@ -4,7 +4,7 @@ import {useRouter} from "vue-router";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {imageSubPage, isDarkMode, projectSubPage, rankImage} from "@/scripts/helperFunctions.js";
+import {isDarkMode, projectSubPage, rankImage} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
@@ -48,7 +48,7 @@ function addNewRank() {
       class="box-shadow advancement-card-out"
       @click="router.push(projectSubPage+'advancement/' + rankInProgress.id)">
     <div class="advancement-card-in"
-      :style="'background-image: url('+rankImage(rank)+')'"
+         :style="{ '--bg-image': `url(${rankImage(rank)})` }"
     >
       <h3> {{ $t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>
@@ -87,6 +87,7 @@ function addNewRank() {
   cursor: pointer;
 }
 .advancement-card-in {
+  position: relative;
   padding: 20px;
   width: 200px;
   height: 250px;
@@ -95,11 +96,20 @@ function addNewRank() {
   justify-content: center;
   display: flex;
   flex-direction: column;
+  --bg-image: none;
+}
+.advancement-card-in:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: var(--bg-image);
   background-repeat: no-repeat;
-  background-size: 200px;
-  background-position: right bottom;
-  background-position-x: 100px;
-  background-position-y: 100px;
+  background-size: 400px;
+  opacity: 0.5;
+  z-index: 0;
+  top: 50px;
+  clip: rect(0, 300px, 240px, 0);
 }
 
 h2, h3, h4{

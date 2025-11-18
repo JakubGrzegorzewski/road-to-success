@@ -8,6 +8,7 @@ interface Option<T = any> {
 }
 
 const props = defineProps<{
+  label?: string,
   modelValue: any,
   options: Option[],
   placeholder?: string,
@@ -149,6 +150,7 @@ watch(() => props.modelValue, () => {
 </script>
 
 <template>
+  <label v-if="label" class="dropdown-label">{{ label }}</label>
   <div ref="rootEl" class="dropdown-root" :class="{ 'is-disabled': disabled }">
     <div
         class="selector-style text-selection-component dropdown-trigger"

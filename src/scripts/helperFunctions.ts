@@ -51,6 +51,8 @@ export async function loadDatabaseData() : Promise<void>{
 
 export function rankImage(rank : RankDTO) : string{
     if (!rank || !rank.shortName) return '';
+    if (rank.shortName === 'ho' || rank.shortName === 'hr') return new URL(`../assets/images/${rank.shortName}-${isDarkMode() ? 'light' : 'dark'}.png`, import.meta.url).href;
+
     return new URL(`../assets/images/${rank.shortName}.png`, import.meta.url).href;
 }
 
