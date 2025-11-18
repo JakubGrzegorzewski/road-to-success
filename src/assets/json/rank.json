@@ -63,5 +63,26 @@
     ],
     "requirementIds": [35,36,37,38,39,40,41,42,43,44],
     "ranksInProgressIds": []
+  },
+  {
+    "id": 4,
+    "fullName": "Harcerz Orli",
+    "shortName": "ho",
+    "idea": "Świadomie pracuję nad budowaniem swojej osobowości. Dojrzale pojmuję wzorzec określony Prawem Harcerskim i konsekwentnie do niego dążę. Stawiam sobie ważne pytania i poszukuję na nie odpowiedzi. Wyciągam wnioski na przyszłość. Umiejętnie zarządzam swoim czasem i zasobami, tak by racjonalnie godzić moje różne role społeczne. Szukam swojej drogi do dorosłości. Jestem świadomy/świadoma odpowiedzialności i konsekwencji dokonywanych przeze mnie wyborów. Ważne miejsce w moim życiu zajmuje troska o innych i otoczenie, w którym żyję. Nie akceptuję zachowań uderzających w godność człowieka. Wybieram kolejne pola służby i rzetelnie je realizuję. Poszerzam swoje horyzonty – poznaję kulturę, historię, osiągnięcia nauki, dokonuję oceny i buduję swój obraz świata. Odważnie podejmuję wyzwania i konsekwentnie je realizuję. Rozwijam siłę ciała, ducha i rozumu – dążę do mistrzostwa w wybranej dziedzinie. Dbam o moją rodzinę.",
+    "startRequirements": [],
+    "endRequirements": [],
+    "requirementIds": [45,46,47,48,49,50,51,52,53,54],
+    "ranksInProgressIds": []
+  },
+  {
+    "id": 5,
+    "fullName": "Harcerz Rzeczypospolitej",
+    "shortName": "hr",
+    "idea": "Jestem gotów/gotowa do wzięcia odpowiedzialności za swój los. Mam ukształtowany system wartości zbudowany na Prawie Harcerskim. Rozumiem, na czym polega harcerski styl życia. Wiem, co jest dla mnie ważne, umiem samodzielnie podejmować decyzje zgodne ze swoim kodeksem wartości. Stale buduję i pogłębiam własny pogląd na świat. Samodzielnie oceniam zdarzenia i fakty. Potrafię słuchać innych, jestem otwarty/otwarta na argumenty i potrafię je krytycznie analizować. Odpowiedzialnie podchodzę do życia i świadomie kształtuję otoczenie i swoją przyszłość. Jestem wrażliwy/wrażliwa na potrzeby innych. Pogłębiam moją wiedzę o kulturze, historii, osiągnięciach naukowych. Mam poczucie współodpowiedzialności za losy mojej rodziny, kraju i świata. Realizuję swoje pasje. Jestem odważny/odważna w działaniu, nie boję się trudnych wyborów i konsekwencji z tym związanych. Stawiam sobie ambitne cele i je realizuję. Troszczę się o harmonijny rozwój - duchowy, społeczny, fizyczny, intelektualny i emocjonalny. Osiągam mistrzostwo w wybranych dziedzinach aktywności. Zaczynam kreować moją zawodową przyszłość. Buduję trwałe więzi, relacje z innymi traktuję poważnie. Uczestniczę w budowaniu tożsamości mojej rodziny, jestem jej ważną częścią.",
+    "startRequirements": [],
+    "endRequirements": [],
+    "requirementIds": [55,56,57,58],
+    "ranksInProgressIds": []
   }
+
 ]
