@@ -46,7 +46,7 @@ function isDarkMode(): boolean {
 </script>
 
 <template>
-  <h3 style="margin: 0; padding: 0 5px 20px 5px;">{{requirement.number}}. {{ requirement.content }}</h3>
+  <h3 style="font-weight: 300"><b style="font-weight: 700">{{requirement.number}}.</b> {{ requirement.content }}</h3>
   <div v-for="task in tasks" style="display: flex; flex-direction: column; margin-bottom: 20px;">
     <TaskComponent
         v-if="props.rankInProgress"
