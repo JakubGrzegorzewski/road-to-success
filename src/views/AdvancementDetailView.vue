@@ -183,6 +183,7 @@ onMounted(() => {
             @update:modelValue="reload"
         />
         <DropDownSelectionComponent
+            v-if="false"
             v-model="editedRankInProgress.style"
             :label="$t('advancement.selectStyle') + ':'"
             :options="Object.values(Style).map(s => ({ value: s, label: $t('advancement.style.'+s) }))"
