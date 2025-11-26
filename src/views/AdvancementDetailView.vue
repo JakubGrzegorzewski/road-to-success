@@ -155,6 +155,53 @@ async function generatePDF() {
   }
 }
 
+function getIdeaWithSelectedParts(){
+  type IdeaPart = {
+    index: number;
+    indexEnd: number;
+  }
+
+  const createIdeaParts = ( index : number, indexEnd : number ) : IdeaPart => {
+    return { index, indexEnd };
+  }
+
+  let ideaParts : IdeaPart[] = [];
+  for (const task of tasks.value)
+    if (rank.value && task.partIdea !== "" && rank.value.idea !== task.partIdea) {
+      const index = rank.value.idea.indexOf(task.partIdea)
+      ideaParts.push(createIdeaParts(index, index+task.partIdea.length))
+    }
+
+
+  ideaParts.sort((a, b) => a.index - b.index)
+
+  let highlightedIdea : IdeaPart[] = [];
+  for (let currentPart of ideaParts) {
+    const part = highlightedIdea.find(p => p !== currentPart && !(currentPart.index >= p.indexEnd || currentPart.indexEnd <= p.index))
+    if (part) {
+      part.index = Math.min(part.index, currentPart.index)
+      part.indexEnd = Math.max(part.indexEnd, currentPart.indexEnd)
+    } else {
+      highlightedIdea.push(currentPart)
+    }
+  }
+
+  highlightedIdea.sort((a, b) => a.index - b.index)
+
+  let resultString = ""
+  if (rank.value) {
+    for (let i = 0; i <= rank.value.idea.length-1; i++) {
+      if (highlightedIdea.find(e => e.index === i))
+        resultString += " <span class='idea-part-highlight'> ";
+      if (highlightedIdea.find(e => e.indexEnd === i))
+        resultString += "</span> ";
+      resultString += rank.value.idea[i];
+      console.log(i);
+    }
+  }
+  return resultString;
+}
+
 onMounted(() => {
   console.log("Mounted with id:", props.id);
   if (!props.id) return;
@@ -211,7 +258,7 @@ onMounted(() => {
       />
 
       <h2>{{ rank.fullName }}</h2>
-      <p style="text-align: justify">{{ $t("advancement.idea") }} <br> {{ rank.idea }}</p>
+      <p style="text-align: justify" v-if="rank.idea" v-html="getIdeaWithSelectedParts()"/>
     </div>
     <div v-if="isRequirementBased(editedRankInProgress.style)">
       <RequirementBasedTaskComponent
@@ -273,5 +320,12 @@ onMounted(() => {
   justify-content: left;
   margin-bottom: 20px;
 }
+</style>
 
+<style>
+.idea-part-highlight {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-warning);
+  text-decoration-thickness: 3px;
+}
 </style>
