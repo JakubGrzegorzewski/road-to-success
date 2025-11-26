@@ -111,7 +111,7 @@ async function generatePDF() {
     return {
       requirements: reqs,
       ideaPart: task.partIdea,
-      content: task.content,
+      content: task.content.replace(/\n/g, ' ').replace(/\t/g, ' ')
     };
   });
 
