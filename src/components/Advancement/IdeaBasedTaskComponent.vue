@@ -10,8 +10,6 @@ import {RequirementDTO} from "@/scripts/Model/Requirement";
 import {doShowIdea} from "@/scripts/whatToShow";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
-import {onMounted} from "vue";
-import {TaskComment} from "@/scripts/Model/TaskComment.js";
 import {Status} from "@/scripts/Model/Status.js";
 import {useI18n} from "vue-i18n";
 
