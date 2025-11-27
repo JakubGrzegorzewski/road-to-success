@@ -49,79 +49,6 @@ function onSelect(option: Option) {
   close();
 }
 
-function onKey(e: KeyboardEvent) {
-  if (props.disabled) return;
-  if (!isOpen.value && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown')) {
-    e.preventDefault();
-    toggle();
-    hoverIndex.value = 0;
-    return;
-  }
-  if (!isOpen.value) return;
-
-  switch (e.key) {
-    case 'Escape':
-      e.preventDefault();
-      close();
-      break;
-    case 'ArrowDown':
-      e.preventDefault();
-      moveHover(1);
-      break;
-    case 'ArrowUp':
-      e.preventDefault();
-      moveHover(-1);
-      break;
-    case 'Home':
-      e.preventDefault();
-      setHover(0);
-      break;
-    case 'End':
-      e.preventDefault();
-      setHover(props.options.length - 1);
-      break;
-    case 'Enter':
-    case ' ':
-      e.preventDefault();
-      if (hoverIndex.value >= 0 && hoverIndex.value < props.options.length) {
-        const opt = props.options[hoverIndex.value];
-        if (!opt.disabled) onSelect(opt);
-      }
-      break;
-  }
-}
-
-function moveHover(delta: number) {
-  if (props.options.length === 0) return;
-  let idx = hoverIndex.value;
-  do {
-    idx = (idx + delta + props.options.length) % props.options.length;
-  } while (props.options[idx].disabled);
-  hoverIndex.value = idx;
-  scrollIntoView(idx);
-}
-
-function setHover(idx: number) {
-  if (idx < 0 || idx >= props.options.length) return;
-  if (props.options[idx].disabled) return;
-  hoverIndex.value = idx;
-  scrollIntoView(idx);
-}
-
-function scrollIntoView(idx: number) {
-  const list = rootEl.value?.querySelector('.dropdown-list');
-  const item = list?.children[idx] as HTMLElement | undefined;
-  if (item && list) {
-    const itemTop = item.offsetTop;
-    const itemBottom = itemTop + item.offsetHeight;
-    if (itemTop < list.scrollTop) {
-      list.scrollTop = itemTop;
-    } else if (itemBottom > list.scrollTop + list.clientHeight) {
-      list.scrollTop = itemBottom - list.clientHeight;
-    }
-  }
-}
-
 function handleClickOutside(e: MouseEvent) {
   if (!rootEl.value) return;
   if (!rootEl.value.contains(e.target as Node)) {
@@ -131,12 +58,10 @@ function handleClickOutside(e: MouseEvent) {
 
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside);
-  document.addEventListener('keydown', onKey);
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', handleClickOutside);
-  document.removeEventListener('keydown', onKey);
 });
 
 watch(() => props.modelValue, () => {
