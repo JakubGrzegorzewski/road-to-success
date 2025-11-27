@@ -325,7 +325,7 @@ onMounted(() => {
 <style>
 .idea-part-highlight {
   text-decoration: underline;
-  text-decoration-color: var(--accent-warning);
+  text-decoration-color: var(--background-color);
   text-decoration-thickness: 3px;
 }
 </style>
