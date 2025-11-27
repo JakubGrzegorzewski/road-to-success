@@ -9,6 +9,11 @@ import {Style} from "@/scripts/Model/Style";
 import {RequirementDTO} from "@/scripts/Model/Requirement";
 import {doShowIdea} from "@/scripts/whatToShow";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
+import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
+import {onMounted} from "vue";
+import {TaskComment} from "@/scripts/Model/TaskComment.js";
+import {Status} from "@/scripts/Model/Status.js";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps<{
   task: TaskDTO
@@ -50,6 +55,15 @@ function getReqIds(): number[] {
 function isRequirementSelected(requirement: RequirementDTO) {
   return getReqIds().find(req => req === requirement.id) !== undefined;
 }
+
+const { t } = useI18n();
+
+const statusOptions = [
+  { value: Status.CREATED, label: t('statusOptions.created') },
+  { value: Status.IN_PROGRESS, label: t('statusOptions.in_progress') },
+  { value: Status.COMPLETED, label: t('statusOptions.completed') },
+  { value: Status.FAILED, label: t('statusOptions.failed') },
+];
 </script>
 
 <template>
@@ -60,6 +74,7 @@ function isRequirementSelected(requirement: RequirementDTO) {
         :show-delete-task-button="true"
         @delete:task="emits('delete:task', $event)"
     >
+      <DropDownSelectionComponent v-model="task.status" @update:modelValue="emits('update:task', props.task)" :options="statusOptions"/>
       <div class="task-content">
         <TextSelectionComponent
             v-if="doShowIdea(rankInProgress.style)"

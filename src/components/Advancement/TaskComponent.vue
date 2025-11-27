@@ -76,7 +76,7 @@ function deleteComment(updatedComment: TaskCommentDTO) {
 
 <template>
 <div class="task">
-  <div class="task-content box-shadow" ref="contentDivRef">
+  <div class="task-content box-shadow" ref="contentDivRef" :class="task.status">
     <slot/>
     <ButtonComponent
         v-if="showDeleteTaskButton && task"
@@ -147,6 +147,8 @@ function deleteComment(updatedComment: TaskCommentDTO) {
   background-size: 600px;
   background-position: left bottom;
   background-position-x: -150px;
+  border-style: solid;
+  border-width: 4px;
 }
 
 .task-delete {
@@ -178,4 +180,26 @@ function deleteComment(updatedComment: TaskCommentDTO) {
   padding: 20px;
   max-width: 400px;
 }
+
+.CREATED{
+  @media (prefers-color-scheme: dark) {
+    border-color: var(--background-color);
+  }
+  @media (prefers-color-scheme: light) {
+    border-color: var(--primary-color);
+  }
+}
+.PENDING{
+  border-color: var(--accent-warning);
+}
+.IN_PROGRESS{
+  border-color: var(--accent-info);
+}
+.COMPLETED{
+  border-color: var(--accent-success);
+}
+.FAILED{
+  border-color: var(--accent-error);
+}
+
 </style>
