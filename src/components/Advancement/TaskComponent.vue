@@ -6,6 +6,9 @@ import {onMounted, Ref, ref} from "vue";
 import {TaskDTO} from "@/scripts/Model/Task";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
+import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
+import {Status} from "@/scripts/Model/Status.js";
+import {useI18n} from "vue-i18n";
 
 const props = withDefaults(defineProps<{
   task : TaskDTO,
@@ -16,6 +19,7 @@ const props = withDefaults(defineProps<{
 });
 
 const emits = defineEmits<{
+  (e: 'update:task', task: TaskDTO): void;
   (e: 'delete:task', task: TaskDTO): void;
 }>();
 
@@ -70,13 +74,43 @@ function deleteComment(updatedComment: TaskCommentDTO) {
   comments.value = comments.value?.filter(comment => comment.id !== updatedComment.id).map(comment => comment);
   TaskComment.deleteObject(updatedComment.id, props.task.id);
 }
+const { t } = useI18n();
 
+const statusOptions = [
+  { value: Status.CREATED, label: t('statusOptions.created') },
+  { value: Status.IN_PROGRESS, label: t('statusOptions.in_progress') },
+  { value: Status.COMPLETED, label: t('statusOptions.completed') },
+  { value: Status.FAILED, label: t('statusOptions.failed') },
+];
 
+const getStatusStyle = (status: Status) => {
+  switch (status) {
+    case Status.CREATED:
+      return 'var(--primary-color)';
+    case Status.PENDING:
+      return 'var(--accent-warning)';
+    case Status.IN_PROGRESS:
+      return 'var(--accent-info)';
+    case Status.COMPLETED:
+      return 'var(--accent-success)';
+    case Status.FAILED:
+      return 'var(--accent-error)';
+    default:
+      return '';
+  }
+};
 </script>
 
 <template>
 <div class="task">
-  <div class="task-content box-shadow" ref="contentDivRef" :class="task.status">
+  <div class="task-content box-shadow" ref="contentDivRef" :style="{'border-color': getStatusStyle(task.status)}">
+    <DropDownSelectionComponent
+        v-model="task.status"
+        @update:modelValue="emits('update:task', props.task)"
+        :options="statusOptions"
+        styles="align-self: flex-end;"
+        :backgroundColor="getStatusStyle(task.status)"
+    />
     <slot/>
     <ButtonComponent
         v-if="showDeleteTaskButton && task"
@@ -180,26 +214,4 @@ function deleteComment(updatedComment: TaskCommentDTO) {
   padding: 20px;
   max-width: 400px;
 }
-
-.CREATED{
-  @media (prefers-color-scheme: dark) {
-    border-color: var(--background-color);
-  }
-  @media (prefers-color-scheme: light) {
-    border-color: var(--primary-color);
-  }
-}
-.PENDING{
-  border-color: var(--accent-warning);
-}
-.IN_PROGRESS{
-  border-color: var(--accent-info);
-}
-.COMPLETED{
-  border-color: var(--accent-success);
-}
-.FAILED{
-  border-color: var(--accent-error);
-}
-
 </style>

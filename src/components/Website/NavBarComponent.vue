@@ -3,6 +3,7 @@ import {onMounted, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cookies from 'js-cookie'
 import {projectSubPage} from "@/scripts/helperFunctions.ts";
+import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 
 const { locale } = useI18n()
 const currentLocale = ref(null)
@@ -20,6 +21,11 @@ onMounted(() => {
   currentLocale.value = savedLocale
   Cookies.set('locale', savedLocale, { expires: 365 })
 })
+
+const langOptions = [
+  { value: 'en', label: 'English' },
+  { value: 'pl', label: 'Polski' }
+]
 </script>
 
 <template>
@@ -27,12 +33,7 @@ onMounted(() => {
     <router-link class="" :to="projectSubPage"><img class="nav-logo" src="../../assets/logo.svg" alt="logo"></router-link>
 
     <div class="selector-style">
-      <div class="text-selection-component">
-        <select @change="changeLocale" v-model="currentLocale">
-          <option value="en">English</option>
-          <option value="pl">Polski</option>
-        </select>
-      </div>
+      <DropDownSelectionComponent v-model="currentLocale" :options="langOptions" @update:modelValue="changeLocale"/>
     </div>
   </nav>
 </template>

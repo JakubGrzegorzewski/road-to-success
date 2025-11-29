@@ -52,6 +52,7 @@ function isDarkMode(): boolean {
         v-if="props.rankInProgress"
         :task="task"
         :user="user"
+        @update:task="emits('update:task', $event)"
         @delete:task="emits('delete:task', $event)"
         :show-delete-task-button="doShowDeleteTaskButton(props.rankInProgress.style)"
     >

@@ -13,6 +13,8 @@ const props = defineProps<{
   options: Option[],
   placeholder?: string,
   disabled?: boolean,
+  styles?: string,
+  backgroundColor?: string,
 }>();
 
 const emits = defineEmits<{
@@ -76,17 +78,16 @@ watch(() => props.modelValue, () => {
 
 <template>
   <label v-if="label" class="dropdown-label">{{ label }}</label>
-  <div ref="rootEl" class="dropdown-root" :class="{ 'is-disabled': disabled }">
+  <div :style="props.styles" ref="rootEl" class="dropdown-root" :class="{ 'is-disabled': disabled }">
     <div
-        class="selector-style text-selection-component dropdown-trigger"
+        class="dropdown-trigger"
         :tabindex="disabled ? -1 : 0"
         @click="toggle"
-        @keydown.enter.prevent="toggle"
-        @keydown.space.prevent="toggle"
+        :style="'background-color:'+props.backgroundColor"
     >
       <span class="dropdown-value" v-if="selectedOption">{{ selectedOption.label }}</span>
       <span class="dropdown-placeholder" v-else>{{ placeholder || 'Select...' }}</span>
-      <span class="dropdown-arrow" :class="{ 'open': isOpen }">▾</span>
+      <span class="dropdown-arrow" :class="{ 'open': isOpen }">➤</span>
     </div>
     <transition name="dropdown-fade">
       <div v-show="isOpen" class="dropdown-popover">
@@ -131,23 +132,27 @@ watch(() => props.modelValue, () => {
   cursor: pointer;
   user-select: none;
   display: flex;
-  align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: var(--background-color, #fff);
-  border: 1px solid var(--background-color, #ccc);
   border-radius: 6px;
   font-size: 14px;
   line-height: 1.4;
   position: relative;
 }
+
 @media (prefers-color-scheme: dark) {
   .dropdown-trigger {
     background: var(--primary-color-light);
-    border-color: var(--primary-color);
     color: var(--background-color);
   }
 }
+@media (prefers-color-scheme: light) {
+  .dropdown-trigger {
+    background: var(--background-color);
+    color: var(--primary-color);
+  }
+}
+
 
 .dropdown-trigger:focus {
   outline: 2px solid var(--primary-color-light);
@@ -171,12 +176,13 @@ watch(() => props.modelValue, () => {
 }
 
 .dropdown-arrow {
+  transform: rotate(90deg);
   transition: transform 0.2s;
   font-size: 12px;
   margin-left: auto;
 }
 .dropdown-arrow.open {
-  transform: rotate(180deg);
+  transform: rotate(270deg);
 }
 
 .dropdown-popover {
