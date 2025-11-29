@@ -73,6 +73,7 @@
   },
   "user": {
     "name": "Imię",
+    "nameRankCombo": "Imię, nazwisko i stopień",
     "email": "Email",
     "role": "Rola",
     "mentor": "Opiekun",

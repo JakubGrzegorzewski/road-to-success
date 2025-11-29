@@ -11,7 +11,7 @@ import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
 import {
   addTaskToDB,
   isDarkMode,
-  loadDatabaseData,
+  loadDatabaseData, projectSubPage,
   rankImage,
   requirementSort
 } from "@/scripts/helperFunctions.js";
@@ -155,6 +155,11 @@ async function generatePDF() {
   }
 }
 
+async function generateExport() {
+  // Placeholder for export functionality
+  console.log("Export functionality is not yet implemented.");
+}
+
 function getIdeaWithSelectedParts(){
   type IdeaPart = {
     index: number;
@@ -228,6 +233,7 @@ onMounted(() => {
             placeholder="Select rank"
             @update:modelValue="reload"
         />
+        <router-link :to="projectSubPage+'add-rank/'"><button class="add-button">+</button></router-link>
         <DropDownSelectionComponent
             v-if="false"
             v-model="editedRankInProgress.style"
@@ -249,6 +255,7 @@ onMounted(() => {
             :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
+        <router-link :to="projectSubPage+'add-person/'"><button class="add-button">+</button></router-link>
       </div>
       <div style="display: flex; gap: 15px">
         <ButtonComponent
@@ -259,7 +266,7 @@ onMounted(() => {
         <ButtonComponent
             :button-text="$t('advancement.export')"
             buttonStyle="primary"
-            @click="generatePDF()"
+            @click="generateExport()"
         />
       </div>
 
@@ -325,6 +332,25 @@ onMounted(() => {
   align-items: center;
   justify-content: left;
   margin-bottom: 20px;
+}
+.add-button{
+  width: 30px;
+  height: 30px;
+  background-color: var(--accent-success);
+  background-image: url('@/assets/images/plus.png');
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  border: none;
+  cursor: pointer;
+  border-radius: 100%;
+  color: white;
+  transition: all 0.2s ease;
+}
+.add-button:hover {
+  transform: scale(1.1);
+}
+.add-button:active {
+  transform: scale(0.9);
 }
 </style>
 

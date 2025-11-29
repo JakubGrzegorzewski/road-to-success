@@ -1,31 +1,5 @@
 let appUser : AppUserDTO[] = [];
 
-appUser.push(
-    {
-        id: 1,
-        fullName: "Ty",
-        email: "",
-        password: "",
-        role: "ADMIN",
-        ranksInProgressIds: [],
-        mentorRanksInProgressIds: [],
-        commentIds: [],
-    }
-)
-
-appUser.push(
-    {
-        id: 2,
-        fullName: "Opiekun",
-        email: "",
-        password: "",
-        role: "ADMIN",
-        ranksInProgressIds: [],
-        mentorRanksInProgressIds: [],
-        commentIds: [],
-    }
-)
-
 export interface AppUserDTO {
     id: number;
     fullName: string;

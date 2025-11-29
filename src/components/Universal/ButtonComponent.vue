@@ -35,7 +35,7 @@ const hintStyle = computed(() => {
 <style scoped>
   .button {
     border: none;
-    border-radius: 10px;
+    border-radius: 6px;
     padding: 8px 16px;
     cursor: pointer;
     font-size: 12px;
