@@ -59,7 +59,8 @@
       "add": "Add Requirements:",
       "remove": "Delete Requirement"
     },
-    "requirements": "Requirements"
+    "requirements": "Requirements",
+    "export" : "Export do pliku zewnętrznego"
   },
   "status": "Status",
   "statusOptions": {

@@ -196,7 +196,6 @@ function getIdeaWithSelectedParts(){
       if (highlightedIdea.find(e => e.indexEnd === i))
         resultString += "</span> ";
       resultString += rank.value.idea[i];
-      console.log(i);
     }
   }
   return resultString;
@@ -251,11 +250,18 @@ onMounted(() => {
             placeholder="Select mentor"
         />
       </div>
-      <ButtonComponent
-          :button-text="$t('advancement.generate')"
-          buttonStyle="primary"
-          @click="generatePDF()"
-      />
+      <div style="display: flex; gap: 15px">
+        <ButtonComponent
+            :button-text="$t('advancement.generate')"
+            buttonStyle="primary"
+            @click="generatePDF()"
+        />
+        <ButtonComponent
+            :button-text="$t('advancement.export')"
+            buttonStyle="primary"
+            @click="generatePDF()"
+        />
+      </div>
 
       <h2>{{ rank.fullName }}</h2>
       <p style="text-align: justify" v-if="rank.idea" v-html="getIdeaWithSelectedParts()"/>

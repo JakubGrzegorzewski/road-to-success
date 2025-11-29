@@ -85,7 +85,7 @@ watch(() => props.modelValue, () => {
         @click="toggle"
         :style="'background-color:'+props.backgroundColor"
     >
-      <span class="dropdown-value" v-if="selectedOption">{{ $t(selectedOption.label) }}</span>
+      <span class="dropdown-value" v-if="selectedOption">{{ selectedOption.label.includes(".") ? $t(selectedOption.label) : selectedOption.label }}</span>
       <span class="dropdown-placeholder" v-else>{{ placeholder || 'Select...' }}</span>
       <span class="dropdown-arrow" :class="{ 'open': isOpen }">➤</span>
     </div>
@@ -108,7 +108,7 @@ watch(() => props.modelValue, () => {
               @click="onSelect(opt)"
           >
             <slot name="option" :option="opt" :active="opt.value === modelValue">
-              {{ $t(opt.label) }}
+              {{ opt.label.includes(".") ? $t(opt.label) : opt.label }}
             </slot>
           </li>
         </ul>
@@ -237,7 +237,7 @@ watch(() => props.modelValue, () => {
 }
 @media (prefers-color-scheme: dark) {
   .dropdown-item.is-hover:not(.is-disabled) {
-    background: var(--secondary-color);
+    background: var(--primary-color-light);
   }
   .dropdown-item.is-active {
     background: var(--secondary-color);

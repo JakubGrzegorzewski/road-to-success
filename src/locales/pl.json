@@ -59,7 +59,8 @@
       "add" : "Dodaj wymaganie:",
       "remove" : "Usuń wymóg"
     },
-    "requirements": "Wymagania"
+    "requirements": "Wymagania",
+    "export" : "Eksportuj do pliku zewnętrznego"
   },
   "status": "Status",
   "statusOptions": {
