@@ -77,10 +77,10 @@ function deleteComment(updatedComment: TaskCommentDTO) {
 const { t } = useI18n();
 
 const statusOptions = [
-  { value: Status.CREATED, label: t('statusOptions.created') },
-  { value: Status.IN_PROGRESS, label: t('statusOptions.in_progress') },
-  { value: Status.COMPLETED, label: t('statusOptions.completed') },
-  { value: Status.FAILED, label: t('statusOptions.failed') },
+  { value: Status.CREATED, label: 'statusOptions.created' },
+  { value: Status.IN_PROGRESS, label: 'statusOptions.in_progress' },
+  { value: Status.COMPLETED, label: 'statusOptions.completed' },
+  { value: Status.FAILED, label: 'statusOptions.failed' },
 ];
 
 const getStatusStyle = (status: Status) => {

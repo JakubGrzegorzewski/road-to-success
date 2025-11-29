@@ -85,7 +85,7 @@ watch(() => props.modelValue, () => {
         @click="toggle"
         :style="'background-color:'+props.backgroundColor"
     >
-      <span class="dropdown-value" v-if="selectedOption">{{ selectedOption.label }}</span>
+      <span class="dropdown-value" v-if="selectedOption">{{ $t(selectedOption.label) }}</span>
       <span class="dropdown-placeholder" v-else>{{ placeholder || 'Select...' }}</span>
       <span class="dropdown-arrow" :class="{ 'open': isOpen }">➤</span>
     </div>
@@ -108,7 +108,7 @@ watch(() => props.modelValue, () => {
               @click="onSelect(opt)"
           >
             <slot name="option" :option="opt" :active="opt.value === modelValue">
-              {{ opt.label }}
+              {{ $t(opt.label) }}
             </slot>
           </li>
         </ul>
