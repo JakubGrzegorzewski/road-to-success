@@ -11,7 +11,7 @@ const idea = ref('')
 
 const iconFile = ref<File | null>(null)
 const documentBackgroundFile = ref<File | null>(null)
-const color = ref('#ffffff')
+const color = ref('#000000')
 
 const startRequirements = ref<string[]>([''])
 const endRequirements = ref<string[]>([''])
