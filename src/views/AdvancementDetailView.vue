@@ -12,7 +12,6 @@ import {
   addTaskToDB,
   isDarkMode,
   loadDatabaseData, projectSubPage,
-  rankImage,
   requirementSort
 } from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
@@ -45,7 +44,7 @@ async function reload() {
 
   try {
     // Load user
-    AppUser.getById(1).then(fetchedUser => {
+    AppUser.getById(editedRankInProgress.value.userId).then(fetchedUser => {
       console.info("User loaded:", fetchedUser);
       user.value = fetchedUser
     })
@@ -122,9 +121,6 @@ async function generatePDF() {
     idea: rank.value?.idea,
     themeColor: "#1E2F5C",
     tasks: exportedTasks,
-    imagePath: "src/main/resources/images/pwd.png",
-    sideImagePath: "src/main/resources/images/side-pwd",
-    backgroundImagePath: "src/main/resources/images/instructor-background.png",
   }
 
   try {
@@ -307,7 +303,7 @@ onMounted(() => {
       />
     </div>
   </div>
-  <img v-if="rank" :src="rankImage(rank)" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
+  <img v-if="rank" :src="'data:image/png;base64,'+rank.iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
 </template>
 
 <style scoped>

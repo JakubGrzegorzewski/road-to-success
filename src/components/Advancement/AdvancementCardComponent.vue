@@ -4,7 +4,7 @@ import {useRouter} from "vue-router";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {isDarkMode, projectSubPage, rankImage} from "@/scripts/helperFunctions.js";
+import {isDarkMode, projectSubPage} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
@@ -30,8 +30,8 @@ function addNewRank() {
   const newRank : RankInProgressDTO = {
     id: Math.floor(Math.random()*1000000000000000),
     rankId: 1,
-    userId : 1,
-    mentorId : 1,
+    userId : 0,
+    mentorId : 0,
     status: Status.CREATED,
     style: Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
     taskIds: []
@@ -48,7 +48,7 @@ function addNewRank() {
       class="box-shadow advancement-card-out"
       @click="router.push(projectSubPage+'advancement/' + rankInProgress.id)">
     <div class="advancement-card-in"
-         :style="{ '--bg-image': `url(${rankImage(rank)})` }"
+         :style="{ '--bg-image': `url(data:image/png;base64,${rank.iconInBase64})` }"
     >
       <h3> {{ $t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>
@@ -105,11 +105,12 @@ function addNewRank() {
   height: 100%;
   background-image: var(--bg-image);
   background-repeat: no-repeat;
-  background-size: 400px;
+  background-size: 150px auto;
   opacity: 0.5;
   z-index: 0;
-  top: 50px;
-  clip: rect(0, 300px, 240px, 0);
+  top: 150px;
+  left: 100px;
+  clip: rect(0, 140px, 140px, 0);
 }
 
 h2, h3, h4{

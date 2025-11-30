@@ -103,5 +103,32 @@
     "userExists": "Użytkownik o tej nazwie już istnieje",
     "invalidEmail": "Nieprawidłowy adres email",
     "emailAlreadyExists": "Email już istnieje"
-  }
+  },
+  "rank" : {
+    "rank": "Stopień",
+    "add": "Dodaj stopień",
+    "edit": "Edytuj stopień",
+    "delete": "Usuń stopień",
+    "noRanks": "Brak stopni do wyświetlenia",
+    "name": "Nazwa stopnia",
+    "idea": "Idea stopnia",
+    "requirements": "Wymagania stopnia",
+    "startRequirements": "Wymagania początkowe",
+    "endRequirements": "Wymagania końcowe",
+    "fullName": "Pełna nazwa stopnia",
+    "shortName": "Skrócona nazwa stopnia",
+    "icon": "Ikona stopnia",
+    "color": "Kolorystyka stopnia",
+    "documentBackground": "Tło dokumentu stopnia"
+  },
+  "requirement": {
+    "requirement": "Wymaganie",
+    "add": "Dodaj wymaganie",
+    "edit": "Edytuj wymaganie",
+    "delete": "Usuń wymaganie",
+    "noRequirements": "Brak wymagań do wyświetlenia",
+    "description": "Opis wymagania",
+    "number": "Numer wymagania"
+  },
+  "content" : "Treść"
 }

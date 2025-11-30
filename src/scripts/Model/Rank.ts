@@ -9,6 +9,9 @@ export interface RankDTO {
     endRequirements: string[];
     requirementIds: number[];
     ranksInProgressIds: number[];
+    colorHex: string;
+    iconInBase64 : string;
+    backgroundInBase64: string;
 }
 
 export class Rank {

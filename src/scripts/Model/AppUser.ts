@@ -1,5 +1,15 @@
-let appUser : AppUserDTO[] = [];
-
+let appUser : AppUserDTO[] = [
+    {
+        id: 0,
+        fullName: "-",
+        email: "",
+        password: "",
+        role: "none",
+        ranksInProgressIds: [],
+        mentorRanksInProgressIds: [],
+        commentIds: []
+    }
+];
 export interface AppUserDTO {
     id: number;
     fullName: string;
