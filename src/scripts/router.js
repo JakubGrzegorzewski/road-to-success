@@ -19,9 +19,9 @@ const routes = [
         component: () => import('@/views/AddPersonView.vue')
     },
     {
-        path: projectSubPage+'add-rank',
-        name: 'AddRank',
-        component: () => import('@/views/AddRankView.vue'),
+        path: projectSubPage+'ranks',
+        name: 'RankManagement',
+        component: () => import('@/views/RankManagementView.vue'),
     },
     {
     }

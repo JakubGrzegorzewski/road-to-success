@@ -22,6 +22,10 @@ const props = defineProps<{
   id: number,
 }>();
 
+const emits = defineEmits<{
+  (e: 'showPopup', title:string, content: string): void;
+}>();
+
 const editedRankInProgress : Ref<RankInProgressDTO> = ref(null as unknown as RankInProgressDTO);
 
 const tasks : Ref<TaskDTO[]> = ref([]);
@@ -229,7 +233,7 @@ onMounted(() => {
             placeholder="Select rank"
             @update:modelValue="reload"
         />
-        <router-link :to="projectSubPage+'add-rank/'"><button class="add-button">+</button></router-link>
+        <router-link :to="projectSubPage+'ranks/'"><button class="add-button">✎</button></router-link>
         <DropDownSelectionComponent
             v-if="false"
             v-model="editedRankInProgress.style"
@@ -251,7 +255,7 @@ onMounted(() => {
             :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
-        <router-link :to="projectSubPage+'add-person/'"><button class="add-button">+</button></router-link>
+        <router-link :to="projectSubPage+'add-person/'"><button class="add-button">✎</button></router-link>
       </div>
       <div style="display: flex; gap: 15px">
         <ButtonComponent
@@ -332,7 +336,7 @@ onMounted(() => {
 .add-button{
   width: 30px;
   height: 30px;
-  background-color: var(--accent-success);
+  background-color: var(--accent-info);
   background-image: url('@/assets/images/plus.png');
   mask-size: contain;
   -webkit-mask-size: contain;

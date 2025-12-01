@@ -106,6 +106,8 @@
   },
   "rank" : {
     "rank": "Stopień",
+    "basedOn": "Oprzyj stopień na:",
+    "existingRanks": "Własne stopnie",
     "add": "Dodaj stopień",
     "edit": "Edytuj stopień",
     "delete": "Usuń stopień",
@@ -130,5 +132,14 @@
     "description": "Opis wymagania",
     "number": "Numer wymagania"
   },
-  "content" : "Treść"
+  "content" : "Treść",
+  "info": {
+    "fileSizeLimit" : "Maksymalny rozmiar pliku to: 20 MB, w formacie PNG.",
+    "change": "To nadpisze wszystkie istniejące dane.",
+    "close": "Zamknij",
+    "confirm": "Potwierdź",
+    "added": "Dodano pomyślnie",
+    "edited": "Edytowano pomyślnie",
+    "deleted": "Usunięto pomyślnie"
+  }
 }

@@ -4,6 +4,10 @@ import {loadDatabaseData} from "@/scripts/helperFunctions.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 
+const emits = defineEmits<{
+  (e: 'showPopup', title:string, content: string): void;
+}>();
+
 const ranksInProgress : Ref<RankInProgressDTO[]> = ref([]);
 
 onMounted(() => {

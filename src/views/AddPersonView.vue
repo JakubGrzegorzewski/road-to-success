@@ -3,6 +3,10 @@ import { ref } from 'vue'
 import { AppUser, AppUserDTO } from '../scripts/Model/AppUser'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
+const emits = defineEmits<{
+  (e: 'showPopup', title:string, content: string): void;
+}>();
+
 const fullName = ref('')
 const email = ref('')
 const password = ref('')

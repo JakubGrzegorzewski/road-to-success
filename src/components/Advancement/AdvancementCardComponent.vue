@@ -108,8 +108,8 @@ function addNewRank() {
   background-size: 150px auto;
   opacity: 0.5;
   z-index: 0;
-  top: 150px;
-  left: 100px;
+  top: 110px;
+  left: 60px;
   clip: rect(0, 140px, 140px, 0);
 }
 

@@ -1,69 +1,26 @@
 .text-input-component {
     position: relative;
     display: flex;
-    padding: 10px 32px 10px 12px;
-    border-radius: 8px;
-    background: white;
-    color: var(--primary-color);
     box-shadow: 0 4px 14px var(--shadow-light);
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    @media (prefers-color-scheme: dark) {
+        background: var(--primary-color);
+        color: var(--background-color);
+    }
+    @media (prefers-color-scheme: light) {
+        background: var(--background-color);
+        color: var(--primary-color);
+    }
 }
-
-.text-input-component input {
-    appearance: none;
-    -webkit-appearance: none;
-    border: none;
-    width: 100%;
-    height: 100%;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--primary-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: transparent;
-}
-
-.text-input-component input::placeholder {
-    color: rgba(var(--primary-color), 0.6);
-}
-
-.text-input-component::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 12px;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid var(--primary-color);
-    pointer-events: none;
-    transition: all 0.3s ease;
-}
-
-.text-input-component:hover {
-    box-shadow: 0 2px 8px var(--shadow-light);
-}
-
-.text-input-component:hover::after {
-    border-top-color: var(--secondary-color);
-}
-
-.text-input-component input:focus {
-    outline: none;
-    cursor: text;
+.text-input-component:focus {
+    box-shadow: 0 6px 20px var(--shadow-medium);
     border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);
-}
-
-.text-input-component:has(input:focus) {
     outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.1);}
-
-.text-input-component:has(input:focus)::after {
-    border-top-color: var(--secondary-color);
 }
+
 
 .btn {
     font-family: 'Museo', sans-serif;
@@ -130,7 +87,7 @@
     font-family: "Museo", sans-serif;
     font-size: 14px;
     @media (prefers-color-scheme: dark) {
-        background-color: var(--primary-color-light);
+        background-color: var(--primary-color);
         color: var(--background-color);
     }
     @media (prefers-color-scheme: light) {
