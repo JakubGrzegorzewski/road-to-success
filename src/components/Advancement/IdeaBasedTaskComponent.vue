@@ -33,6 +33,10 @@ function onTextHighlighted (reset: boolean, text: string) {
   emits('update:task', props.task)
 }
 
+function getReqIds(): number[] {
+  return Array.isArray(props.task.requirementsIds) ? props.task.requirementsIds : [];
+}
+
 function toggleRequirement(requirement: RequirementDTO) {
   console.log("Toggle requirement", props.task.requirementsIds, requirement.id,);
   if (!Array.isArray(props.task.requirementsIds)) return;
@@ -43,12 +47,16 @@ function toggleRequirement(requirement: RequirementDTO) {
   emits('update:task', props.task)
 }
 
-function getReqIds(): number[] {
-  return Array.isArray(props.task.requirementsIds) ? props.task.requirementsIds : [];
-}
-
 function isRequirementSelected(requirement: RequirementDTO) {
   return getReqIds().find(req => req === requirement.id) !== undefined;
+}
+
+function hasMoreThenOneRequirementWithSameNumber(number : string) {
+  return props.requirements.filter(req => req.number === number).length > 1;
+}
+
+function getRequirementSubIndex(requirement : RequirementDTO) {
+  return props.requirements.filter(req => req.number === requirement.number).indexOf(requirement) + 1;
 }
 </script>
 
@@ -75,7 +83,7 @@ function isRequirementSelected(requirement: RequirementDTO) {
           <ButtonComponent
               v-for="requirement in requirements"
               :key="requirement.id"
-              :button-text="requirement.number"
+              :button-text="hasMoreThenOneRequirementWithSameNumber(requirement.number) ? getRequirementSubIndex(requirement) + '. ' + requirement.number: requirement.number"
               :buttonStyle="isRequirementSelected(requirement) ? 'primary' : 'default'"
               :button-hint="requirement.content"
               @click="toggleRequirement(requirement)"
