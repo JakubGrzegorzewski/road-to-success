@@ -93,10 +93,10 @@ function addNewRank() {
   height: 250px;
   font-family: 'Museo', sans-serif;
   align-items: center;
-  justify-content: center;
   display: flex;
   flex-direction: column;
   --bg-image: none;
+  transform: translateY(40px);
 }
 .advancement-card-in:before {
   content: "";
@@ -108,7 +108,7 @@ function addNewRank() {
   background-size: 150px auto;
   opacity: 0.5;
   z-index: 0;
-  top: 110px;
+  top: 70px;
   left: 60px;
   clip: rect(0, 140px, 140px, 0);
 }
