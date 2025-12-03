@@ -9,7 +9,7 @@ import {Task, TaskDTO} from "@/scripts/Model/Task";
 import {Rank, RankDTO} from "@/scripts/Model/Rank";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
 import {
-  addTaskToDB,
+  addTaskToDB, generateExport, generatePDF,
   isDarkMode,
   loadDatabaseData, projectSubPage,
   requirementSort
@@ -104,60 +104,6 @@ function updateTask(updatedTask: TaskDTO) {
 function deleteTask(task: TaskDTO) {
   tasks.value = tasks.value.filter(t => t.id !== task.id);
   Task.deleteObject(task.id, editedRankInProgress.value.id);
-}
-
-async function generatePDF() {
-  const exportedTasks: object[] = tasks.value.map((task: TaskDTO) => {
-    const reqs = requirements.value
-        .filter((e: RequirementDTO) => Array.isArray(task.requirementsIds) && task.requirementsIds.indexOf(e.id) !== -1)
-        .map((e: RequirementDTO) => e.number + ". " + e.content);
-    return {
-      requirements: reqs,
-      ideaPart: task.partIdea,
-      content: task.content.replace(/\n/g, ' ').replace(/\t/g, ' ')
-    };
-  });
-
-  const exportedDocumentData : object = {
-    advancementName: rank.value?.fullName,
-    menteeName: user.value?.fullName,
-    mentorName: user.value?.fullName,
-    idea: rank.value?.idea,
-    themeColor: "#1E2F5C",
-    tasks: exportedTasks,
-  }
-
-  try {
-    const response = await fetch('/api/generate-pdf', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(exportedDocumentData),
-    });
-
-    if (!response.ok) {
-      console.error("Failed to generate PDF:", response.statusText);
-      return;
-    }
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${rank.value?.fullName || 'advancement'}.pdf`);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode?.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch (err) {
-    console.error("Error generating PDF:", err);
-  }
-}
-
-async function generateExport() {
-  // Placeholder for export functionality
-  console.log("Export functionality is not yet implemented.");
 }
 
 function getIdeaWithSelectedParts(){
@@ -261,7 +207,7 @@ onMounted(() => {
         <ButtonComponent
             :button-text="$t('advancement.generate')"
             buttonStyle="primary"
-            @click="generatePDF()"
+            @click="generatePDF(editedRankInProgress)"
         />
         <ButtonComponent
             :button-text="$t('advancement.export')"
