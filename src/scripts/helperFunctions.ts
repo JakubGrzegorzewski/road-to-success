@@ -1,10 +1,10 @@
 import {Task, TaskDTO} from "@/scripts/Model/Task.js";
 import {Status} from "@/scripts/Model/Status.js";
-import {RankDTO} from "@/scripts/Model/Rank.js";
+import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
-import {RequirementDTO} from "@/scripts/Model/Requirement.js";
+import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 
 export const projectSubPage : string = "/road-to-success/"
 
@@ -54,6 +54,81 @@ export function rankImage(rank : RankDTO) : string{
     if (rank.shortName === 'ho' || rank.shortName === 'hr') return new URL(`../assets/images/${rank.shortName}-${isDarkMode() ? 'light' : 'dark'}.png`, import.meta.url).href;
 
     return new URL(`../assets/images/${rank.shortName}.png`, import.meta.url).href;
+}
+
+export async function generatePDF(RankInProgressData: RankInProgressDTO){
+    try {
+        const [rank, user, mentor] = await Promise.all([
+            Rank.getById(RankInProgressData.rankId),
+            AppUser.getById(RankInProgressData.userId),
+            AppUser.getById(RankInProgressData.mentorId),
+        ]);
+
+        if (!rank || !user || !mentor) {
+            console.error("Missing data for PDF generation");
+            return;
+        }
+
+        const requirementArray: RequirementDTO[] = (rank.requirementIds || []).length > 0
+            ? (await Promise.all((rank.requirementIds || []).map(id => Requirement.getById(id)))).filter(Boolean) as RequirementDTO[]
+            : [];
+
+        const taskArray: TaskDTO[] = (RankInProgressData.taskIds || []).length > 0
+            ? (await Promise.all((RankInProgressData.taskIds || []).map(id => Task.getById(id)))).filter(Boolean) as TaskDTO[]
+            : [];
+
+
+
+        const exportedTasks = await Promise.all(taskArray.map(async (task: TaskDTO) => {
+            return {
+                content: (task.content || '').replace(/\r?\n|\r/g, ' ').replace(/\s+/g, ' ').trim(),
+                ideaPart: (task.partIdea || '').replace(/\r?\n|\r/g, ' ').replace(/\s+/g, ' ').trim(),
+                requirements: task.requirementsIds.map( (rid) => requirementArray.find(r => r.id === rid)),
+            };
+        }));
+
+        const exportedDocumentData : object = {
+            advancementName: rank.fullName,
+            menteeName: user.fullName,
+            mentorName: mentor.fullName,
+            idea: rank.idea,
+            themeColor: rank.colorHex,
+            tasks: exportedTasks,
+            imageBase64: rank.iconInBase64,
+            backgroundImageBase64 : rank.backgroundInBase64,
+            requirements: requirementArray.map( (req) => {req.number; req.content; }),
+        };
+
+        const response = await fetch('/api/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(exportedDocumentData),
+        });
+
+        if (!response.ok) {
+            console.error("Failed to generate PDF:", response.statusText);
+            return;
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${RankInProgressData.rankId || 'advancement'}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode?.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error("Error generating PDF:", err);
+    }
+}
+
+export async function generateExport() {
+    // Placeholder for export functionality
+    console.log("Export functionality is not yet implemented.");
 }
 
 export function isDarkMode(): boolean {
