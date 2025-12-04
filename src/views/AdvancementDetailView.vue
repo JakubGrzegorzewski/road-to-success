@@ -210,6 +210,7 @@ onMounted(() => {
             @click="generatePDF(editedRankInProgress)"
         />
         <ButtonComponent
+            v-if="false"
             :button-text="$t('advancement.export')"
             buttonStyle="primary"
             @click="generateExport()"
