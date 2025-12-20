@@ -18,7 +18,7 @@ export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requireme
         requirementsIds: requirements,
         content: "",
         status: Status.CREATED,
-        partIdea: rank.idea,
+        partIdea: rank.idea.split(" "),
         commentIds: [],
     };
     return Task.add(task, rankInProgressId);
@@ -82,7 +82,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
         const exportedTasks = await Promise.all(taskArray.map(async (task: TaskDTO) => {
             return {
                 content: (task.content || '').replace(/\r?\n|\r/g, ' ').replace(/\s+/g, ' ').trim(),
-                ideaPart: (task.partIdea || '').replace(/\r?\n|\r/g, ' ').replace(/\s+/g, ' ').trim(),
+                ideaPart: (task.partIdea || []).map(part => part.replace(/\r?\n|\r/g, ' ').replace(/\s+/g, ' ').trim()).join(' '),
                 requirements: task.requirementsIds.map( (rid) => requirementArray.find(r => r.id === rid)),
             };
         }));
