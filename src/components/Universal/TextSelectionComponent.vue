@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import {computed, ref, nextTick, onUnmounted, onMounted} from 'vue'
+import {ref, nextTick, onUnmounted, onMounted} from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
-const props = defineProps<{ text: string; originalText: string }>();
+const props = defineProps<{ text: string[]; originalText: string[] }>();
 
 const emits = defineEmits<{
-  (e: 'text-highlighted', payload: { text: string; reset: boolean }): void;
+  (e: 'text-highlighted', payload: { text: string[]; reset: boolean }): void;
 }>();
 
-const words = computed<string[]>(() => props.text.split(' '));
 const showAddSelection = ref<boolean>(false);
 const showClearSelection = ref<boolean>(false);
-const highlightedWords = ref<HTMLSpanElement[]>([]);
 const textContainer = ref<HTMLElement | null>(null);
 
 async function clearHighlight() {
-  highlightedWords.value.forEach(span => span.classList.remove('highlighted'))
-  highlightedWords.value = []
+  if (textContainer.value) {
+    const highlightedEls = Array.from(textContainer.value.getElementsByClassName('highlighted'))
+    highlightedEls.forEach((el) => el.classList.remove('highlighted'))
+  }
+
   showAddSelection.value = false
   window.getSelection()?.removeAllRanges()
   document.removeEventListener('click', handleOutsideClick)
@@ -27,7 +28,8 @@ async function clearHighlight() {
 async function handleOutsideClick(event: MouseEvent) {
   await new Promise(resolve => setTimeout(resolve, 100))
   if (!(event.target as HTMLElement).closest('.snipped-text, .snipped-buttons')) {
-    await clearHighlight()
+    showAddSelection.value = false
+    document.removeEventListener('click', handleOutsideClick)
   }
 }
 
@@ -36,7 +38,9 @@ async function handleTextSelection() {
   const selection = window.getSelection()
 
   if (!selection || !selection.rangeCount || selection.isCollapsed || !selection.toString().trim()) {
-    await clearHighlight()
+    showAddSelection.value = false
+    selection?.removeAllRanges()
+    document.removeEventListener('click', handleOutsideClick)
     return
   }
 
@@ -44,28 +48,40 @@ async function handleTextSelection() {
   const container = textContainer.value;
   if (!container || !container.contains(range.commonAncestorContainer)) return;
 
-  // clear previous highlights to avoid duplicates
-  highlightedWords.value.forEach(span => span.classList.remove('highlighted'));
-  highlightedWords.value = [];
-
   const spans = container.querySelectorAll<HTMLSpanElement>('.snipped-word');
   spans.forEach((span) => {
     if (selection.containsNode(span, true)) {
-      highlightedWords.value.push(span);
-      span.classList.add('highlighted');
+      if (!span.classList.contains('highlighted')) {
+        span.classList.add('highlighted');
+      }
     }
   });
 
-  if (highlightedWords.value.length > 0) {
+  if (container.querySelectorAll<HTMLSpanElement>('.highlighted').length > 0) {
     showAddSelection.value = true;
-    showClearSelection.value = true;
+    showClearSelection.value = props.text !== props.originalText;
     selection.removeAllRanges();
     document.addEventListener('click', handleOutsideClick);
   }
 }
 
 const confirmSelection = () => {
-  const selectedText = highlightedWords.value.map(span => span.textContent?.trim()).join(' ')
+  if (!textContainer.value) return;
+  let selectedText: string[] = [];
+  let currentSpan : string = "";
+  const spans = textContainer.value.querySelectorAll<HTMLSpanElement>('.snipped-word');
+  spans.forEach((span) => {
+    if (span.classList.contains('highlighted')) {
+      currentSpan = currentSpan + " " + span.innerText.trim();
+      console.log(currentSpan);
+    }else{
+      if(currentSpan.length > 0){
+        selectedText.push(currentSpan);
+      }
+      currentSpan = "";
+    }
+  });
+  console.log(selectedText);
   emits('text-highlighted', { text: selectedText, reset: false })
   clearHighlight()
 }
@@ -87,8 +103,8 @@ onUnmounted(() => {
 <template>
   <div ref="textContainer" class="snipped">
     <div class="snipped-text" @mouseup="handleTextSelection" @touchend="handleTextSelection">
-      <span v-for="(word, index) in words" :key="`${word}-${index}`" class="snipped-word">
-        {{ word }}{{ index < words.length - 1 ? ' ' : '' }}
+      <span v-for="(word, index) in props.text" :key="`${word}-${index}`" class="snipped-word">
+        {{ word }}{{ index < props.text.length - 1 ? ' ' : '' }}
       </span>
     </div>
 

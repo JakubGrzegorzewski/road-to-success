@@ -9,7 +9,7 @@ export interface TaskDTO {
     requirementsIds: number[];
     content: string;
     status: Status;
-    partIdea: string;
+    partIdea: string[];
     commentIds: number[];
 }
 

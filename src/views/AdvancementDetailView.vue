@@ -106,50 +106,66 @@ function deleteTask(task: TaskDTO) {
   Task.deleteObject(task.id, editedRankInProgress.value.id);
 }
 
-function getIdeaWithSelectedParts(){
-  type IdeaPart = {
-    index: number;
-    indexEnd: number;
-  }
+function getIdeaWithSelectedParts() {
+  type IdeaPart = { index: number; indexEnd: number };
 
-  const createIdeaParts = ( index : number, indexEnd : number ) : IdeaPart => {
-    return { index, indexEnd };
-  }
+  const ideaText = rank.value?.idea ?? "";
+  if (!ideaText) return "";
 
-  let ideaParts : IdeaPart[] = [];
-  for (const task of tasks.value)
-    if (rank.value && task.partIdea !== "" && rank.value.idea !== task.partIdea) {
-      const index = rank.value.idea.indexOf(task.partIdea)
-      ideaParts.push(createIdeaParts(index, index+task.partIdea.length))
+  const rawParts: IdeaPart[] = [];
+
+  for (const task of tasks.value) {
+    const parts = Array.isArray((task as any).partIdea) ? ((task as any).partIdea as string[]) : [];
+    const cleaned = parts.map(p => (p ?? "").trim()).filter(p => p.length > 0);
+    if (cleaned.length === 0) continue;
+
+    // Highlight each selected fragment separately (also works when there is a gap between fragments)
+    for (const fragment of cleaned) {
+      if (!fragment) continue;
+      if (fragment === ideaText) continue;
+
+      let fromIndex = 0;
+      while (true) {
+        const idx = ideaText.indexOf(fragment, fromIndex);
+        if (idx < 0) break;
+
+        rawParts.push({ index: idx, indexEnd: idx + fragment.length });
+        fromIndex = idx + fragment.length;
+      }
     }
+  }
 
+  if (rawParts.length === 0) return ideaText;
 
-  ideaParts.sort((a, b) => a.index - b.index)
+  rawParts.sort((a, b) => a.index - b.index);
 
-  let highlightedIdea : IdeaPart[] = [];
-  for (let currentPart of ideaParts) {
-    const part = highlightedIdea.find(p => p !== currentPart && !(currentPart.index >= p.indexEnd || currentPart.indexEnd <= p.index))
-    if (part) {
-      part.index = Math.min(part.index, currentPart.index)
-      part.indexEnd = Math.max(part.indexEnd, currentPart.indexEnd)
+  // Merge overlaps / touching ranges
+  const merged: IdeaPart[] = [];
+  for (const part of rawParts) {
+    const last = merged[merged.length - 1];
+    if (last && part.index <= last.indexEnd) {
+      last.indexEnd = Math.max(last.indexEnd, part.indexEnd);
     } else {
-      highlightedIdea.push(currentPart)
+      merged.push({ ...part });
     }
   }
 
-  highlightedIdea.sort((a, b) => a.index - b.index)
+  // Build HTML using range pointers (no per\-char .some() scans)
+  let result = "";
+  let rangeIndex = 0;
 
-  let resultString = ""
-  if (rank.value) {
-    for (let i = 0; i <= rank.value.idea.length-1; i++) {
-      if (highlightedIdea.find(e => e.index === i))
-        resultString += " <span class='idea-part-highlight'> ";
-      if (highlightedIdea.find(e => e.indexEnd === i))
-        resultString += "</span> ";
-      resultString += rank.value.idea[i];
+  for (let i = 0; i < ideaText.length; i++) {
+    const range = merged[rangeIndex];
+
+    if (range && i === range.index) result += "<span class='idea-part-highlight'>";
+    result += ideaText[i];
+    if (range && i + 1 === range.indexEnd) {
+      result += "</span>";
+      rangeIndex++;
     }
   }
-  return resultString;
+
+  return result;
 }
 
 onMounted(() => {

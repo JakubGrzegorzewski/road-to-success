@@ -23,11 +23,11 @@ const emits = defineEmits<{
   (e: 'update:task', task: TaskDTO): void;
 }>();
 
-function onTextHighlighted (reset: boolean, text: string) {
+function onTextHighlighted (reset: boolean, text: string[]) {
   if (props.rank === undefined)
     return
   if (reset)
-    props.task.partIdea = props.rank.idea;
+    props.task.partIdea = props.rank.idea.split(' ');
   else
     props.task.partIdea = text;
   emits('update:task', props.task)
@@ -72,7 +72,7 @@ function getRequirementSubIndex(requirement : RequirementDTO) {
         <TextSelectionComponent
             v-if="doShowIdea(rankInProgress.style)"
             :text="props.task.partIdea"
-            :original-text="rank?.idea"
+            :original-text="rank?.idea.split(' ')"
             @text-highlighted="data => onTextHighlighted(data.reset, data.text)"
         />
         <textarea class="multiline-text-input" v-model="props.task.content" @change="emits('update:task', props.task)"/>
