@@ -115,6 +115,7 @@ function getIdeaWithSelectedParts() {
   const rawParts: IdeaPart[] = [];
 
   for (const task of tasks.value) {
+    if (task.partIdea.length === rank.value?.idea.split(" ").length) continue;
     const parts = Array.isArray((task as any).partIdea) ? ((task as any).partIdea as string[]) : [];
     const cleaned = parts.map(p => (p ?? "").trim()).filter(p => p.length > 0);
     if (cleaned.length === 0) continue;

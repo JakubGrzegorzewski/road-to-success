@@ -22,7 +22,7 @@ async function clearHighlight() {
   window.getSelection()?.removeAllRanges()
   document.removeEventListener('click', handleOutsideClick)
   await nextTick()
-  showClearSelection.value = props.text !== props.originalText
+  showClearSelection.value = props.text.length !== props.originalText.length;
 }
 
 async function handleOutsideClick(event: MouseEvent) {
@@ -59,7 +59,7 @@ async function handleTextSelection() {
 
   if (container.querySelectorAll<HTMLSpanElement>('.highlighted').length > 0) {
     showAddSelection.value = true;
-    showClearSelection.value = props.text !== props.originalText;
+    showClearSelection.value = props.text.length !== props.originalText.length;
     selection.removeAllRanges();
     document.addEventListener('click', handleOutsideClick);
   }
@@ -92,7 +92,7 @@ const resetSelection = () => {
 }
 
 onMounted(() => {
-  showClearSelection.value = props.text !== props.originalText;
+  showClearSelection.value = props.text.length !== props.originalText.length;
 })
 
 onUnmounted(() => {
