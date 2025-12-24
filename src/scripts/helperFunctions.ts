@@ -87,6 +87,8 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             };
         }));
 
+
+
         const exportedDocumentData : object = {
             advancementName: rank.fullName,
             menteeName: user.fullName,
@@ -96,7 +98,10 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             tasks: exportedTasks,
             imageBase64: rank.iconInBase64,
             backgroundImageBase64 : rank.backgroundInBase64,
-            requirements: requirementArray.map( (req) => {req.number; req.content; }),
+            requirements: requirementArray.map( (req) => {
+                    taskArray.some((task: TaskDTO) => task.requirementsIds.includes(req.id));req.number; req.content;
+                }
+            ),
         };
 
         const response = await fetch('/api/generate-pdf', {
