@@ -9,6 +9,7 @@ import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {useI18n} from "vue-i18n";
+import PopupComponent from "@/components/Universal/PopupComponent.vue";
 
 const props = withDefaults(defineProps<{
   task : TaskDTO,
@@ -22,6 +23,9 @@ const emits = defineEmits<{
   (e: 'update:task', task: TaskDTO): void;
   (e: 'delete:task', task: TaskDTO): void;
 }>();
+
+const taskIdToDelete = ref<number | null>(null);
+const commentIdToDelete = ref<number | null>(null);
 
 const comments : Ref<TaskCommentDTO[] | []> = ref([]);
 
@@ -70,9 +74,9 @@ function addComment(newComment: TaskCommentDTO) {
   }
 }
 
-function deleteComment(updatedComment: TaskCommentDTO) {
-  comments.value = comments.value?.filter(comment => comment.id !== updatedComment.id).map(comment => comment);
-  TaskComment.deleteObject(updatedComment.id, props.task.id);
+function deleteComment(commentId: number) {
+  comments.value = comments.value?.filter(comment => comment.id !== commentId);
+  TaskComment.deleteObject(commentId, props.task.id);
 }
 const { t } = useI18n();
 
@@ -117,8 +121,16 @@ const getStatusStyle = (status: Status) => {
         class="task-delete"
         button-style="error"
         :button-text="$t('advancement.task.delete')"
-        @click="emits('delete:task', task)"
+        @click="taskIdToDelete = task.id"
     />
+    <PopupComponent
+        v-if="taskIdToDelete !== null"
+        :title="$t('popups.delete.title')"
+        :message="$t('popups.delete.message')"
+        :option-one="{ text: $t('edit.delete'), action: () => { emits('delete:task', task); taskIdToDelete = null } }"
+        :option-two="{ text: $t('edit.cancel'), action: () => { taskIdToDelete = null } }"
+    />
+
   </div>
   <div class="comments box-shadow" v-if="comments">
     <CommentComponent
@@ -127,7 +139,14 @@ const getStatusStyle = (status: Status) => {
         :taskId="props.task.id"
         :user="user"
         @comment:update="updateComment"
-        @comment:delete="deleteComment"
+        @comment:delete="commentIdToDelete = currentComment.id"
+    />
+    <PopupComponent
+        v-if="commentIdToDelete !== null"
+        :title="$t('popups.delete.title')"
+        :message="$t('popups.delete.message')"
+        :option-one="{ text: $t('edit.delete'), action: () => { deleteComment(commentIdToDelete); commentIdToDelete = null } }"
+        :option-two="{ text: $t('edit.cancel'), action: () => { commentIdToDelete = null } }"
     />
 
     <EditCommentComponent

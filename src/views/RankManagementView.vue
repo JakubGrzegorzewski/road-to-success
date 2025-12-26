@@ -5,6 +5,7 @@ import {Requirement, RequirementDTO} from '../scripts/Model/Requirement'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import {useI18n} from "vue-i18n";
+import PopupComponent from "@/components/Universal/PopupComponent.vue";
 
 const { t } = useI18n();
 
@@ -37,6 +38,10 @@ onMounted(() => {
   resetForm()
 })
 
+const message : Ref<string> = ref(null)
+const action : () => void = () => {};
+const id : Ref<number | null> = ref(null);
+
 function resetForm() {
   fullName.value = ''
   shortName.value = ''
@@ -61,10 +66,10 @@ const removeEndReq = (i: number) => endRequirements.value.splice(i, 1)
 const addRequirement = () => requirements.value.push({ number: '', content: '' })
 const removeRequirement = (i: number) => requirements.value.splice(i, 1)
 
-function deleteRank(id: number) {
-  Rank.deleteObject(id);
+function deleteRank() {
+  console.log(id.value)
+  Rank.deleteObject(id.value);
   allLocalRanks.value = JSON.parse(window.localStorage.getItem('Ranks') || '[]') as RankDTO[];
-  emits("showPopup",t('rank.rank'), t('info.deleted'));
 }
 
 function editRank(id: number) {
@@ -145,17 +150,14 @@ async function onSubmit() {
     }
     if (editedRank.value.id < 10) {
       await Rank.add(rank)
-      emits("showPopup",t('rank.rank'), t('info.added'));
     }
     else {
       rank.id = editedRank.value.id
       await Rank.update(rank)
-      emits("showPopup",t('rank.rank'), t('info.edited'));
     }
     resetForm()
   }else {
     await Rank.add(rank)
-    emits("showPopup",t('rank.rank'), t('info.added'));
     resetForm()
   }
 }
@@ -310,10 +312,17 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
           <h3>{{ rank.fullName }} ({{ rank.shortName }})</h3>
           <div style="display:flex; gap:8px; width: 100%">
             <button-component buttonStyle="info" @click="editRank(rank.id)" :button-text="$t('rank.edit')" />
-            <button-component buttonStyle="error" @click="deleteRank(rank.id)" :button-text="$t('rank.delete')" />
+            <button-component buttonStyle="error" @click="() => {action = deleteRank; message = t('info.deleted'); id = rank.id }" :button-text="$t('rank.delete')" />
           </div>
         </div>
     </div>
+    <PopupComponent
+        v-if="message !== null"
+        :title="$t('popups.delete.title')"
+        :message="$t('popups.delete.message')"
+        :option-one="{ text: $t('edit.delete'), action: () => { action() ; message = null } }"
+        :option-two="{ text: $t('edit.cancel'), action: () => { message = null } }"
+    />
   </div>
 
 

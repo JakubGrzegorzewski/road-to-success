@@ -6,6 +6,8 @@
     "orders": "Rozkazy"
   },
   "edit": {
+    "yes": "Tak",
+    "no": "Nie",
     "edit": "Edytuj",
     "save": "Zapisz",
     "cancel": "Anuluj",
@@ -141,5 +143,17 @@
     "added": "Dodano pomyślnie",
     "edited": "Edytowano pomyślnie",
     "deleted": "Usunięto pomyślnie"
+  },
+  "popups": {
+    "delete" : {
+      "title": "Potwierdź usunięcie",
+      "message": "Czy na pewno chcesz usunąć ten element? Tej akcji nie można cofnąć."
+    },
+    "changeRank": {
+      "title": "Zmień stopień",
+      "message": "Czy chcesz zmienić stopień tej próby? To nadpisze wszystkie istniejące dane związane z bieżącym stopniem."
+    }
+
+
   }
 }

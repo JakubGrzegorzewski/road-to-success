@@ -22,9 +22,6 @@ const props = defineProps<{
   id: number,
 }>();
 
-const emits = defineEmits<{
-  (e: 'showPopup', title:string, content: string): void;
-}>();
 
 const editedRankInProgress : Ref<RankInProgressDTO> = ref(null as unknown as RankInProgressDTO);
 
@@ -301,7 +298,6 @@ onMounted(() => {
   width: 30px;
   height: 30px;
   background-color: var(--accent-info);
-  background-image: url('@/assets/images/plus.png');
   mask-size: contain;
   -webkit-mask-size: contain;
   border: none;

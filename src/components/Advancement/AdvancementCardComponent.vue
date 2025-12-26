@@ -13,6 +13,10 @@ const props = defineProps<{
   rankInProgress?: RankInProgressDTO
 }>();
 
+const emits = defineEmits<{
+  (e: 'delete-rank', rankInProgressId: number): void
+}>();
+
 const rank : Ref<RankDTO> = ref(null as unknown as RankDTO);
 const mentor : Ref<AppUserDTO> = ref(null as unknown as AppUserDTO);
 const user : Ref<AppUserDTO> = ref(null as unknown as AppUserDTO);
@@ -45,11 +49,16 @@ function addNewRank() {
 
 <template>
   <div v-if="rankInProgress && rank && mentor && user"
-      class="box-shadow advancement-card-out"
-      @click="router.push(projectSubPage+'advancement/' + rankInProgress.id)">
+      class="box-shadow advancement-card-out">
+    <div class="advancement-card-delete" @click="emits('delete-rank', rankInProgress.id)">
+      <img src="@/assets/images/delete.svg"  alt="delete"/> 
+    </div>
+
     <div class="advancement-card-in"
          :style="{ '--bg-image': `url(data:image/png;base64,${rank.iconInBase64})` }"
+         @click="router.push(projectSubPage+'advancement/' + rankInProgress.id)"
     >
+
       <h3> {{ $t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>
       <h3> {{ $t('user.mentor') }} </h3>
@@ -143,15 +152,15 @@ h4{
   font-weight: 300;
 }
 
-img{
-  width: 200px;
-  display: block;
-  position:relative;
-  bottom: 0;
-  left: 0;
-  transform: translate(50px, -50px) rotate(30deg);
-  overflow: clip;
-  opacity: 0.4;
-  z-index: 1;
+.advancement-card-delete{
+  background: var(--accent-error);
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  padding: 5px;
+  justify-self: flex-end;
+  margin : 5px;
+  position: absolute;
+  transform: translate(20px, -20px);
 }
 </style>
