@@ -21,10 +21,8 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'http://localhost:8081',
+                target: 'https://pdf-generator-962523277913.europe-west1.run.app',
                 changeOrigin: true,
-                secure: true,
-                ws: false,
             },
         }
     }
