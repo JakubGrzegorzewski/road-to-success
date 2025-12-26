@@ -60,7 +60,7 @@ function addNewRank() {
        class="advancement-card-out box-shadow" style="justify-content: center; align-items: center;"
        @click="addNewRank()"
   >
-    <div class="advancement-card-in">
+    <div class="advancement-card-in" style="transform: translateY(0px)">
       <PlusIconComponent :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'" style="width: 150px; height: 150px; margin-bottom: 10px;"/>
       <h3 style="transform: none">{{$t('advancement.add')}}</h3>
     </div>
