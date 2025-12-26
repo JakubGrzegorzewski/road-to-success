@@ -101,7 +101,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             requirements: requirementArray.map( (req) => {
                     taskArray.some((task: TaskDTO) => task.requirementsIds.includes(req.id));req.number; req.content;
                 }
-            ),
+            ).filter( (req) => req !== undefined),
         };
 
         const response = await fetch('/api/generate-pdf', {

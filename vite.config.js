@@ -22,6 +22,8 @@ export default defineConfig({
             '/api': {
                 target: 'https://pdf-generator-962523277913.europe-west1.run.app',
                 changeOrigin: true,
+                secure: true,
+                ws: false,
             },
         }
     }
