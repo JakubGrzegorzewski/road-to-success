@@ -20,17 +20,8 @@ async function clearHighlight() {
 
   showAddSelection.value = false
   window.getSelection()?.removeAllRanges()
-  document.removeEventListener('click', handleOutsideClick)
   await nextTick()
   showClearSelection.value = props.text.length !== props.originalText.length;
-}
-
-async function handleOutsideClick(event: MouseEvent) {
-  await new Promise(resolve => setTimeout(resolve, 100))
-  if (!(event.target as HTMLElement).closest('.snipped-text, .snipped-buttons')) {
-    showAddSelection.value = false
-    document.removeEventListener('click', handleOutsideClick)
-  }
 }
 
 async function handleTextSelection() {
@@ -40,7 +31,6 @@ async function handleTextSelection() {
   if (!selection || !selection.rangeCount || selection.isCollapsed || !selection.toString().trim()) {
     showAddSelection.value = false
     selection?.removeAllRanges()
-    document.removeEventListener('click', handleOutsideClick)
     return
   }
 
@@ -51,7 +41,9 @@ async function handleTextSelection() {
   const spans = container.querySelectorAll<HTMLSpanElement>('.snipped-word');
   spans.forEach((span) => {
     if (selection.containsNode(span, true)) {
-      if (!span.classList.contains('highlighted')) {
+      if (span.classList.contains('highlighted')) {
+        span.classList.remove('highlighted');
+      }else {
         span.classList.add('highlighted');
       }
     }
@@ -61,7 +53,6 @@ async function handleTextSelection() {
     showAddSelection.value = true;
     showClearSelection.value = props.text.length !== props.originalText.length;
     selection.removeAllRanges();
-    document.addEventListener('click', handleOutsideClick);
   }
 }
 
@@ -95,9 +86,6 @@ onMounted(() => {
   showClearSelection.value = props.text.length !== props.originalText.length;
 })
 
-onUnmounted(() => {
-  document.removeEventListener('click', handleOutsideClick);
-})
 </script>
 
 <template>
