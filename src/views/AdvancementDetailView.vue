@@ -272,7 +272,7 @@ function gerRequirementsStatus() {
       <h1 style="margin-top: 20px; justify-self: center">{{ rank.fullName }}</h1>
       <p style="text-align: justify" v-if="rank.idea" v-html="getIdeaWithSelectedParts()"/>
       <details style="margin-top: 20px; cursor: pointer " v-if="Array.isArray(requirements) && Array.isArray(tasks)">
-          <summary>{{ t('advancement.requirement.selected') }}</summary>
+          <summary>{{ t('advancement.requirement.showSelected') }}</summary>
           <div class="requirements-collapsed">
             <div class="requirement-item box-shadow"
                  v-for="reqStatus in gerRequirementsStatus()"

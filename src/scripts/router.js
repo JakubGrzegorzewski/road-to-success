@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import {pagesLinks} from "@/scripts/pagesLinks.ts";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
 
 const routes = [
     {

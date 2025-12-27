@@ -58,6 +58,7 @@
     },
     "requirement" : {
       "selected": "Zaznaczone wymagania:",
+      "showSelected": "Pokaż zaznaczone wymagania",
       "add" : "Dodaj wymaganie:",
       "remove" : "Usuń wymóg",
       "added": "Wymaganie dodane",
