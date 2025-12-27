@@ -2,8 +2,8 @@
 import {onMounted, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cookies from 'js-cookie'
-import {projectSubPage} from "@/scripts/helperFunctions.ts";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
 
 const { locale } = useI18n()
 const currentLocale = ref(null)
@@ -30,7 +30,7 @@ const langOptions = [
 
 <template>
   <nav>
-    <router-link class="" :to="projectSubPage"><img class="nav-logo" src="../../assets/logo.svg" alt="logo"></router-link>
+    <router-link class="" :to="pagesLinks.roadToSuccess"><img class="nav-logo" src="../../assets/logo.svg" alt="logo"></router-link>
 
     <div class="selector-style">
       <DropDownSelectionComponent v-model="currentLocale" :options="langOptions" @update:modelValue="changeLocale"/>

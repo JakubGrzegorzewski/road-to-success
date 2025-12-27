@@ -4,10 +4,11 @@ import {useRouter} from "vue-router";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {isDarkMode, projectSubPage} from "@/scripts/helperFunctions.js";
+import {isDarkMode} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
 
 const props = defineProps<{
   rankInProgress?: RankInProgressDTO
@@ -41,7 +42,7 @@ function addNewRank() {
     taskIds: []
   }
   RankInProgress.add(newRank).then(
-      rankInProgress => router.push(projectSubPage+'advancement/' + rankInProgress.id)
+      rankInProgress => router.push(pagesLinks.advancement + rankInProgress.id)
   );
 
 }
@@ -56,7 +57,7 @@ function addNewRank() {
 
     <div class="advancement-card-in"
          :style="{ '--bg-image': `url(data:image/png;base64,${rank.iconInBase64})` }"
-         @click="router.push(projectSubPage+'advancement/' + rankInProgress.id)"
+         @click="router.push(pagesLinks.advancement + rankInProgress.id)"
     >
 
       <h3> {{ $t('user.mentee') }} </h3>

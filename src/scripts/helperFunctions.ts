@@ -6,8 +6,6 @@ import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 
-export const projectSubPage : string = "/road-to-success/"
-
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
         return;

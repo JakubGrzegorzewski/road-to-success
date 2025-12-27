@@ -11,12 +11,17 @@ import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
 import {
   addTaskToDB, generateExport, generatePDF,
   isDarkMode,
-  loadDatabaseData, projectSubPage,
+  loadDatabaseData,
   requirementSort
 } from "@/scripts/helperFunctions.js";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
 import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
+import PopupComponent from "@/components/Universal/PopupComponent.vue";
+import {useI18n} from "vue-i18n";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   id: number,
@@ -24,6 +29,7 @@ const props = defineProps<{
 
 
 const editedRankInProgress : Ref<RankInProgressDTO> = ref(null as unknown as RankInProgressDTO);
+const tempRankId = ref<number | null>(null);
 
 const tasks : Ref<TaskDTO[]> = ref([]);
 const requirements : Ref<RequirementDTO[]> = ref([]);
@@ -174,26 +180,47 @@ onMounted(() => {
     RankInProgress.getById(props.id)
         .then(rankInProgress => {
           editedRankInProgress.value = rankInProgress;
+          tempRankId.value = rankInProgress.rankId;
           console.log("Rank in progress loaded:", rankInProgress);
         })
         .then(reload)
   })
 })
 
+function changeRank() {
+  if (!tempRankId.value || !editedRankInProgress.value) return;
+  Promise.all(
+    tasks.value.map(task => Task.deleteObject(task.id, editedRankInProgress.value.id))
+  ).then(() => {
+    console.log("All tasks deleted for rank change.");
+    tasks.value = [];
+    editedRankInProgress.value.rankId = tempRankId;
+    console.log("Rank in progress loaded:", editedRankInProgress.value.rankId, "changed to rank:", tempRankId.value);
+    reload();
+  });
+
+}
+
 </script>
 
 <template>
-  <div class="rank" v-if="editedRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
+  <div class="rank" v-if="tempRankId && editedRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
     <div class="rank-details">
       <div class="option-selection">
         <DropDownSelectionComponent
-            v-model="editedRankInProgress.rankId"
+            v-model="tempRankId"
             :label="$t('advancement.select') + ':'"
             :options="allRanks.map(r => ({ value: r.id, label: r.fullName }))"
             placeholder="Select rank"
-            @update:modelValue="reload"
         />
-        <router-link :to="projectSubPage+'ranks/'"><button class="add-button">✎</button></router-link>
+        <PopupComponent
+            v-if="tempRankId !== editedRankInProgress.rankId"
+            :title="t('popups.changeRank.title')"
+            :message="t('popups.changeRank.message')"
+            :option-one="{text: t('edit.yes'), action: () => { changeRank() }}"
+            :option-two="{text: t('edit.no'), action: () => { tempRankId = editedRankInProgress.rankId; }}"
+        />
+        <router-link :to="pagesLinks.addAdvertisement"><button class="add-button">✎</button></router-link>
         <DropDownSelectionComponent
             v-if="false"
             v-model="editedRankInProgress.style"
@@ -215,7 +242,7 @@ onMounted(() => {
             :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
-        <router-link :to="projectSubPage+'add-person/'"><button class="add-button">✎</button></router-link>
+        <router-link :to="pagesLinks.addPerson"><button class="add-button">✎</button></router-link>
       </div>
       <div style="display: flex; gap: 15px">
         <ButtonComponent
