@@ -201,6 +201,17 @@ function changeRank() {
 
 }
 
+function gerRequirementsStatus() {
+  const isRequirementCompleted = (reqId: number) : boolean => {
+    return tasks.value.some((task: TaskDTO) => {
+      return task.requirementsIds.includes(reqId)
+    })
+  }
+  return requirements.value.map((req : RequirementDTO) => {
+    return {isCompleted: isRequirementCompleted(req.id), requirement : req}
+  })
+}
+
 </script>
 
 <template>
@@ -258,8 +269,25 @@ function changeRank() {
         />
       </div>
 
-      <h2>{{ rank.fullName }}</h2>
+      <h1 style="margin-top: 20px; justify-self: center">{{ rank.fullName }}</h1>
       <p style="text-align: justify" v-if="rank.idea" v-html="getIdeaWithSelectedParts()"/>
+      <details style="margin-top: 20px; cursor: pointer " v-if="Array.isArray(requirements) && Array.isArray(tasks)">
+          <summary>{{ t('advancement.requirement.selected') }}</summary>
+          <div class="requirements-collapsed">
+            <div class="requirement-item box-shadow"
+                 v-for="reqStatus in gerRequirementsStatus()"
+                 :key="reqStatus.requirement.id"
+            >
+              <div
+                  class="requirement-item-status"
+                  :style="{ backgroundColor: reqStatus.isCompleted ? 'var(--accent-success)' : 'var(--accent-error)' }"
+              >
+                {{ reqStatus.isCompleted ? "✔ " + t('advancement.requirement.added') : "𐄂 " + t('advancement.requirement.notAdded') }}
+              </div>
+              <p> {{ reqStatus.requirement.content }} </p>
+            </div>
+          </div>
+      </details>
     </div>
     <div v-if="isRequirementBased(editedRankInProgress.style)">
       <RequirementBasedTaskComponent
@@ -307,12 +335,14 @@ function changeRank() {
   align-items: stretch;
   gap: 20px;
 }
+
 .add-task-button {
   align-self: center;
   justify-self: center;
   margin: 10px;
   width: 800px;
 }
+
 .option-selection {
   display: flex;
   flex-direction: row;
@@ -321,7 +351,8 @@ function changeRank() {
   justify-content: left;
   margin-bottom: 20px;
 }
-.add-button{
+
+.add-button {
   width: 30px;
   height: 30px;
   background-color: var(--accent-info);
@@ -333,11 +364,47 @@ function changeRank() {
   color: white;
   transition: all 0.2s ease;
 }
+
 .add-button:hover {
   transform: scale(1.1);
 }
+
 .add-button:active {
   transform: scale(0.9);
+}
+.requirements-collapsed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+  cursor: default;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 8px;
+  gap : 5px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--primary-color-light);
+  }
+  @media (prefers-color-scheme: light) {
+    background-color: var(--background-color);
+  }
+}
+.requirement-item-status{
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  min-width: 100px;
+  text-align: center;
+  position: relative;
+  align-self: flex-end;
+  font-size: 12px;
 }
 </style>
 

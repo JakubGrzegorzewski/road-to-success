@@ -13,22 +13,13 @@ onMounted(() => {
   }
 })
 
-const isPopupShown = ref(false)
-const popupTitle = ref('')
-const popupMessage = ref('')
-
-function showPopup(title: string, content: string) {
-  isPopupShown.value = true;
-  popupTitle.value = title;
-  popupMessage.value = content;
-}
 </script>
 
 <template>
   <div class="app-container">
     <NavBarComponent/>
     <main class="main-content">
-      <router-view @showPopup="showPopup"/>
+      <router-view/>
     </main>
     <FooterComponent/>
   </div>

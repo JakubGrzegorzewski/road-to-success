@@ -59,7 +59,10 @@
     "requirement" : {
       "selected": "Zaznaczone wymagania:",
       "add" : "Dodaj wymaganie:",
-      "remove" : "Usuń wymóg"
+      "remove" : "Usuń wymóg",
+      "added": "Wymaganie dodane",
+      "notAdded": "Wymaganie nie zostało dodane",
+      "removed": "Wymaganie usunięte"
     },
     "requirements": "Wymagania",
     "export" : "Eksportuj do pliku zewnętrznego"
@@ -71,6 +74,7 @@
     "pending": "Wysłana",
     "in_progress": "W trakcie",
     "completed": "Zakończona",
+    "inCompleted": "Niezakończona",
     "failed": "Nieudana"
   },
   "user": {
