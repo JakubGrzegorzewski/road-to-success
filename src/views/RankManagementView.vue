@@ -39,8 +39,8 @@ onMounted(() => {
 })
 
 const message : Ref<string | null> = ref(null)
-const action : () => void = () => {};
-const id : Ref<number | null> = ref(null);
+const action: Ref<(() => void) | null> = ref(null)
+const id: Ref<number | null> = ref(null)
 
 function resetForm() {
   fullName.value = ''
@@ -312,7 +312,7 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
           <h3>{{ rank.fullName }} ({{ rank.shortName }})</h3>
           <div style="display:flex; gap:8px; width: 100%">
             <button-component buttonStyle="info" @click="editRank(rank.id)" :button-text="$t('rank.edit')" />
-            <button-component buttonStyle="error" @click="() => {action = deleteRank; message = t('info.deleted'); id = rank.id }" :button-text="$t('rank.delete')" />
+            <button-component buttonStyle="error" @click="() => {action = () => deleteRank; message = t('info.deleted'); id = rank.id }" :button-text="$t('rank.delete')" />
           </div>
         </div>
     </div>
@@ -320,7 +320,7 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
         v-if="message !== null"
         :title="$t('popups.delete.title')"
         :message="$t('popups.delete.message')"
-        :option-one="{ text: $t('edit.delete'), action: () => { action() ; message = null } }"
+        :option-one="{ text: $t('edit.delete'), action: () => { if (action) action() ; message = null } }"
         :option-two="{ text: $t('edit.cancel'), action: () => { message = null } }"
     />
   </div>
