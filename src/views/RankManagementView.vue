@@ -38,7 +38,7 @@ onMounted(() => {
   resetForm()
 })
 
-const message : Ref<string> = ref(null)
+const message : Ref<string | null> = ref(null)
 const action : () => void = () => {};
 const id : Ref<number | null> = ref(null);
 
@@ -67,7 +67,7 @@ const addRequirement = () => requirements.value.push({ number: '', content: '' }
 const removeRequirement = (i: number) => requirements.value.splice(i, 1)
 
 function deleteRank() {
-  console.log(id.value)
+  if (id.value === null) return;
   Rank.deleteObject(id.value);
   allLocalRanks.value = JSON.parse(window.localStorage.getItem('Ranks') || '[]') as RankDTO[];
 }
