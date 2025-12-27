@@ -19,7 +19,7 @@ const routes = [
         component: () => import('@/views/AddPersonView.vue')
     },
     {
-        path: pagesLinks.addAdvertisement,
+        path: pagesLinks.addAdvancement,
         name: 'RankManagement',
         component: () => import('@/views/RankManagementView.vue'),
     },

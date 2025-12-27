@@ -220,7 +220,7 @@ function changeRank() {
             :option-one="{text: t('edit.yes'), action: () => { changeRank() }}"
             :option-two="{text: t('edit.no'), action: () => { tempRankId = editedRankInProgress.rankId; }}"
         />
-        <router-link :to="pagesLinks.addAdvertisement"><button class="add-button">✎</button></router-link>
+        <router-link :to="pagesLinks.addAdvancement"><button class="add-button">✎</button></router-link>
         <DropDownSelectionComponent
             v-if="false"
             v-model="editedRankInProgress.style"
