@@ -81,6 +81,7 @@ function addNewRank() {
 
 <style scoped>
 .advancement-card-out {
+  position: relative;
   margin: 10px;
   border-radius: 8px;
   @media (prefers-color-scheme: dark) {
@@ -154,11 +155,14 @@ h4{
 }
 
 .advancement-card-delete{
+  z-index: 3;
   background: var(--accent-error);
   border-radius: 10px;
   width: 40px;
   height: 40px;
   padding: 5px;
+  right: 0;
+  top: 0;
   justify-self: flex-end;
   margin : 5px;
   position: absolute;
