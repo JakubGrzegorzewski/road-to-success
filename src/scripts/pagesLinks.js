@@ -1,7 +1,7 @@
 export const pagesLinks = {
     home: '/',
-    roadToSuccess: '/droga-do-sukcesu',
-    advancement: '/droga-do-sukcesu/stopien/',
-    addPerson: '/droga-do-sukcesu/dodaj-osobe/',
-    addAdvancement: '/droga-do-sukcesu/stopnie/',
+    roadToSuccess: '/oad-to-success/',
+    advancement: '/road-to-success/stopien/',
+    addPerson: '/road-to-success/dodaj-osobe/',
+    addAdvancement: '/road-to-success/stopnie/',
 }
