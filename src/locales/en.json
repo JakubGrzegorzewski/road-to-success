@@ -1,11 +1,13 @@
 {
   "nav": {
     "home": "Home",
-    "myAdvancement": "My Advancements",
-    "menteesAdvancements": "Mentee Advancements",
+    "myAdvancement": "My advancements",
+    "menteesAdvancements": "Mentees' advancements",
     "orders": "Orders"
   },
   "edit": {
+    "yes": "Yes",
+    "no": "No",
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
@@ -15,84 +17,89 @@
   },
   "advancement": {
     "your": "Your advancements",
-    "generate": "Generate advancement's PDF",
-    "changeStatus": "Change Status",
-    "changeMentor": "Change Mentor",
-    "idea": "Rank idea",
-    "add": "Add New Advancement",
-    "delete": "Delete Advancement",
+    "generate": "Generate advancement PDF",
+    "changeStatus": "Change status",
+    "changeMentor": "Change mentor",
+    "idea": "Advancement idea",
+    "add": "Add new advancement",
+    "delete": "Delete advancement",
     "select": "Select advancement",
     "selectMentee": "Select mentee",
     "selectMentor": "Select mentor",
     "selectStyle": "Select style",
     "noAdvancements": "No advancements to display",
     "comment": {
-      "add": "Add Comment",
-      "edit": "Edit Comment",
-      "delete": "Delete Comment",
+      "add": "Add comment",
+      "edit": "Edit comment",
+      "delete": "Delete comment",
       "placeholder": "Write your comment here...",
-      "save": "Save Comment",
+      "save": "Save comment",
       "cancel": "Cancel",
       "noComments": "No comments to display"
     },
     "style": {
-      "NONE" : "NONE",
-      "IDEA_SELECTION" : "Idea Selection",
-      "ONE_TASK_ONE_REQUIREMENT" : "One task, one requirement.",
-      "ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA" : "One task, one requirement, with idea.",
-      "ONE_TASK_MULTI_REQUIREMENTS" : "One task, multiple requirements.",
-      "ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA" : "One task, multiple requirements, with idea.",
-      "MULTI_TASK_ONE_REQUIREMENT" : "Multiple tasks, one requirement.",
-      "MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA" : "Multiple tasks, one requirement, with idea."
+      "NONE": "NONE",
+      "MULTI_TASK_ONE_REQUIREMENT": "Multiple tasks based on one requirement.",
+      "MULTI_TASK_ONE_REQUIREMENT_WITH_IDEA": "Multiple tasks based on one requirement, with idea assignment.",
+      "ONE_TASK_MULTI_REQUIREMENTS": "One task based on multiple requirements.",
+      "ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA": "One task based on an idea, with multiple requirements assigned.",
+      "ONE_TASK_ONE_REQUIREMENT": "One task based on one requirement.",
+      "ONE_TASK_ONE_REQUIREMENTS_WITH_IDEA": "One task based on one requirement, with idea assignment.",
+      "IDEA_SELECTION": "Task based on an idea."
     },
     "task": {
-      "add": "Add Task",
-      "edit": "Edit Task",
-      "delete": "Delete Task",
+      "add": "Add task",
+      "edit": "Edit task",
+      "delete": "Delete task",
       "placeholder": "Write your task here...",
-      "save": "Save Task",
+      "save": "Save task",
       "cancel": "Cancel",
       "noTasks": "No tasks to display"
     },
     "requirement": {
       "selected": "Selected requirements:",
-      "add": "Add Requirements:",
-      "remove": "Delete Requirement"
+      "showSelected": "Show selected requirements in tasks",
+      "add": "Add requirement:",
+      "remove": "Remove requirement",
+      "added": "Requirement selected",
+      "notAdded": "Requirement was not selected",
+      "removed": "Requirement removed"
     },
     "requirements": "Requirements",
-    "export" : "Export do pliku zewnętrznego"
+    "export": "Export to external file"
   },
   "status": "Status",
   "statusOptions": {
     "draft": "Draft",
     "created": "Created",
-    "pending": "Sent",
-    "in_progress": "In Progress",
+    "pending": "Submitted",
+    "in_progress": "In progress",
     "completed": "Completed",
+    "inCompleted": "Incomplete",
     "failed": "Failed"
   },
   "user": {
-    "name": "Name",
-    "nameRankCombo": "First, Last Name and Rank",
+    "name": "First name",
+    "nameRankCombo": "First name, last name and rank",
     "email": "Email",
     "role": "Role",
     "mentor": "Mentor",
     "mentee": "Mentee",
-    "admin": "Admin",
-    "addUser": "Add User",
+    "admin": "Administrator",
+    "addUser": "Add user",
     "noUsers": "No users to display",
-    "editUser": "Edit User",
-    "deleteUser": "Delete User",
-    "you" : "Yourself"
+    "editUser": "Edit user",
+    "deleteUser": "Delete user",
+    "you": "You"
   },
   "register": {
-    "registerUser": "Register User",
+    "registerUser": "Register user",
     "register": "Register",
-    "loginUser" : "Login",
-    "login" : "Login",
+    "loginUser": "Log in",
+    "login": "Log in",
     "username": "Username",
     "password": "Password",
-    "confirmPassword": "Confirm Password",
+    "confirmPassword": "Confirm password",
     "passwordMismatch": "Passwords do not match",
     "email": "Email",
     "emailRequired": "Email is required",
@@ -100,8 +107,56 @@
     "passwordRequired": "Password is required",
     "registrationSuccess": "Registration successful",
     "registrationFailed": "Registration failed",
-    "userExists": "User already exists",
+    "userExists": "A user with this username already exists",
     "invalidEmail": "Invalid email address",
     "emailAlreadyExists": "Email already exists"
+  },
+  "rank": {
+    "rank": "Rank",
+    "basedOn": "Base rank on:",
+    "existingRanks": "Custom ranks",
+    "add": "Add rank",
+    "edit": "Edit rank",
+    "delete": "Delete rank",
+    "noRanks": "No ranks to display",
+    "name": "Rank name",
+    "idea": "Rank idea",
+    "requirements": "Rank requirements",
+    "startRequirements": "Initial requirements",
+    "endRequirements": "Final requirements",
+    "fullName": "Full rank name",
+    "shortName": "Short rank name",
+    "icon": "Rank icon",
+    "color": "Rank color scheme",
+    "documentBackground": "Rank document background"
+  },
+  "requirement": {
+    "requirement": "Requirement",
+    "add": "Add requirement",
+    "edit": "Edit requirement",
+    "delete": "Delete requirement",
+    "noRequirements": "No requirements to display",
+    "description": "Requirement description",
+    "number": "Requirement number"
+  },
+  "content": "Content",
+  "info": {
+    "fileSizeLimit": "Maximum file size is: 20 MB, PNG format.",
+    "change": "This will overwrite all existing data.",
+    "close": "Close",
+    "confirm": "Confirm",
+    "added": "Added successfully",
+    "edited": "Edited successfully",
+    "deleted": "Deleted successfully"
+  },
+  "popups": {
+    "delete": {
+      "title": "Confirm deletion",
+      "message": "Are you sure you want to delete this item? This action cannot be undone."
+    },
+    "changeRank": {
+      "title": "Change rank",
+      "message": "Do you want to change the rank of this advancement? This will overwrite all existing data related to the current rank."
+    }
   }
 }
