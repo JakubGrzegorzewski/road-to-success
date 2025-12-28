@@ -13,11 +13,4 @@ const i18n = createI18n({
     }
 })
 
-// Function to load locale messages
-export async function loadLocaleMessages(locale) {
-    const messages = await import(`@/locales/${locale}.json`)
-    i18n.global.setLocaleMessage(locale, messages.default)
-    return messages
-}
-
 export default i18n
