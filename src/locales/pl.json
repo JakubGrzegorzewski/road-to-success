@@ -58,11 +58,11 @@
     },
     "requirement" : {
       "selected": "Zaznaczone wymagania:",
-      "showSelected": "Pokaż zaznaczone wymagania",
+      "showSelected": "Pokaż wybrane wymagania w zadaniach",
       "add" : "Dodaj wymaganie:",
       "remove" : "Usuń wymóg",
-      "added": "Wymaganie dodane",
-      "notAdded": "Wymaganie nie zostało dodane",
+      "added": "Wymaganie wybrane",
+      "notAdded": "Wymaganie nie zostało wybrane",
       "removed": "Wymaganie usunięte"
     },
     "requirements": "Wymagania",
