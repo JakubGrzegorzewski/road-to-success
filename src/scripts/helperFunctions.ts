@@ -47,13 +47,6 @@ export async function loadDatabaseData() : Promise<void>{
     return Promise.all(promises).then(() => console.log("Loaded data from local storage"));
 }
 
-export function rankImage(rank : RankDTO) : string{
-    if (!rank || !rank.shortName) return '';
-    if (rank.shortName === 'ho' || rank.shortName === 'hr') return new URL(`../assets/images/${rank.shortName}-${isDarkMode() ? 'light' : 'dark'}.png`, import.meta.url).href;
-
-    return new URL(`../assets/images/${rank.shortName}.png`, import.meta.url).href;
-}
-
 export async function generatePDF(RankInProgressData: RankInProgressDTO){
     try {
         const [rank, user, mentor] = await Promise.all([

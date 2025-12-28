@@ -3,13 +3,13 @@ import {onMounted, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cookies from 'js-cookie'
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
-import {pagesLinks} from "@/scripts/pagesLinks.js";
+import {pagesLinks} from "@/scripts/pagesLinks";
 
 const { locale } = useI18n()
-const currentLocale = ref(null)
+const currentLocale = ref<string>('en')
 
 const changeLocale = () => {
-  const newLocale = currentLocale.value
+  const newLocale: string = currentLocale.value
   locale.value = newLocale
   localStorage.setItem('locale', newLocale)
   Cookies.set('locale', newLocale, { expires: 365 })

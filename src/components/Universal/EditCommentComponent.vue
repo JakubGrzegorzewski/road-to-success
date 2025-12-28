@@ -41,12 +41,12 @@ const { t } = useI18n();
     <ButtonComponent
       buttonStyle="success"
       @click="emits('comment:close'); emits('comment:save', editComment);"
-      :button-text="$t('edit.save')"
+      :button-text="t('edit.save')"
     />
     <ButtonComponent
       buttonStyle="warning"
       @click="emits('comment:close')"
-      :button-text="$t('edit.cancel')"
+      :button-text="t('edit.cancel')"
     />
   </div>
 </div>

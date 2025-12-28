@@ -9,6 +9,9 @@ import {Style} from "@/scripts/Model/Style";
 import {RequirementDTO} from "@/scripts/Model/Requirement";
 import {doShowIdea} from "@/scripts/whatToShow";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n()
 
 const props = defineProps<{
   task: TaskDTO
@@ -77,7 +80,7 @@ function getRequirementSubIndex(requirement : RequirementDTO) {
         />
         <textarea class="multiline-text-input" v-model="props.task.content" @change="emits('update:task', props.task)"/>
 
-        <h3 v-if="props.rankInProgress.style !== Style.IDEA_SELECTION"> {{$t("advancement.requirements")}}</h3>
+        <h3 v-if="props.rankInProgress.style !== Style.IDEA_SELECTION"> {{t("advancement.requirements")}}</h3>
 
         <div class="task-requirements" v-if="props.rankInProgress.style !== Style.IDEA_SELECTION">
           <ButtonComponent

@@ -34,13 +34,13 @@ const showCommentEdit = ref(false);
           v-if="user.id === comment.userId"
           @click="showCommentEdit = true"
           buttonStyle="default"
-          :button-text="$t('edit.edit')"
+          :button-text="t('edit.edit')"
       />
       <ButtonComponent
           v-if="props.comment"
           @click="emits('comment:delete', props.comment);"
           buttonStyle="error"
-          :button-text="$t('edit.delete')"
+          :button-text="t('edit.delete')"
       />
     </div>
   </div>

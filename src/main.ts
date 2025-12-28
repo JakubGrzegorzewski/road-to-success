@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './scripts/router.js'
-import i18n from './scripts/i18n.ts'
+import i18n from './scripts/i18n.js'
 import 'vuetify/styles'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'

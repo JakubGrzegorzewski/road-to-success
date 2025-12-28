@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import {ref, nextTick, onUnmounted, onMounted} from 'vue'
+import {ref, nextTick, onMounted} from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{ text: string[]; originalText: string[] }>();
 
@@ -100,13 +103,13 @@ onMounted(() => {
       <button-component
           v-if="showAddSelection"
           @click.stop="confirmSelection"
-          :button-text="$t('edit.save')"
+          :button-text="t('edit.save')"
           button-style="success"
       />
       <button-component
           v-if="showClearSelection"
           @click.stop="resetSelection"
-          :button-text="$t('edit.cancel')"
+          :button-text="t('edit.cancel')"
           button-style="warning"
       />
     </div>

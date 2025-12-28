@@ -9,6 +9,9 @@ import {TaskDTO} from "@/scripts/Model/Task";
 import {RequirementDTO} from "@/scripts/Model/Requirement";
 import {RankDTO} from "@/scripts/Model/Rank";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n()
 
 const props = defineProps<{
   requirement: RequirementDTO,
@@ -24,9 +27,9 @@ const emits = defineEmits<{
   (e: 'add:task', requirements: number[]): void;
 }>();
 
-function onTextHighlighted (reset: boolean, text: string, task: TaskDTO) {
+function onTextHighlighted (reset: boolean, text: string[], task: TaskDTO) {
   if (reset)
-    task.partIdea = props.rank.idea;
+    task.partIdea = props.rank.idea.split(" ");
   else
     task.partIdea = text;
   emits('update:task', task)
@@ -61,7 +64,7 @@ function isDarkMode(): boolean {
       <TextSelectionComponent
           v-if="rank && task.partIdea && doShowIdea(props.rankInProgress.style)"
           :text="task.partIdea"
-          :original-text="rank.idea"
+          :original-text="rank.idea.split(' ')"
           @text-highlighted="data => onTextHighlighted(data.reset, data.text, task)"
       />
 
@@ -70,7 +73,7 @@ function isDarkMode(): boolean {
   <ButtonComponent
       v-if="doShowAddTaskButton(props.rankInProgress.style) && rank"
       class="add-task-button"
-      :button-text="$t('advancement.task.add')"
+      :button-text="t('advancement.task.add')"
       :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
       @click="emits('add:task', [requirement.id])"
   />

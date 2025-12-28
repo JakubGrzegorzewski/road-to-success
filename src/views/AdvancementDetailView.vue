@@ -19,7 +19,7 @@ import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {pagesLinks} from "@/scripts/pagesLinks.js";
+import {pagesLinks} from "@/scripts/pagesLinks";
 
 const { t } = useI18n();
 
@@ -194,7 +194,8 @@ function changeRank() {
   ).then(() => {
     console.log("All tasks deleted for rank change.");
     tasks.value = [];
-    editedRankInProgress.value.rankId = tempRankId;
+    if (tempRankId.value !== null)
+      editedRankInProgress.value.rankId = tempRankId.value;
     console.log("Rank in progress loaded:", editedRankInProgress.value.rankId, "changed to rank:", tempRankId.value);
     reload();
   });
@@ -220,7 +221,7 @@ function gerRequirementsStatus() {
       <div class="option-selection">
         <DropDownSelectionComponent
             v-model="tempRankId"
-            :label="$t('advancement.select') + ':'"
+            :label="t('advancement.select') + ':'"
             :options="allRanks.map(r => ({ value: r.id, label: r.fullName }))"
             placeholder="Select rank"
         />
@@ -235,21 +236,21 @@ function gerRequirementsStatus() {
         <DropDownSelectionComponent
             v-if="false"
             v-model="editedRankInProgress.style"
-            :label="$t('advancement.selectStyle') + ':'"
-            :options="Object.values(Style).map(s => ({ value: s, label: $t('advancement.style.'+s) }))"
+            :label="t('advancement.selectStyle') + ':'"
+            :options="Object.values(Style).map(s => ({ value: s, label: t('advancement.style.'+s) }))"
             placeholder="Select style"
         />
       </div>
       <div class="option-selection">
         <DropDownSelectionComponent
             v-model="editedRankInProgress.userId"
-            :label="$t('advancement.selectMentee') + ':'"
+            :label="t('advancement.selectMentee') + ':'"
             :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentee"
         />
         <DropDownSelectionComponent
             v-model="editedRankInProgress.mentorId"
-            :label="$t('advancement.selectMentor') + ':'"
+            :label="t('advancement.selectMentor') + ':'"
             :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
@@ -257,13 +258,13 @@ function gerRequirementsStatus() {
       </div>
       <div style="display: flex; gap: 15px">
         <ButtonComponent
-            :button-text="$t('advancement.generate')"
+            :button-text="t('advancement.generate')"
             buttonStyle="primary"
             @click="generatePDF(editedRankInProgress)"
         />
         <ButtonComponent
             v-if="false"
-            :button-text="$t('advancement.export')"
+            :button-text="t('advancement.export')"
             buttonStyle="primary"
             @click="generateExport()"
         />
@@ -317,7 +318,7 @@ function gerRequirementsStatus() {
       />
       <ButtonComponent
           class="add-task-button"
-          :button-text="$t('advancement.task.add')"
+          :button-text="t('advancement.task.add')"
           :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
           @click="addTask()"
       />

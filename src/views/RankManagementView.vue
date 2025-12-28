@@ -9,10 +9,6 @@ import PopupComponent from "@/components/Universal/PopupComponent.vue";
 
 const { t } = useI18n();
 
-const emits = defineEmits<{
-  (e: 'showPopup', title:string, content: string): void;
-}>();
-
 const allLocalRanks : Ref<RankDTO[]> = ref([])
 const allRanks : Ref<RankDTO[]> = ref([])
 const editedRank : Ref<RankDTO | null> = ref(null)
@@ -208,55 +204,55 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
 
     <form @submit.prevent="onSubmit" class="form">
       <div>
-        <label> {{$t('rank.basedOn')}} </label>
+        <label> {{t('rank.basedOn')}} </label>
         <DropDownSelectionComponent
             v-model="test"
             @update:model-value="e=>{editRank(e)}"
             :options="allRanks.map(e=>({label : e.fullName, value: e.id}))"
             backgroundColor="var(--primary-color)"
         />
-        <small>{{ $t('info.change')}}</small>
+        <small>{{ t('info.change')}}</small>
       </div>
 
       <div>
-        <label>{{ $t('rank.fullName') }}</label>
+        <label>{{ t('rank.fullName') }}</label>
         <input class="text-input-component custom-input" v-model="fullName" required />
       </div>
 
       <div>
-        <label>{{ $t('rank.shortName') }}</label>
+        <label>{{ t('rank.shortName') }}</label>
         <input class="text-input-component custom-input" v-model="shortName" />
       </div>
 
       <div>
-        <label>{{ $t('rank.idea') }}</label>
+        <label>{{ t('rank.idea') }}</label>
         <textarea class="text-input-component custom-input" v-model="idea"></textarea>
       </div>
 
       <div class="input-list">
-        <label>{{ $t('rank.startRequirements') }}</label>
+        <label>{{ t('rank.startRequirements') }}</label>
         <div v-for="(req, i) in startRequirements" :key="`start-${i}`" class="input-list-item">
-          <input class="text-input-component custom-input" v-model="startRequirements[i]" :placeholder="$t('content')"  />
+          <input class="text-input-component custom-input" v-model="startRequirements[i]" :placeholder="t('content')"  />
           <button-component buttonStyle="error" @click="removeStartReq(i)" v-if="startRequirements.length>1" button-text="-"/>
         </div>
         <button-component style="align-self: flex-end" buttonStyle="success" button-text="+" @click="addStartReq"/>
       </div>
 
       <div class="input-list">
-        <label>{{ $t('rank.endRequirements') }}</label>
+        <label>{{ t('rank.endRequirements') }}</label>
         <div v-for="(req, i) in endRequirements" :key="`end-${i}`" class="input-list-item">
-          <input class="text-input-component custom-input" v-model="endRequirements[i]" :placeholder="$t('content')" />
+          <input class="text-input-component custom-input" v-model="endRequirements[i]" :placeholder="t('content')" />
           <button-component buttonStyle="error" @click="removeEndReq(i)" v-if="endRequirements.length>1" button-text="-"/>
         </div>
         <button-component style="align-self: flex-end" buttonStyle="success" button-text="+" @click="addEndReq"/>
       </div>
 
       <div class="input-list">
-        <label> {{ $t('rank.requirements') }} </label>
+        <label> {{ t('rank.requirements') }} </label>
         <div v-for="(r, i) in requirements" :key="`req-${i}`" class="input-list-item">
           <div style="display:flex; gap:8px; width: 100%">
-            <input class="text-input-component custom-input" v-model="requirements[i].number" style="width:100px;" :placeholder="$t('requirement.number')" />
-            <input class="text-input-component custom-input" v-model="requirements[i].content" style="" :placeholder="$t('requirement.description')"/>
+            <input class="text-input-component custom-input" v-model="requirements[i].number" style="width:100px;" :placeholder="t('requirement.number')" />
+            <input class="text-input-component custom-input" v-model="requirements[i].content" style="" :placeholder="t('requirement.description')"/>
           </div>
           <div>
             <button-component buttonStyle="error" @click="removeRequirement(i)" v-if="requirements.length>1" button-text="-"/>
@@ -266,7 +262,7 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
       </div>
 
       <div>
-        <label> {{ $t('rank.color') }} </label>
+        <label> {{ t('rank.color') }} </label>
         <div>
           <input
               v-model="color"
@@ -276,7 +272,7 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
       </div>
 
       <div class="input-list">
-        <label> {{ $t('rank.icon') }} </label>
+        <label> {{ t('rank.icon') }} </label>
         <div class="input-list-item" style="flex-direction: column">
           <input
               class="text-input-component custom-input"
@@ -284,12 +280,12 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
               type="file"
               @change="e => onFileChange(e, 2000, 'iconFile')"
           />
-          <small>{{ $t('info.fileSizeLimit') }}</small>
+          <small>{{ t('info.fileSizeLimit') }}</small>
         </div>
       </div>
 
       <div class="input-list">
-        <label> {{ $t('rank.documentBackground') }} </label>
+        <label> {{ t('rank.documentBackground') }} </label>
         <div class="input-list-item" style="flex-direction: column">
         <input
             class="text-input-component custom-input"
@@ -297,31 +293,31 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
             type="file"
             @change="e => onFileChange(e, 2000, 'documentBackgroundFile')"
         />
-          <small>{{ $t('info.fileSizeLimit') }}</small>
+          <small>{{ t('info.fileSizeLimit') }}</small>
         </div>
       </div>
 
       <button type="submit">
-        <button-component buttonStyle="success" :button-text="$t('rank.add')" />
+        <button-component buttonStyle="success" :button-text="t('rank.add')" />
       </button>
     </form>
     <div class="form">
-      <h2>{{ $t('rank.existingRanks') }}</h2>
+      <h2>{{ t('rank.existingRanks') }}</h2>
       <div v-for="rank in allLocalRanks" :key="rank.id" class="rank-item box-shadow"
            :style="rank.iconInBase64 ? { backgroundImage: `url(data:image/png;base64,${rank.iconInBase64})` } : {}">
           <h3>{{ rank.fullName }} ({{ rank.shortName }})</h3>
           <div style="display:flex; gap:8px; width: 100%">
-            <button-component buttonStyle="info" @click="editRank(rank.id)" :button-text="$t('rank.edit')" />
-            <button-component buttonStyle="error" @click="() => {action = () => deleteRank; message = t('info.deleted'); id = rank.id }" :button-text="$t('rank.delete')" />
+            <button-component buttonStyle="info" @click="editRank(rank.id)" :button-text="t('rank.edit')" />
+            <button-component buttonStyle="error" @click="() => {action = () => deleteRank; message = t('info.deleted'); id = rank.id }" :button-text="t('rank.delete')" />
           </div>
         </div>
     </div>
     <PopupComponent
         v-if="message !== null"
-        :title="$t('popups.delete.title')"
-        :message="$t('popups.delete.message')"
-        :option-one="{ text: $t('edit.delete'), action: () => { if (action) action() ; message = null } }"
-        :option-two="{ text: $t('edit.cancel'), action: () => { message = null } }"
+        :title="t('popups.delete.title')"
+        :message="t('popups.delete.message')"
+        :option-one="{ text: t('edit.delete'), action: () => { if (action) action() ; message = null } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { message = null } }"
     />
   </div>
 

@@ -120,15 +120,15 @@ const getStatusStyle = (status: Status) => {
         v-if="showDeleteTaskButton && task"
         class="task-delete"
         button-style="error"
-        :button-text="$t('advancement.task.delete')"
+        :button-text="t('advancement.task.delete')"
         @click="taskIdToDelete = task.id"
     />
     <PopupComponent
         v-if="taskIdToDelete !== null"
-        :title="$t('popups.delete.title')"
-        :message="$t('popups.delete.message')"
-        :option-one="{ text: $t('edit.delete'), action: () => { emits('delete:task', task); taskIdToDelete = null } }"
-        :option-two="{ text: $t('edit.cancel'), action: () => { taskIdToDelete = null } }"
+        :title="t('popups.delete.title')"
+        :message="t('popups.delete.message')"
+        :option-one="{ text: t('edit.delete'), action: () => { emits('delete:task', task); taskIdToDelete = null } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { taskIdToDelete = null } }"
     />
 
   </div>
@@ -143,10 +143,10 @@ const getStatusStyle = (status: Status) => {
     />
     <PopupComponent
         v-if="commentIdToDelete !== null"
-        :title="$t('popups.delete.title')"
-        :message="$t('popups.delete.message')"
-        :option-one="{ text: $t('edit.delete'), action: () => { deleteComment(commentIdToDelete); commentIdToDelete = null } }"
-        :option-two="{ text: $t('edit.cancel'), action: () => { commentIdToDelete = null } }"
+        :title="t('popups.delete.title')"
+        :message="t('popups.delete.message')"
+        :option-one="{ text: t('edit.delete'), action: () => { commentIdToDelete ? deleteComment(commentIdToDelete) : null; commentIdToDelete = null } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { commentIdToDelete = null } }"
     />
 
     <EditCommentComponent
@@ -159,12 +159,12 @@ const getStatusStyle = (status: Status) => {
     />
 
     <p v-if="comments && comments.length === 0" style="align-self: center">
-      {{ $t("advancement.comment.noComments") }}
+      {{ t("advancement.comment.noComments") }}
     </p>
 
     <ButtonComponent
         style="align-self: center"
-        :button-text="$t('advancement.comment.add')"
+        :button-text="t('advancement.comment.add')"
         buttonStyle="default"
         @click="showCommentAdding = true"
     />

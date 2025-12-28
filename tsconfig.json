@@ -8,11 +8,12 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
     "exclude": ["node_modules", "dist"],
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
-  },
+  }
 }

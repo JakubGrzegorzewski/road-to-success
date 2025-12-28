@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {useRouter} from "vue-router";
-import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
+import {Rank, RankDTO} from "@/scripts/Model/Rank";
 import {onMounted, ref, Ref} from "vue";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {isDarkMode} from "@/scripts/helperFunctions.js";
+import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
+import {isDarkMode} from "@/scripts/helperFunctions";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
-import {Status} from "@/scripts/Model/Status.js";
-import {Style} from "@/scripts/Model/Style.js";
-import {pagesLinks} from "@/scripts/pagesLinks.js";
+import {Status} from "@/scripts/Model/Status";
+import {Style} from "@/scripts/Model/Style";
+import {pagesLinks} from "@/scripts/pagesLinks";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   rankInProgress?: RankInProgressDTO
@@ -60,9 +63,9 @@ function addNewRank() {
          @click="router.push(pagesLinks.advancement + rankInProgress.id)"
     >
 
-      <h3> {{ $t('user.mentee') }} </h3>
+      <h3> {{ t('user.mentee') }} </h3>
       <h4> {{ user.fullName }} </h4>
-      <h3> {{ $t('user.mentor') }} </h3>
+      <h3> {{ t('user.mentor') }} </h3>
       <h4> {{ mentor.fullName }} </h4>
     </div>
   </div>
@@ -72,7 +75,7 @@ function addNewRank() {
   >
     <div class="advancement-card-in" style="transform: translateY(0px)">
       <PlusIconComponent :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'" style="width: 150px; height: 150px; margin-bottom: 10px;"/>
-      <h3 style="transform: none">{{$t('advancement.add')}}</h3>
+      <h3 style="transform: none">{{t('advancement.add')}}</h3>
     </div>
 
   </div>

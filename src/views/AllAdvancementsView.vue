@@ -4,6 +4,10 @@ import {loadDatabaseData} from "@/scripts/helperFunctions.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n();
+
 
 const ranksInProgress : Ref<RankInProgressDTO[]> = ref([]);
 
@@ -29,7 +33,7 @@ function deleteRank(rankId: number) {
 </script>
 
 <template>
-  <h1>{{ $t('advancement.your') }}</h1>
+  <h1>{{ t('advancement.your') }}</h1>
   <div class="advancement-container">
     <AdvancementCardComponent
         :rank-in-progress="rankInProgress"
@@ -40,10 +44,10 @@ function deleteRank(rankId: number) {
     <AdvancementCardComponent/>
     <PopupComponent
         v-if="rankIdToDelete !== null"
-        :title="$t('popups.delete.title')"
-        :message="$t('popups.delete.message')"
-        :option-one="{ text: $t('edit.delete'), action: () => { deleteRank(<number>rankIdToDelete); rankIdToDelete = null } }"
-        :option-two="{ text: $t('edit.cancel'), action: () => { rankIdToDelete = null } }"
+        :title="t('popups.delete.title')"
+        :message="t('popups.delete.message')"
+        :option-one="{ text: t('edit.delete'), action: () => { deleteRank(<number>rankIdToDelete); rankIdToDelete = null } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { rankIdToDelete = null } }"
     />
   </div>
   </template>

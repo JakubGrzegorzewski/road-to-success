@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Cookies from 'js-cookie';
-import {onMounted, ref} from 'vue';
+import {onMounted} from 'vue';
 import NavBarComponent from "@/components/Website/NavBarComponent.vue";
 import FooterComponent from "@/components/Website/FooterComponent.vue";
 

@@ -2,10 +2,9 @@
 import { ref } from 'vue'
 import { AppUser, AppUserDTO } from '../scripts/Model/AppUser'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
+import {useI18n} from "vue-i18n";
 
-const emits = defineEmits<{
-  (e: 'showPopup', title:string, content: string): void;
-}>();
+const { t } = useI18n();
 
 const fullName = ref('')
 const email = ref('')
@@ -50,17 +49,17 @@ async function onSubmit() {
 <template>
   <form @submit.prevent="onSubmit" class="form">
     <div>
-      <label>{{ $t('user.nameRankCombo') }}</label>
+      <label>{{ t('user.nameRankCombo') }}</label>
       <input v-model="fullName" required />
     </div>
 
     <div>
-      <label>{{ $t('user.email') }}</label>
+      <label>{{ t('user.email') }}</label>
       <input v-model="email" type="email" />
     </div>
 
     <button type="submit">
-      <button-component :button-text="$t('user.addUser')"/>
+      <button-component :button-text="t('user.addUser')"/>
     </button>
     <p v-if="success">{{ success }}</p>
   </form>
