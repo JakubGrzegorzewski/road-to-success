@@ -4,7 +4,7 @@ import {
     type RouteLocationNormalized,
     type RouteRecordRaw,
 } from 'vue-router'
-import { pagesLinks } from '@/scripts/pagesLinks'
+import { pagesLinks } from '@/scripts/pagesLinks.js'
 
 const routes: RouteRecordRaw[] = [
     {
