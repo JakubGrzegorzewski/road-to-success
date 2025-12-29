@@ -5,7 +5,6 @@ import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
-import {buildPdfApiUrl} from "@/scripts/config/api.js";
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
@@ -96,13 +95,13 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ).filter( (req) => req !== undefined),
         };
 
-        const response = await fetch(buildPdfApiUrl('/generate-pdf'), {
-             method: 'POST',
-             headers: {
-                 'Content-Type': 'application/json',
-             },
-             body: JSON.stringify(exportedDocumentData),
-         });
+        const response = await fetch('/api/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(exportedDocumentData),
+        });
 
         if (!response.ok) {
             console.error("Failed to generate PDF:", response.statusText);
