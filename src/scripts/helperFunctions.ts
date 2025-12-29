@@ -95,7 +95,8 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ).filter( (req) => req !== undefined),
         };
 
-        const response = await fetch('/api/generate-pdf', {
+        const apiUrl = import.meta.env.VITE_PDF_API_URL || 'https://pdf-generator-962523277913.europe-west1.run.app';
+        const response = await fetch(`${apiUrl}/generate-pdf`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

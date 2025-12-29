@@ -13,6 +13,10 @@ dist
 dist-ssr
 coverage
 *.local
+.env.local
+
+# Keep .env.development and .env.production in repo for configuration
+# Only ignore .env.local which may contain secrets
 
 /cypress/videos/
 /cypress/screenshots/
