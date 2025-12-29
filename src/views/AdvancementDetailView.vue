@@ -40,6 +40,9 @@ const rank : Ref<RankDTO | undefined> = ref();
 const allRanks : Ref<RankDTO[]> = ref([]);
 
 const isLoadingData = ref(false);
+const loadingScreenTitle = ref("");
+const loadingScreenMessage = ref("");
+
 
 async function reload() {
   if (isLoadingData.value) return;
@@ -213,6 +216,20 @@ function gerRequirementsStatus() {
   })
 }
 
+function managePdfGeneration(){
+  loadingScreenTitle.value = t('advancement.generating');
+  generatePDF(editedRankInProgress.value).then(e=>{
+      if (e?.ok)
+        loadingScreenTitle.value = t('advancement.generated')
+      else {
+        loadingScreenTitle.value = t('advancement.generationFailed')
+        loadingScreenMessage.value = e?.statusText ? e?.status + " " + e?.statusText : "Something went wrong"
+        console.log(e)
+      }
+
+    })
+}
+
 </script>
 
 <template>
@@ -260,8 +277,21 @@ function gerRequirementsStatus() {
         <ButtonComponent
             :button-text="t('advancement.generate')"
             buttonStyle="primary"
-            @click="generatePDF(editedRankInProgress)"
+            @click="managePdfGeneration()"
         />
+        <div v-if="loadingScreenTitle.length > 0">
+          <PopupComponent
+              v-if="loadingScreenTitle == t('advancement.generating')"
+              :title="loadingScreenTitle"
+              :message="loadingScreenMessage"
+          />
+          <PopupComponent
+              v-else
+              :title="loadingScreenTitle"
+              :message="loadingScreenMessage"
+              :option-one="{text: t('edit.ok'), action: () => { loadingScreenTitle = ''; loadingScreenMessage = ''; }}"
+          />
+        </div>
         <ButtonComponent
             v-if="false"
             :button-text="t('advancement.export')"

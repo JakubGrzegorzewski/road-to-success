@@ -105,7 +105,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
 
         if (!response.ok) {
             console.error("Failed to generate PDF:", response.statusText);
-            return;
+            return response;
         }
 
         const blob = await response.blob();
@@ -117,6 +117,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
         link.click();
         link.parentNode?.removeChild(link);
         window.URL.revokeObjectURL(url);
+        return response;
     } catch (err) {
         console.error("Error generating PDF:", err);
     }

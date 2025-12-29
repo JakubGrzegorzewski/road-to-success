@@ -8,6 +8,7 @@
   "edit": {
     "yes": "Tak",
     "no": "Nie",
+    "ok": "OK",
     "edit": "Edytuj",
     "save": "Zapisz",
     "cancel": "Anuluj",
@@ -18,6 +19,9 @@
   "advancement": {
     "your": "Twoje próby",
     "generate": "Generuj PDF próby",
+    "generating" : "Generowanie próby",
+    "generated" : "Proba wygenerowana",
+    "generationFailed": "Generowanie próby się nie powiodło",
     "changeStatus": "Zmień status",
     "changeMentor": "Zmień opiekuna",
     "idea": "Idea stopnia",

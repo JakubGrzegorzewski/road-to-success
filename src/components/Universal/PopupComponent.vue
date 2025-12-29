@@ -5,9 +5,9 @@ import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 
 const props = defineProps<{
   title: string,
-  message: string,
-  optionOne : { text: string, action: () => void } | null,
-  optionTwo : { text: string, action: () => void } | null,
+  message?: string,
+  optionOne? : { text: string, action: () => void } | null,
+  optionTwo? : { text: string, action: () => void } | null,
 }>();
 
 </script>

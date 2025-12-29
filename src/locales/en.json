@@ -8,6 +8,7 @@
   "edit": {
     "yes": "Yes",
     "no": "No",
+    "ok": "OK",
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
@@ -18,6 +19,9 @@
   "advancement": {
     "your": "Your advancements",
     "generate": "Generate advancement PDF",
+    "generating" : "Generating advancement",
+    "generated" : "Advancement generated",
+    "generationFailed": "Generation failed",
     "changeStatus": "Change status",
     "changeMentor": "Change mentor",
     "idea": "Advancement idea",
