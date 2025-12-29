@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from 'url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
-import { pagesLinks } from '@/scripts/pagesLinks.js'
+import { pagesLinks } from './src/scripts/pagesLinks.js'
 
 
 export default defineConfig({
