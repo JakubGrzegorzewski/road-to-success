@@ -98,15 +98,12 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ).filter( (req) => req !== undefined),
         };
 
-        // Use proxy in development, direct URL in production
-        const apiUrl = import.meta.env.DEV
-            ? '/generate-pdf'
-            : 'https://pdf-generator-962523277913.europe-west1.run.app/generate-pdf';
+        // Always use relative path - let the proxy handle it in dev, and server proxy in production
+        const apiUrl = '/generate-pdf';
 
         const response = await axios.post(apiUrl, exportedDocumentData, {
             headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Content-Type': 'application/json'
             },
             responseType: 'blob'
         });
