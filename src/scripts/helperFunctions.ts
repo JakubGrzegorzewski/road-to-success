@@ -90,17 +90,19 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             tasks: exportedTasks,
             imageBase64: rank.iconInBase64,
             backgroundImageBase64 : rank.backgroundInBase64,
-            requirements: requirementArray.map( (req) => {
-                    taskArray.some((task: TaskDTO) => task.requirementsIds.includes(req.id));req.number; req.content;
-                }
+            requirements: requirementArray.map( (req) => ({
+                    number: req.number,
+                    content: req.content,
+                    isUsed: taskArray.some((task: TaskDTO) => task.requirementsIds.includes(req.id))
+                })
             ).filter( (req) => req !== undefined),
         };
 
-        const response = await axios.post('/generate-pdf', {
+        const response = await axios.post('/generate-pdf', exportedDocumentData, {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(exportedDocumentData),
+            responseType: 'blob'
         });
 
         if (!response.data) {
@@ -108,7 +110,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             return response;
         }
 
-        const url = window.URL.createObjectURL(response.data.blob());
+        const url = window.URL.createObjectURL(response.data);
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `${RankInProgressData.rankId || 'advancement'}.pdf`);

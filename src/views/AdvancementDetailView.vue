@@ -219,7 +219,7 @@ function gerRequirementsStatus() {
 function managePdfGeneration(){
   loadingScreenTitle.value = t('advancement.generating');
   generatePDF(editedRankInProgress.value).then(e=>{
-      if (e?.ok)
+      if (e?.status === 200)
         loadingScreenTitle.value = t('advancement.generated')
       else {
         loadingScreenTitle.value = t('advancement.generationFailed')

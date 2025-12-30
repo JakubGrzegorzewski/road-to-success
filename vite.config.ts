@@ -22,9 +22,9 @@ export default defineConfig({
     server : {
         proxy : {
             '/generate-pdf': {
-                target: 'https://pdf-generator-962523277913.europe-west1.run.app/generate-pdf/',
+                target: 'https://pdf-generator-962523277913.europe-west1.run.app/generate-pdf',
                 changeOrigin : true,
-                rewrite: path => path.replace("/api", "")
+                rewrite: path => path.replace("/generate-pdf", "")
             }
         }
     }
