@@ -11,6 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@vueuse/core": "^14.1.0",
     "axios": "^1.13.2",
     "js-cookie": "^3.0.5",
     "vue": "^3.5.17",
