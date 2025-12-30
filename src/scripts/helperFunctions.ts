@@ -5,6 +5,7 @@ import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
+import axios from 'axios'
 
 export function addTaskToDB(rankInProgressId : number, rank : RankDTO, requirements : number[] = []) : Promise<TaskDTO> | undefined {
     if (rank === undefined)
@@ -95,22 +96,19 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ).filter( (req) => req !== undefined),
         };
 
-        const apiUrl = import.meta.env.VITE_PDF_API_URL || 'https://pdf-generator-962523277913.europe-west1.run.app';
-        const response = await fetch(`${apiUrl}/generate-pdf`, {
-            method: 'POST',
+        const response = await axios.post('/generate-pdf', {
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(exportedDocumentData),
         });
 
-        if (!response.ok) {
+        if (!response.data) {
             console.error("Failed to generate PDF:", response.statusText);
             return response;
         }
 
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
+        const url = window.URL.createObjectURL(response.data.blob());
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `${RankInProgressData.rankId || 'advancement'}.pdf`);

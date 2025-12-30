@@ -19,14 +19,13 @@ export default defineConfig({
           '@': fileURLToPath(new URL('./src', import.meta.url))
         },
     },
-    server: {
-        proxy: {
-            '/api': {
-                target: 'https://pdf-generator-962523277913.europe-west1.run.app',
-                changeOrigin: true,
-                secure: true,
-                ws: false,
-            },
+    server : {
+        proxy : {
+            '/generate-pdf': {
+                target: 'https://pdf-generator-962523277913.europe-west1.run.app/generate-pdf/',
+                changeOrigin : true,
+                rewrite: path => path.replace("/api", "")
+            }
         }
     }
 })
