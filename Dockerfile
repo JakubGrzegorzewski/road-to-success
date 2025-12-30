@@ -22,7 +22,7 @@ WORKDIR /workspace
 
 # Copy package files and install only production dependencies
 COPY package*.json ./
-RUN npm install --omit=dev express
+RUN npm ci --omit=dev
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
