@@ -106,6 +106,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
         const response = await axios.post(apiUrl, exportedDocumentData, {
             headers: {
                 'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
             },
             responseType: 'blob'
         });
