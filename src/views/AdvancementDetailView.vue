@@ -219,14 +219,21 @@ function gerRequirementsStatus() {
 function managePdfGeneration(){
   loadingScreenTitle.value = t('advancement.generating');
   generatePDF(editedRankInProgress.value).then(e=>{
-      if (e?.status === 200)
+      if (e?.status === 200) {
         loadingScreenTitle.value = t('advancement.generated')
-      else {
+      } else {
         loadingScreenTitle.value = t('advancement.generationFailed')
         loadingScreenMessage.value = e?.statusText ? e?.status + " " + e?.statusText : "Something went wrong"
         console.log(e)
       }
-
+    }).catch(error => {
+      loadingScreenTitle.value = t('advancement.generationFailed')
+      if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
+        loadingScreenMessage.value = 'Network error: Please check if CORS is enabled on the backend API'
+      } else {
+        loadingScreenMessage.value = error.message || "An unexpected error occurred"
+      }
+      console.error("PDF generation error:", error)
     })
 }
 

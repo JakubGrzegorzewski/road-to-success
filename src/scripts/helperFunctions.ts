@@ -98,7 +98,12 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ).filter( (req) => req !== undefined),
         };
 
-        const response = await axios.post('/generate-pdf', exportedDocumentData, {
+        // Use proxy in development, direct URL in production
+        const apiUrl = import.meta.env.DEV
+            ? '/generate-pdf'
+            : 'https://pdf-generator-962523277913.europe-west1.run.app/generate-pdf';
+
+        const response = await axios.post(apiUrl, exportedDocumentData, {
             headers: {
                 'Content-Type': 'application/json',
             },
