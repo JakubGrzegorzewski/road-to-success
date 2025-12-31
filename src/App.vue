@@ -5,7 +5,7 @@ import NavBarComponent from "@/components/Website/NavBarComponent.vue";
 import FooterComponent from "@/components/Website/FooterComponent.vue";
 import { useFavicon } from '@vueuse/core';
 
-useFavicon('@/assets/logo.svg')
+useFavicon('@/assets/favicon.ico')
 
 onMounted(() => {
   if (!Cookies.get('locale')) {
