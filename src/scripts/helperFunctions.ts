@@ -69,7 +69,15 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ? (await Promise.all((RankInProgressData.taskIds || []).map(id => Task.getById(id)))).filter(Boolean) as TaskDTO[]
             : [];
 
-
+        if (taskArray.length <= 0)
+            return {
+                data: {},
+                status: '',
+                statusText: 'By wygenerować plik należy dodać zadania',
+                headers: {},
+                config: {},
+                request: {}
+            }
 
         const exportedTasks = await Promise.all(taskArray.map(async (task: TaskDTO) => {
             return {
@@ -98,6 +106,7 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             ).filter( (req) => req !== undefined),
         };
 
+        console.log(JSON.stringify(exportedDocumentData));
         // Always use relative path - let the proxy handle it in dev, and server proxy in production
         const apiUrl = '/generate-pdf';
 
