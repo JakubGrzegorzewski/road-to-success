@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import RequirementBasedTaskComponent from "@/components/Advancement/RequirementBasedTaskComponent.vue";
 import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {isIdeaBased, isRequirementBased} from "@/scripts/whatToShow";
+import {isIdeaBased} from "@/scripts/whatToShow";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import {Style} from "@/scripts/Model/Style";
 import {Task, TaskDTO} from "@/scripts/Model/Task";
@@ -326,20 +325,6 @@ function managePdfGeneration(){
             </div>
           </div>
       </details>
-    </div>
-    <div v-if="isRequirementBased(editedRankInProgress.style)">
-      <RequirementBasedTaskComponent
-          v-for="requirement in requirements.sort(requirementSort)"
-          :key="requirement.id"
-          :requirement="requirement"
-          :rank-in-progress="editedRankInProgress"
-          :tasks="tasks.filter(el => Array.isArray(el.requirementsIds) ? el.requirementsIds.indexOf(requirement.id) !== -1 : false)"
-          :rank="rank"
-          :user="user"
-          @update:task="updateTask"
-          @delete:task="deleteTask"
-          @add:task="req => addTask(req)"
-      />
     </div>
     <div v-if="isIdeaBased(editedRankInProgress.style)" style="display: flex; flex-direction: column; gap: 20px;">
       <IdeaBasedTaskComponent

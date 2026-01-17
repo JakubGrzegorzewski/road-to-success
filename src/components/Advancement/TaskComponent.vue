@@ -132,7 +132,7 @@ const getStatusStyle = (status: Status) => {
     />
 
   </div>
-  <div class="comments box-shadow" v-if="comments">
+  <div class="comments box-shadow" v-if="false">
     <CommentComponent
         v-for="currentComment in comments"
         :comment="currentComment"
@@ -177,6 +177,7 @@ const getStatusStyle = (status: Status) => {
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  gap: 20px;
 }
 .task-content {
   display: flex;
@@ -184,7 +185,6 @@ const getStatusStyle = (status: Status) => {
   border-radius: 8px;
   padding: 20px;
   gap: 10px;
-  margin-right: 20px;
   flex: 2;
   align-items: stretch;
   @media (prefers-color-scheme: dark) {
