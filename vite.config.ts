@@ -1,18 +1,17 @@
 import { fileURLToPath, URL } from 'url'
 
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { pagesLinks } from './src/scripts/pagesLinks.js'
 
-
-export default defineConfig({
+module.exports = {
     base: pagesLinks.roadToSuccess,
     plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+        vue(),
+        vueDevTools(),
+    ],
   // base: '/road-to-success/',
+
 
     resolve: {
         alias: {
@@ -22,10 +21,15 @@ export default defineConfig({
     server : {
         proxy : {
             '/generate-pdf': {
-                target: 'https://pdf-generator-962523277913.europe-west1.run.app',
+                target: 'api.grzegorzewski.app',
                 changeOrigin : true,
                 secure: true
             }
         }
+    },
+    pwa: {
+        iconPaths: {
+            favicon32: '/src/assets/favicon.ico',
+        }
     }
-})
+}

@@ -3,9 +3,11 @@ import Cookies from 'js-cookie';
 import {onMounted} from 'vue';
 import NavBarComponent from "@/components/Website/NavBarComponent.vue";
 import FooterComponent from "@/components/Website/FooterComponent.vue";
-import { useFavicon } from '@vueuse/core';
+import { useFavicon } from '@vueuse/core'
 
-useFavicon('@/assets/favicon.ico')
+const icon = useFavicon()
+
+icon.value = '@/assets/favicon.ico'
 
 onMounted(() => {
   if (!Cookies.get('locale')) {
