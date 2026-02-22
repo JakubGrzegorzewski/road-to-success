@@ -136,11 +136,66 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
     }
 }
 
-export async function generateExport() {
-    // Placeholder for export functionality
-    console.log("Export functionality is not yet implemented.");
-}
+export async function generateExport(RankInProgressData: RankInProgressDTO) {
+    try {
+        let [rank, user, mentor] = await Promise.all([
+            Rank.getById(RankInProgressData.rankId),
+            AppUser.getById(RankInProgressData.userId),
+            AppUser.getById(RankInProgressData.mentorId),
+        ]);
 
+        let requirementArray: RequirementDTO[] = (rank?.requirementIds || []).length > 0
+            ? (await Promise.all((rank!.requirementIds || []).map(id => Requirement.getById(id)))).filter(Boolean) as RequirementDTO[]
+            : [];
+
+        let taskArray: TaskDTO[] = (RankInProgressData.taskIds || []).length > 0
+            ? (await Promise.all((RankInProgressData.taskIds || []).map(id => Task.getById(id)))).filter(Boolean) as TaskDTO[]
+            : [];
+
+        if (rank.id <= 5){
+            rank = {
+                id: rank.id,
+                fullName: "",
+                shortName: rank.shortName,
+                idea: "",
+                startRequirements: [],
+                endRequirements: [],
+                requirementIds: [],
+                ranksInProgressIds: [],
+                iconInBase64: "",
+                backgroundInBase64: "",
+                colorHex: "",
+            }
+            requirementArray = []
+        }
+
+        const exportData = {
+            rank: rank ?? null,
+            user: user ?? null,
+            mentor: mentor ?? null,
+            requirements: requirementArray,
+            tasks: taskArray,
+        };
+
+        try {
+            const json = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Próba_${rank.shortName || 'advancement'}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('Failed to export', e);
+        }
+
+    } catch (err) {
+        console.error("Error generating export:", err);
+    }
+}
 export function isDarkMode(): boolean {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return window.matchMedia('(prefers-color-scheme: dark)').matches;

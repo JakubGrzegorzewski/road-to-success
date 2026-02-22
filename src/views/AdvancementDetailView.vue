@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {isIdeaBased} from "@/scripts/whatToShow";
-import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress";
-import {Style} from "@/scripts/Model/Style";
-import {Task, TaskDTO} from "@/scripts/Model/Task";
-import {Rank, RankDTO} from "@/scripts/Model/Rank";
-import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement";
+import {isIdeaBased} from "@/scripts/whatToShow.js";
+import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
+import {Style} from "@/scripts/Model/Style.js";
+import {Task, TaskDTO} from "@/scripts/Model/Task.js";
+import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
+import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 import {
   addTaskToDB, generateExport, generatePDF,
   isDarkMode,
   loadDatabaseData,
-  requirementSort
 } from "@/scripts/helperFunctions.js";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
+import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {pagesLinks} from "@/scripts/pagesLinks";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
 
 const { t } = useI18n();
 
@@ -53,12 +52,12 @@ async function reload() {
 
   try {
     // Load user
-    AppUser.getById(editedRankInProgress.value.userId).then(fetchedUser => {
+    AppUser.getById(editedRankInProgress.value.userId).then((fetchedUser: AppUserDTO) => {
       console.info("User loaded:", fetchedUser);
       user.value = fetchedUser
     })
 
-    AppUser.getAll().then(fetchedUsers => {
+    AppUser.getAll().then((fetchedUsers: AppUserDTO[]) => {
       console.info("Users loaded:", fetchedUsers);
       allUsers.value = fetchedUsers
     })
@@ -71,14 +70,14 @@ async function reload() {
     // Load requirements
     const requirementIds = rank.value?.requirementIds ?? [];
     requirements.value = await Promise.all(
-        requirementIds.map(id => Requirement.getById(id))
+        requirementIds.map((id: number) => Requirement.getById(id))
     );
     console.info("Requirements loaded:", requirements.value);
 
     // Load tasks
     const taskIds = editedRankInProgress.value.taskIds ?? [];
     tasks.value = await Promise.all(
-        taskIds.map(id => Task.getById(id))
+        taskIds.map((id: number) => Task.getById(id))
     );
     console.info("Tasks loaded:", tasks.value);
   } catch (error) {
@@ -180,7 +179,7 @@ onMounted(() => {
   // Load ranks in progress
   loadDatabaseData().then(()=>{
     RankInProgress.getById(props.id)
-        .then(rankInProgress => {
+        .then((rankInProgress: RankInProgressDTO) => {
           editedRankInProgress.value = rankInProgress;
           tempRankId.value = rankInProgress.rankId;
           console.log("Rank in progress loaded:", rankInProgress);
@@ -234,6 +233,11 @@ function managePdfGeneration(){
       }
       console.error("PDF generation error:", error)
     })
+}
+
+function manageExport() {
+  loadingScreenTitle.value = t('advancement.exporting');
+  generateExport(editedRankInProgress.value);
 }
 
 </script>
@@ -299,10 +303,9 @@ function managePdfGeneration(){
           />
         </div>
         <ButtonComponent
-            v-if="false"
             :button-text="t('advancement.export')"
             buttonStyle="primary"
-            @click="generateExport()"
+            @click="manageExport()"
         />
       </div>
 
