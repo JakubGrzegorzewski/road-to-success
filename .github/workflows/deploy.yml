@@ -15,6 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get Short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -28,3 +32,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/jakubgrzegorzewski/road-to-success:latest
+          # Pass the version as a build argument
+          build-args: |
+            VITE_APP_VERSION=${{ steps.vars.outputs.sha_short }}
