@@ -19,11 +19,12 @@ module.exports = {
         },
     },
     server : {
-        proxy : {
+        proxy: {
             '/generate-pdf': {
-                target: 'https://api.grzegorzewski.app/generate-pdf/',
-                changeOrigin : true,
-                secure: true
+                target: 'https://api.grzegorzewski.app',
+                changeOrigin: true, // Crucial for SSL/SNI
+                secure: false,      // Add this if the certificate is self-signed or invalid
+                rewrite: (path: string) => path.replace(/^\/generate-pdf/, '/generate-pdf')
             }
         }
     },
