@@ -21,7 +21,7 @@ module.exports = {
     server : {
         proxy : {
             '/generate-pdf': {
-                target: 'https://api.grzegorzewski.app',
+                target: 'https://api.grzegorzewski.app/generate-pdf/',
                 changeOrigin : true,
                 secure: true
             }
