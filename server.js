@@ -28,6 +28,13 @@ app.post('/generate-pdf', async (req, res) => {
       return res.status(response.status).json({ error: 'Failed to generate PDF' });
     }
 
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/pdf')) {
+      const text = await response.text();
+      console.error('PDF API returned non-PDF response. Content-Type:', contentType, '\nBody:', text.substring(0, 500));
+      return res.status(502).json({ error: 'API did not return a PDF', contentType, detail: text.substring(0, 500) });
+    }
+
     const buffer = await response.arrayBuffer();
     res.set('Content-Type', 'application/pdf');
     res.send(Buffer.from(buffer));

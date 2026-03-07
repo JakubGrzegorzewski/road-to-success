@@ -122,6 +122,20 @@ export async function generatePDF(RankInProgressData: RankInProgressDTO){
             return response;
         }
 
+        // Check if the response is actually a PDF; proxy may return a JSON error blob
+        const responseContentType: string = response.headers['content-type'] || '';
+        if (!responseContentType.includes('application/pdf')) {
+            const text = await (response.data as Blob).text();
+            let detail = text;
+            try { detail = JSON.parse(text)?.error || text; } catch { /* ignore */ }
+            console.error("Failed to generate PDF: unexpected content type", responseContentType, detail);
+            return {
+                ...response,
+                status: response.status || 502,
+                statusText: detail || 'API did not return a PDF'
+            };
+        }
+
         const url = window.URL.createObjectURL(response.data);
         const link = document.createElement('a');
         link.href = url;
