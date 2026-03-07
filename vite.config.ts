@@ -3,16 +3,17 @@ import { fileURLToPath, URL } from 'url'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { pagesLinks } from './src/scripts/pagesLinks.js'
+import { version } from './package.json'
 
-module.exports = {
+export default {
     base: pagesLinks.roadToSuccess,
     plugins: [
         vue(),
         vueDevTools(),
     ],
-  // base: '/road-to-success/',
-
-
+    define: {
+        __APP_VERSION__: JSON.stringify(version)
+    },
     resolve: {
         alias: {
           '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -24,7 +25,6 @@ module.exports = {
                 target: 'https://api.grzegorzewski.app',
                 changeOrigin: true, // Crucial for SSL/SNI
                 secure: false,      // Add this if the certificate is self-signed or invalid
-                rewrite: (path: string) => path.replace(/^\/generate-pdf/, '/generate-pdf')
             }
         }
     },
