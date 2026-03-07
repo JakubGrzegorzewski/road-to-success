@@ -16,6 +16,7 @@ onMounted(() => {
   if (!Cookies.get('userId')) {
     Cookies.set('userId', '1', { expires: 1 });
   }
+  console.log("Version:", __APP_VERSION__);
 })
 
 </script>
