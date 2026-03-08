@@ -19,6 +19,8 @@ app.post('/generate-pdf', async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) VueProxy/1.0', // Dodaj to!
+        'Accept': 'application/pdf, application/json'
       },
       body: JSON.stringify(req.body)
     });
