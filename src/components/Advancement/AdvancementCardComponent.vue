@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {useRouter} from "vue-router";
-import {Rank, RankDTO} from "@/scripts/Model/Rank";
+import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser";
-import {isDarkMode} from "@/scripts/helperFunctions";
+import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
+import {isDarkMode} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
-import {Status} from "@/scripts/Model/Status";
-import {Style} from "@/scripts/Model/Style";
-import {pagesLinks} from "@/scripts/pagesLinks";
+import {Status} from "@/scripts/Model/Status.js";
+import {Style} from "@/scripts/Model/Style.js";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
 import {useI18n} from "vue-i18n";
+import ImportIconComponent from "@/components/Universal/ImportIconComponent.vue";
 
 const { t } = useI18n();
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   rankInProgress?: RankInProgressDTO
-}>();
+  type?: 'default' | 'add' | 'import'
+}>(), {
+  type: 'default'
+});
 
 const emits = defineEmits<{
   (e: 'delete-rank', rankInProgressId: number): void
@@ -29,9 +33,9 @@ const router = useRouter();
 
 onMounted(() => {
   if (!props.rankInProgress) return;
-  Rank.getById(props.rankInProgress.rankId).then(e=>rank.value = e);
-  AppUser.getById(props.rankInProgress.mentorId).then(e=>mentor.value = e);
-  AppUser.getById(props.rankInProgress.userId).then(e=>user.value = e);
+  Rank.getById(props.rankInProgress.rankId).then((e: RankDTO) => rank.value = e);
+  AppUser.getById(props.rankInProgress.mentorId).then((e: AppUserDTO) => mentor.value = e);
+  AppUser.getById(props.rankInProgress.userId).then((e: AppUserDTO) => user.value = e);
 });
 
 function addNewRank() {
@@ -52,7 +56,7 @@ function addNewRank() {
 </script>
 
 <template>
-  <div v-if="rankInProgress && rank && mentor && user"
+  <div v-if="rankInProgress && rank && mentor && user && type == 'default'"
       class="box-shadow advancement-card-out">
     <div class="advancement-card-delete" @click="emits('delete-rank', rankInProgress.id)">
       <img src="@/assets/images/delete.svg"  alt="delete"/> 
@@ -69,7 +73,7 @@ function addNewRank() {
       <h4> {{ mentor.fullName }} </h4>
     </div>
   </div>
-  <div v-else
+  <div v-if="type == 'add'"
        class="advancement-card-out box-shadow" style="justify-content: center; align-items: center;"
        @click="addNewRank()"
   >
@@ -78,6 +82,12 @@ function addNewRank() {
       <h3 style="transform: none">{{t('advancement.add')}}</h3>
     </div>
 
+  </div>
+  <div v-if="type == 'import'" class="advancement-card-out box-shadow">
+    <div class="advancement-card-in" style="transform: translateY(0px)">
+      <ImportIconComponent :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'" style="width: 150px; height: 150px; margin-bottom: 10px;"/>
+      <h3 style="transform: none">{{t('advancement.import')}}</h3>
+    </div>
   </div>
 
 </template>

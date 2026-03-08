@@ -303,7 +303,6 @@ function manageExport() {
           />
         </div>
         <ButtonComponent
-            v-if="false"
             :button-text="t('advancement.export')"
             buttonStyle="primary"
             @click="manageExport()"
