@@ -23,7 +23,8 @@ export default {
         proxy: {
             '/generate-pdf': {
                 target: 'https://api.grzegorzewski.app',
-                secure: false,
+                changeOrigin: true, // Crucial for SSL/SNI
+                secure: false,      // Add this if the certificate is self-signed or invalid
             }
         }
     },

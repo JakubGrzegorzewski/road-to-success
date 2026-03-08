@@ -13,9 +13,9 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json({ limit: '50mb' }));
 
 // Proxy for PDF generation API
-app.post('https://api.grzegorzewski.app/generate-pdf', async (req, res) => {
+app.post('/generate-pdf', async (req, res) => {
   try {
-    const response = await fetch('https://api.grzegorzewski.app/generate-pdf', {
+    const response = await fetch('/generate-pdf', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
