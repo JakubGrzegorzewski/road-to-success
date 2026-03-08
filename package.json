@@ -1,6 +1,6 @@
 {
   "name": "road-to-success",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "build": "vite build",
