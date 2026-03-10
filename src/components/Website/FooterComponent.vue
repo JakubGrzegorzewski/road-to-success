@@ -4,8 +4,8 @@
 
 <template>
   <footer>
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAACo1OLKZyUIP-Uhz"></div>
     <div class="footer-thing">
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAACo1OLKZyUIP-Uhz"></div>
       <p>&copy; 2025 Jakub Grzegorzewski</p>
     </div>
   </footer>
@@ -22,6 +22,7 @@ footer {
   background-color: var(--primary-color);
   box-shadow: 0 10px 10px var(--shadow-light);
   padding: 0 20px;
+  gap: 50px
 }
 
 
