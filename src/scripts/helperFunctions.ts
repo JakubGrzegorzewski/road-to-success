@@ -166,30 +166,28 @@ export async function generateExport(RankInProgressData: RankInProgressDTO) {
             ? (await Promise.all((RankInProgressData.taskIds || []).map(id => Task.getById(id)))).filter(Boolean) as TaskDTO[]
             : [];
 
+
+        let exportData = {};
+
         if (rank.id <= 5){
-            rank = {
-                id: rank.id,
-                fullName: "",
-                shortName: rank.shortName,
-                idea: "",
-                startRequirements: [],
-                endRequirements: [],
-                requirementIds: [],
-                ranksInProgressIds: [],
-                iconInBase64: "",
-                backgroundInBase64: "",
-                colorHex: "",
+            exportData = {
+                rankInProgress: RankInProgressData,
+                user: user ?? null,
+                mentor: mentor ?? null,
+                tasks: taskArray,
+            };
+        }else {
+            exportData = {
+                rankInProgress: RankInProgressData,
+                user: user ?? null,
+                mentor: mentor ?? null,
+                tasks: taskArray,
+                requirements: requirementArray,
+                rank: rank
             }
-            requirementArray = []
         }
 
-        const exportData = {
-            rank: rank ?? null,
-            user: user ?? null,
-            mentor: mentor ?? null,
-            requirements: requirementArray,
-            tasks: taskArray,
-        };
+
 
         try {
             const json = JSON.stringify(exportData, null, 2);
@@ -210,6 +208,97 @@ export async function generateExport(RankInProgressData: RankInProgressDTO) {
         console.error("Error generating export:", err);
     }
 }
+
+export async function generateImport(): Promise<RankInProgressDTO | null> {
+    return new Promise((resolve, reject) => {
+        const input = document.createElement('input'); input.type = 'file'; input.accept = 'application/json';
+        input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) {
+            resolve(null);
+            return;
+        }
+
+        try {
+            const text = await file.text();
+            const importData = JSON.parse(text);
+
+            const promises: Promise<any>[] = [];
+
+            if (importData.rank) {
+                const existing = await Rank.getById(importData.rank.id);
+                if (existing) {
+                    promises.push(Rank.update(importData.rank as RankDTO));
+                } else {
+                    promises.push(Rank.add(importData.rank as RankDTO));
+                }
+            }
+
+            if (importData.requirements && Array.isArray(importData.requirements)) {
+                for (const req of importData.requirements as RequirementDTO[]) {
+                    const existing = await Requirement.getById(req.id);
+                    if (existing) {
+                        promises.push(Requirement.update(req));
+                    } else {
+                        promises.push(Requirement.add(req));
+                    }
+                }
+            }
+
+            if (importData.user) {
+                const existing = await AppUser.getById(importData.user.id);
+                if (existing) {
+                    promises.push(AppUser.update(importData.user as AppUserDTO));
+                } else {
+                    promises.push(AppUser.add(importData.user as AppUserDTO));
+                }
+            }
+
+            if (importData.mentor) {
+                const mentor = importData.mentor as AppUserDTO;
+                if (mentor.id !== importData.user?.id) {
+                    const existing = await AppUser.getById(mentor.id);
+                    if (existing) {
+                        promises.push(AppUser.update(mentor));
+                    } else {
+                        promises.push(AppUser.add(mentor));
+                    }
+                }
+            }
+
+            if (importData.rankInProgress) {
+                const existing = await RankInProgress.getById(importData.rankInProgress.id);
+                if (existing) {
+                    promises.push(RankInProgress.update(importData.rankInProgress as RankInProgressDTO));
+                } else {
+                    promises.push(RankInProgress.add(importData.rankInProgress as RankInProgressDTO));
+                }
+            }
+
+            if (importData.tasks && Array.isArray(importData.tasks)) {
+                for (const task of importData.tasks as TaskDTO[]) {
+                    const existing = await Task.getById(task.id);
+                    if (existing) {
+                        promises.push(Task.update(task));
+                    } else {
+                        promises.push(Task.add(task, task.rankInProgressId));
+                    }
+                }
+            }
+
+            await Promise.all(promises);
+            console.log("Import successful");
+            resolve(importData.rankInProgress ?? null);
+        } catch (e) {
+            console.error('Failed to import', e);
+            reject(e);
+        }
+    };
+
+    input.click();
+});
+}
+
 export function isDarkMode(): boolean {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return window.matchMedia('(prefers-color-scheme: dark)').matches;

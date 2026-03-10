@@ -4,7 +4,7 @@ import {useRouter} from "vue-router";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {isDarkMode} from "@/scripts/helperFunctions.js";
+import {generateImport, isDarkMode} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {Style} from "@/scripts/Model/Style.js";
@@ -51,7 +51,6 @@ function addNewRank() {
   RankInProgress.add(newRank).then(
       rankInProgress => router.push(pagesLinks.advancement + rankInProgress.id)
   );
-
 }
 </script>
 
@@ -83,7 +82,10 @@ function addNewRank() {
     </div>
 
   </div>
-  <div v-if="type == 'import'" class="advancement-card-out box-shadow">
+  <div v-if="type == 'import'"
+       class="advancement-card-out box-shadow"
+       @click="generateImport().then((thisRankInProgress: RankInProgressDTO | null) => { if (thisRankInProgress) router.push(pagesLinks.advancement + thisRankInProgress.id) })"
+  >
     <div class="advancement-card-in" style="transform: translateY(0px)">
       <ImportIconComponent :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'" style="width: 150px; height: 150px; margin-bottom: 10px;"/>
       <h3 style="transform: none">{{t('advancement.import')}}</h3>
