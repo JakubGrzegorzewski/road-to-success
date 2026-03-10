@@ -237,7 +237,10 @@ function managePdfGeneration(){
 
 function manageExport() {
   loadingScreenTitle.value = t('advancement.exporting');
-  generateExport(editedRankInProgress.value);
+  generateExport(editedRankInProgress.value).then(() => {
+      loadingScreenTitle.value = t('advancement.exported')
+    }
+  )
 }
 
 </script>
