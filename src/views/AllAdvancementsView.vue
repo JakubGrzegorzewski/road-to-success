@@ -41,7 +41,8 @@ function deleteRank(rankId: number) {
         :key="rankInProgress.id"
         @delete-rank="rankIdToDelete = $event"
     />
-    <AdvancementCardComponent/>
+    <AdvancementCardComponent type="add"/>
+    <AdvancementCardComponent type="import"/>
     <PopupComponent
         v-if="rankIdToDelete !== null"
         :title="t('popups.delete.title')"
