@@ -21,6 +21,8 @@
     "generate": "Generate advancement PDF",
     "generating" : "Generating advancement",
     "generated" : "Advancement generated",
+    "exporting": "Advancement is being exported",
+    "exported": "Advancement has been exported",
     "generationFailed": "Generation failed",
     "changeStatus": "Change status",
     "changeMentor": "Change mentor",

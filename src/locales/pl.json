@@ -21,6 +21,8 @@
     "generate": "Generuj PDF próby",
     "generating" : "Generowanie próby",
     "generated" : "Proba wygenerowana",
+    "exporting": "Próba jest eksportowana",
+    "exported": "Próba została eksportowana",
     "generationFailed": "Generowanie próby się nie powiodło",
     "changeStatus": "Zmień status",
     "changeMentor": "Zmień opiekuna",
