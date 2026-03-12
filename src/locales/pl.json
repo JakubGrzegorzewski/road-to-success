@@ -23,6 +23,7 @@
     "generated" : "Proba wygenerowana",
     "exporting": "Próba jest eksportowana",
     "exported": "Próba została eksportowana",
+    "import": "Zaimportuj próbę",
     "generationFailed": "Generowanie próby się nie powiodło",
     "changeStatus": "Zmień status",
     "changeMentor": "Zmień opiekuna",
