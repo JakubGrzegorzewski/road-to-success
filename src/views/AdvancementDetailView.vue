@@ -313,6 +313,33 @@ function manageExport() {
       </div>
 
       <h1 style="margin-top: 20px; justify-self: center">{{ rank.fullName }}</h1>
+      <details style="margin-bottom: 20px;" v-if="rank.startRequirements.length > 0 && rank.endRequirements.length >0">
+        <summary>{{ t('advancement.requirement.showRequirements') }}</summary>
+        <div
+            class="requirement-item box-shadow"
+            style="padding: 20px"
+        >
+          <h3> {{ t('advancement.requirement.start') }} </h3>
+          <br/>
+          <ul
+               v-for="req in rank.startRequirements"
+               :key="req"
+               style="padding-left: 30px"
+          >
+            <li> {{ req }} </li>
+          </ul>
+          <br/>
+          <h3> {{ t('advancement.requirement.end') }} </h3>
+          <br/>
+          <ul
+               v-for="req in rank.endRequirements"
+               :key="req"
+                style="padding-left: 30px"
+          >
+            <li> {{ req }} </li>
+          </ul>
+        </div>
+      </details>
       <p style="text-align: justify" v-if="rank.idea" v-html="getIdeaWithSelectedParts()"/>
       <details style="margin-top: 20px; cursor: pointer " v-if="Array.isArray(requirements) && Array.isArray(tasks)">
           <summary>{{ t('advancement.requirement.showSelected') }}</summary>

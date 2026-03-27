@@ -65,6 +65,9 @@
     },
     "requirement": {
       "selected": "Selected requirements:",
+      "showRequirements": "Show requirements",
+      "start": "Initial requirements",
+      "end": "Final requirements",
       "showSelected": "Show selected requirements in tasks",
       "add": "Add requirement:",
       "remove": "Remove requirement",

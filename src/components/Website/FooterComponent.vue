@@ -4,7 +4,6 @@
 
 <template>
   <footer>
-    <div class="cf-turnstile" data-sitekey="0x4AAAAAACo1OLKZyUIP-Uhz"></div>
     <div class="footer-thing">
       <p>&copy; 2025 Jakub Grzegorzewski</p>
     </div>

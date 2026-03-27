@@ -65,6 +65,9 @@
     },
     "requirement" : {
       "selected": "Zaznaczone wymagania:",
+      "showRequirements": "Pokaż wymagania",
+      "start": "Wymagania początkowe",
+      "end": "Wymagania końcowe",
       "showSelected": "Pokaż wybrane wymagania w zadaniach",
       "add" : "Dodaj wymaganie:",
       "remove" : "Usuń wymóg",
