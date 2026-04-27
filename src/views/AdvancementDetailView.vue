@@ -287,11 +287,11 @@ function manageExport() {
         <router-link :to="pagesLinks.addPerson"><button class="add-button">✎</button></router-link>
       </div>
       <div style="display: flex; gap: 15px">
-<!--        <ButtonComponent-->
-<!--            :button-text="t('advancement.generate')"-->
-<!--            buttonStyle="primary"-->
-<!--            @click="managePdfGeneration()"-->
-<!--        />-->
+        <ButtonComponent
+            :button-text="t('advancement.generate')"
+            buttonStyle="primary"
+            @click="managePdfGeneration()"
+        />
         <div v-if="loadingScreenTitle.length > 0">
           <PopupComponent
               v-if="loadingScreenTitle == t('advancement.generating')"
