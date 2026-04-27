@@ -47,9 +47,6 @@ app.post('/generate-pdf', async (req, res) => {
 });
 
 // Serve static files from the dist directory
-app.use('/.well-known', express.static(path.join(__dirname, 'dist', '.well-known'), {
-  dotfiles: 'allow'
-}));
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Handle SPA routing - send all requests to index.html
