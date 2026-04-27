@@ -7,7 +7,7 @@ import { useFavicon } from '@vueuse/core'
 
 const icon = useFavicon()
 
-icon.value = 'https://grzegorzewski.app/favicon.svg'
+icon.value = '@/assets/favicon.ico'
 
 onMounted(() => {
   if (!Cookies.get('locale')) {

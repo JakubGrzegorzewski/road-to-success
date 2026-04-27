@@ -30,7 +30,7 @@ export default {
     },
     pwa: {
         iconPaths: {
-            favicon32: 'https://grzegorzewski.app/favicon.svg',
+            favicon32: '/src/assets/favicon.ico',
         }
     }
 }
