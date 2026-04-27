@@ -5,7 +5,7 @@ import NavBarComponent from "@/components/Website/NavBarComponent.vue";
 import FooterComponent from "@/components/Website/FooterComponent.vue";
 import { useFavicon } from '@vueuse/core'
 
-const icon = useFavicon();
+const icon = useFavicon()
 
 icon.value = 'https://grzegorzewski.app/favicon.svg'
 
