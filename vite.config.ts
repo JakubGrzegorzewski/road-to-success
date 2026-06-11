@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'url'
 
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
-import { pagesLinks } from '@/scripts/pagesLinks'
+import { pagesLinks } from './src/scripts/pagesLinks'
 import { version } from './package.json'
 
 export default {
