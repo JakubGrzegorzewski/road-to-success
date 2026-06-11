@@ -75,6 +75,10 @@ const confirmSelection = () => {
       currentSpan = "";
     }
   });
+  if (currentSpan.length > 0) {
+    selectedText.push(currentSpan);
+  }
+  selectedText = selectedText.map((part) => part.trim()).filter((part) => part.length > 0);
   console.log(selectedText);
   emits('text-highlighted', { text: selectedText, reset: false })
   clearHighlight()

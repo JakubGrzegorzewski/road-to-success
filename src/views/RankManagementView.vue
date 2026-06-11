@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from 'vue'
-import {Rank, RankDTO} from '../scripts/Model/Rank'
-import {Requirement, RequirementDTO} from '../scripts/Model/Requirement'
+import {Rank, RankDTO} from '@/scripts/Model/Rank'
+import {Requirement, RequirementDTO} from '@/scripts/Model/Requirement'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import {useI18n} from "vue-i18n";
@@ -49,7 +49,7 @@ function resetForm() {
   iconFile.value = null
   documentBackgroundFile.value = null
   editedRank.value = null
-  Rank.getAll().then(res => { allRanks.value = res });
+  Rank.getAll().then((res: RankDTO[]) => { allRanks.value = res });
   allLocalRanks.value = JSON.parse(window.localStorage.getItem('Ranks') || '[]') as RankDTO[];
 }
 
@@ -86,9 +86,9 @@ function editRank(id: number) {
   requirements.value = []
 
   // Load requirements
-  rankToEdit.requirementIds.forEach(reqId => {
+  rankToEdit.requirementIds.forEach((reqId: number) => {
     if (allRanks.value)
-      Requirement.getById(reqId).then(e => {
+      Requirement.getById(reqId).then((e: RequirementDTO) => {
         requirements.value.push({ number: e.number, content: e.content});
       });
   });
@@ -231,28 +231,28 @@ function onFileChange(e: Event, maxSizeKB = 2000, fileRefName: 'iconFile' | 'doc
 
       <div class="input-list">
         <label>{{ t('rank.startRequirements') }}</label>
-        <div v-for="(req, i) in startRequirements" :key="`start-${i}`" class="input-list-item">
-          <input class="text-input-component custom-input" v-model="startRequirements[i]" :placeholder="t('content')"  />
-          <button-component buttonStyle="error" @click="removeStartReq(i)" v-if="startRequirements.length>1" button-text="-"/>
+        <div v-for="i in startRequirements.length" :key="`start-${i-1}`" class="input-list-item">
+          <input class="text-input-component custom-input" v-model="startRequirements[i-1]" :placeholder="t('content')"  />
+          <button-component buttonStyle="error" @click="removeStartReq(i-1)" v-if="startRequirements.length>1" button-text="-"/>
         </div>
         <button-component style="align-self: flex-end" buttonStyle="success" button-text="+" @click="addStartReq"/>
       </div>
 
       <div class="input-list">
         <label>{{ t('rank.endRequirements') }}</label>
-        <div v-for="(req, i) in endRequirements" :key="`end-${i}`" class="input-list-item">
-          <input class="text-input-component custom-input" v-model="endRequirements[i]" :placeholder="t('content')" />
-          <button-component buttonStyle="error" @click="removeEndReq(i)" v-if="endRequirements.length>1" button-text="-"/>
+        <div v-for="i in endRequirements.length" :key="`end-${i-1}`" class="input-list-item">
+          <input class="text-input-component custom-input" v-model="endRequirements[i-1]" :placeholder="t('content')" />
+          <button-component buttonStyle="error" @click="removeEndReq(i-1)" v-if="endRequirements.length>1" button-text="-"/>
         </div>
         <button-component style="align-self: flex-end" buttonStyle="success" button-text="+" @click="addEndReq"/>
       </div>
 
       <div class="input-list">
         <label> {{ t('rank.requirements') }} </label>
-        <div v-for="(r, i) in requirements" :key="`req-${i}`" class="input-list-item">
+        <div v-for="(req, i) in requirements" :key="`req-${i}`" class="input-list-item">
           <div style="display:flex; gap:8px; width: 100%">
-            <input class="text-input-component custom-input" v-model="requirements[i].number" style="width:100px;" :placeholder="t('requirement.number')" />
-            <input class="text-input-component custom-input" v-model="requirements[i].content" style="" :placeholder="t('requirement.description')"/>
+            <input class="text-input-component custom-input" v-model="req.number" style="width:100px;" :placeholder="t('requirement.number')" />
+            <input class="text-input-component custom-input" v-model="req.content" style="" :placeholder="t('requirement.description')"/>
           </div>
           <div>
             <button-component buttonStyle="error" @click="removeRequirement(i)" v-if="requirements.length>1" button-text="-"/>

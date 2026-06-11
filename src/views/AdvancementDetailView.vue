@@ -8,7 +8,7 @@ import {Task, TaskDTO} from "@/scripts/Model/Task.js";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
 import {
-  addTaskToDB, generateExport, generatePDF,
+  addTaskToDB, generateExport,
   isDarkMode,
   loadDatabaseData,
 } from "@/scripts/helperFunctions.js";
@@ -17,7 +17,7 @@ import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {pagesLinks} from "@/scripts/pagesLinks.js";
+import {pagesLinks} from "@/scripts/pagesLinks";
 
 const { t } = useI18n();
 
@@ -214,27 +214,6 @@ function gerRequirementsStatus() {
   })
 }
 
-function managePdfGeneration(){
-  loadingScreenTitle.value = t('advancement.generating');
-  generatePDF(editedRankInProgress.value).then(e=>{
-      if (e?.status === 200) {
-        loadingScreenTitle.value = t('advancement.generated')
-      } else {
-        loadingScreenTitle.value = t('advancement.generationFailed')
-        loadingScreenMessage.value = e?.statusText ? e?.status + " " + e?.statusText : "Something went wrong"
-        console.log(e)
-      }
-    }).catch(error => {
-      loadingScreenTitle.value = t('advancement.generationFailed')
-      if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
-        loadingScreenMessage.value = 'Network error: Please check if CORS is enabled on the backend API'
-      } else {
-        loadingScreenMessage.value = error.message || "An unexpected error occurred"
-      }
-      console.error("PDF generation error:", error)
-    })
-}
-
 function manageExport() {
   loadingScreenTitle.value = t('advancement.exporting');
   generateExport(editedRankInProgress.value).then(() => {
@@ -263,13 +242,6 @@ function manageExport() {
             :option-two="{text: t('edit.no'), action: () => { tempRankId = editedRankInProgress.rankId; }}"
         />
         <router-link :to="pagesLinks.addAdvancement"><button class="add-button">✎</button></router-link>
-        <DropDownSelectionComponent
-            v-if="false"
-            v-model="editedRankInProgress.style"
-            :label="t('advancement.selectStyle') + ':'"
-            :options="Object.values(Style).map(s => ({ value: s, label: t('advancement.style.'+s) }))"
-            placeholder="Select style"
-        />
       </div>
       <div class="option-selection">
         <DropDownSelectionComponent
@@ -287,11 +259,6 @@ function manageExport() {
         <router-link :to="pagesLinks.addPerson"><button class="add-button">✎</button></router-link>
       </div>
       <div style="display: flex; gap: 15px">
-        <ButtonComponent
-            :button-text="t('advancement.generate')"
-            buttonStyle="primary"
-            @click="managePdfGeneration()"
-        />
         <div v-if="loadingScreenTitle.length > 0">
           <PopupComponent
               v-if="loadingScreenTitle == t('advancement.generating')"

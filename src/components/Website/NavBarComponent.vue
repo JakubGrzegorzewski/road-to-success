@@ -3,7 +3,7 @@ import {onMounted, ref} from 'vue'
 import { useI18n } from 'vue-i18n'
 import Cookies from 'js-cookie'
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
-import {pagesLinks} from "@/scripts/pagesLinks";
+import {pagesLinks} from "@/scripts/pagesLinks.js";
 
 const { locale } = useI18n()
 const currentLocale = ref<string>('en')

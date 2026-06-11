@@ -6,9 +6,9 @@ import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {generateImport, isDarkMode} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
-import {Status} from "@/scripts/Model/Status.js";
+import {Status} from "@/scripts/Model/Status";
 import {Style} from "@/scripts/Model/Style.js";
-import {pagesLinks} from "@/scripts/pagesLinks.js";
+import {pagesLinks} from "@/scripts/pagesLinks.ts";
 import {useI18n} from "vue-i18n";
 import ImportIconComponent from "@/components/Universal/ImportIconComponent.vue";
 
@@ -49,7 +49,7 @@ function addNewRank() {
     taskIds: []
   }
   RankInProgress.add(newRank).then(
-      rankInProgress => router.push(pagesLinks.advancement + rankInProgress.id)
+      (rankInProgress: RankInProgressDTO) => router.push(pagesLinks.advancement + rankInProgress.id)
   );
 }
 </script>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, ref, Ref} from "vue";
-import {loadDatabaseData} from "@/scripts/helperFunctions.js";
-import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
+import {loadDatabaseData} from "@/scripts/helperFunctions";
+import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";

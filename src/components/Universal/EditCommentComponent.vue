@@ -2,8 +2,8 @@
 import {ref, Ref} from 'vue';
 import { useI18n } from 'vue-i18n';
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {TaskCommentDTO} from "@/scripts/Model/TaskComment";
-import {AppUserDTO} from "@/scripts/Model/AppUser";
+import {TaskCommentDTO} from "@/scripts/Model/TaskComment.js";
+import {AppUserDTO} from "@/scripts/Model/AppUser.js";
 
 
 const props = defineProps<{

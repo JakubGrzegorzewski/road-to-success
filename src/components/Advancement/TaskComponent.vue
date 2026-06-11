@@ -3,9 +3,9 @@ import EditCommentComponent from "@/components/Universal/EditCommentComponent.vu
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {onMounted, Ref, ref} from "vue";
-import {TaskDTO} from "@/scripts/Model/Task";
-import {AppUserDTO} from "@/scripts/Model/AppUser";
-import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment";
+import {TaskDTO} from "@/scripts/Model/Task.js";
+import {AppUserDTO} from "@/scripts/Model/AppUser.js";
+import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import {Status} from "@/scripts/Model/Status.js";
 import {useI18n} from "vue-i18n";
@@ -46,8 +46,8 @@ function sizeObserver() {
 
 onMounted(() => {
   sizeObserver()
-  props.task.commentIds.forEach(commentId => {
-    TaskComment.getById(commentId).then(comment => {
+  props.task.commentIds.forEach((commentId: number) => {
+    TaskComment.getById(commentId).then((comment: TaskCommentDTO | null) => {
       console.log("Comment loaded:", comment);
       if (comment) {
         console.log("Comment loaded:", comment);
@@ -132,7 +132,7 @@ const getStatusStyle = (status: Status) => {
     />
 
   </div>
-  <div class="comments box-shadow" v-if="false">
+  <div class="comments box-shadow">
     <CommentComponent
         v-for="currentComment in comments"
         :comment="currentComment"
