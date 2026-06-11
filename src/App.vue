@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Cookies from 'js-cookie';
-import {onMounted} from 'vue';
 import NavBarComponent from "@/components/Website/NavBarComponent.vue";
 import FooterComponent from "@/components/Website/FooterComponent.vue";
 import { useFavicon } from '@vueuse/core'
@@ -9,15 +7,6 @@ const icon = useFavicon()
 
 icon.value = '@/assets/favicon.ico'
 
-onMounted(() => {
-  if (!Cookies.get('locale')) {
-    Cookies.set('locale', 'pl', { expires: 365 });
-  }
-  if (!Cookies.get('userId')) {
-    Cookies.set('userId', '1', { expires: 1 });
-  }
-  console.log("Version:", __APP_VERSION__);
-})
 
 </script>
 

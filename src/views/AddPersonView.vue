@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AppUser, AppUserDTO } from '../scripts/Model/AppUser'
+import { AppUser, AppUserDTO } from '@/scripts/Model/AppUser'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {useI18n} from "vue-i18n";
 
@@ -52,12 +52,6 @@ async function onSubmit() {
       <label>{{ t('user.nameRankCombo') }}</label>
       <input v-model="fullName" required />
     </div>
-
-    <div>
-      <label>{{ t('user.email') }}</label>
-      <input v-model="email" type="email" />
-    </div>
-
     <button type="submit">
       <button-component :button-text="t('user.addUser')"/>
     </button>

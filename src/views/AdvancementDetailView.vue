@@ -3,7 +3,6 @@ import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskCompon
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {isIdeaBased} from "@/scripts/whatToShow.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
-import {Style} from "@/scripts/Model/Style.js";
 import {Task, TaskDTO} from "@/scripts/Model/Task.js";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";

@@ -5,12 +5,12 @@ import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
 import {onMounted, ref, Ref} from "vue";
 import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
 import {generateImport, isDarkMode} from "@/scripts/helperFunctions.js";
-import PlusIconComponent from "@/components/Universal/PlusIconComponent.vue";
+import PlusIconComponent from "@/components/Universal/Icons/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status";
 import {Style} from "@/scripts/Model/Style.js";
 import {pagesLinks} from "@/scripts/pagesLinks.ts";
 import {useI18n} from "vue-i18n";
-import ImportIconComponent from "@/components/Universal/ImportIconComponent.vue";
+import ImportIconComponent from "@/components/Universal/Icons/ImportIconComponent.vue";
 
 const { t } = useI18n();
 
