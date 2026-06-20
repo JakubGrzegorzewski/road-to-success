@@ -39,7 +39,7 @@ export async function loadDatabaseData() : Promise<void>{
         return [];
     };
 
-    parseStored<AppUserDTO>("Users").forEach((user) => promises.push(AppUser.add(user)));
+    parseStored<AppUserDTO>("User").forEach((user) => promises.push(AppUser.add(user)));
     parseStored<RankInProgressDTO>("RanksInProgress").forEach((rip) => promises.push(RankInProgress.add(rip)));
     parseStored<TaskDTO>("Tasks").forEach((task) => promises.push(Task.add(task, task.rankInProgressId)));
     parseStored<TaskCommentDTO>("TaskComments").forEach((comment) => promises.push(TaskComment.add(comment, comment.taskId)));

@@ -15,7 +15,6 @@ import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {pagesLinks} from "@/main";
 
 const { t } = useI18n();
 
@@ -56,7 +55,7 @@ async function reload() {
     })
 
     AppUser.getAll().then((fetchedUsers: AppUserDTO[]) => {
-      console.info("Users loaded:", fetchedUsers);
+      console.info("User loaded:", fetchedUsers);
       allUsers.value = fetchedUsers
     })
 
@@ -239,7 +238,7 @@ function manageExport() {
             :option-one="{text: t('edit.yes'), action: () => { changeRank() }}"
             :option-two="{text: t('edit.no'), action: () => { tempRankId = editedRankInProgress.rankId; }}"
         />
-        <router-link :to="pagesLinks.addAdvancement"><button class="add-button">✎</button></router-link>
+        <router-link :to="'/dodaj-osobe/'"><button class="add-button">✎</button></router-link>
       </div>
       <div class="option-selection">
         <DropDownSelectionComponent
@@ -254,7 +253,7 @@ function manageExport() {
             :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
-        <router-link :to="pagesLinks.addPerson"><button class="add-button">✎</button></router-link>
+        <router-link :to="'/dodaj-osobe/'"><button class="add-button">✎</button></router-link>
       </div>
       <div style="display: flex; gap: 15px">
         <div v-if="loadingScreenTitle.length > 0">

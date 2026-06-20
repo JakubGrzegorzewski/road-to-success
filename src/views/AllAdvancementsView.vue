@@ -1,34 +1,23 @@
 <script setup lang="ts">
-import {onMounted, ref, Ref} from "vue";
-import {loadDatabaseData} from "@/scripts/helperFunctions";
-import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress";
+import {onMounted, ref} from "vue";
+import type {IRankInProgress} from '@/scripts/interfaces.ts';
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
+import {CardType} from "@/main.ts";
+import {RankInProgress} from "@/scripts/database/RankInProgress.ts";
+import router from "@/scripts/router.ts";
 
 const { t } = useI18n();
 
+const ranks = ref<IRankInProgress[]>([]);
+const rankToDelete = ref<number | null>(null);
 
-const ranksInProgress : Ref<RankInProgressDTO[]> = ref([]);
+onMounted(async () => {
+  ranks.value = await RankInProgress.getAll();
 
-const rankIdToDelete = ref<number | null>(null);
+});
 
-onMounted(() => {
-  reloadData()
-})
-
-function reloadData() {
-  ranksInProgress.value = [];
-  loadDatabaseData().then(()=>{
-    RankInProgress.getAll()
-        .then(fetchedRanksInProgress => {fetchedRanksInProgress.forEach(rank => ranksInProgress.value.push(rank))})
-  })
-}
-
-function deleteRank(rankId: number) {
-  RankInProgress.deleteObject(rankId);
-  reloadData();
-}
 
 </script>
 
@@ -36,19 +25,26 @@ function deleteRank(rankId: number) {
   <h1>{{ t('advancement.your') }}</h1>
   <div class="advancement-container">
     <AdvancementCardComponent
-        :rank-in-progress="rankInProgress"
-        v-for="rankInProgress in ranksInProgress"
+        v-for="rankInProgress in ranks"
+        :type="CardType.DEFAULT"
         :key="rankInProgress.id"
-        @delete-rank="rankIdToDelete = $event"
+        :rankInProgress="rankInProgress"
+        @click="router.push('/stopien/' + rankInProgress.id)"
+        @delete-rank="rankToDelete = rankInProgress.id"
     />
-    <AdvancementCardComponent type="add"/>
-    <AdvancementCardComponent type="import"/>
+    <AdvancementCardComponent
+        :type="CardType.ADD"
+        @click="RankInProgress.addDefault()"
+    />
+    <AdvancementCardComponent
+        :type="CardType.IMPORT"
+    />
     <PopupComponent
-        v-if="rankIdToDelete !== null"
+        v-if="rankToDelete !== null"
         :title="t('popups.delete.title')"
         :message="t('popups.delete.message')"
-        :option-one="{ text: t('edit.delete'), action: () => { deleteRank(<number>rankIdToDelete); rankIdToDelete = null } }"
-        :option-two="{ text: t('edit.cancel'), action: () => { rankIdToDelete = null } }"
+        :option-one="{ text: t('edit.delete'), action: () => { if (rankToDelete !== null) RankInProgress.deleteObject(rankToDelete); rankToDelete = null } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { rankToDelete = null } }"
     />
   </div>
   </template>
