@@ -1,97 +1,79 @@
 <script setup lang="ts">
-import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
-import {useRouter} from "vue-router";
-import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
-import {onMounted, ref, Ref} from "vue";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {generateImport, isDarkMode} from "@/scripts/helperFunctions.js";
+import { useI18n } from "vue-i18n";
+import { CardType } from '@/main.ts';
+import { isDarkMode } from "@/scripts/helperFunctions.ts";
 import PlusIconComponent from "@/components/Universal/Icons/PlusIconComponent.vue";
-import {Status} from "@/scripts/Model/Status";
-import {Style} from "@/scripts/Model/Style.js";
-import {pagesLinks} from "@/main";
-import {useI18n} from "vue-i18n";
 import ImportIconComponent from "@/components/Universal/Icons/ImportIconComponent.vue";
+import {IRank, IRankInProgress, IUser} from "@/scripts/interfaces.ts";
+import {onMounted, ref} from "vue";
+import {User} from "@/scripts/database/User.js";
+import {Rank} from "@/scripts/Model/Rank.ts";
 
 const { t } = useI18n();
 
 const props = withDefaults(defineProps<{
-  rankInProgress?: RankInProgressDTO
-  type?: 'default' | 'add' | 'import'
+  type: CardType;
+  rankInProgress?: IRankInProgress;
 }>(), {
-  type: 'default'
+  type: CardType.DEFAULT
 });
+
+const mentee = ref<IUser>();
+const mentor = ref<IUser>();
+const rank = ref<IRank>()
 
 const emits = defineEmits<{
-  (e: 'delete-rank', rankInProgressId: number): void
+  (e: 'click'): void;
+  (e: 'delete-rank'): void;
 }>();
 
-const rank : Ref<RankDTO> = ref(null as unknown as RankDTO);
-const mentor : Ref<AppUserDTO> = ref(null as unknown as AppUserDTO);
-const user : Ref<AppUserDTO> = ref(null as unknown as AppUserDTO);
-
-const router = useRouter();
-
-onMounted(() => {
-  if (!props.rankInProgress) return;
-  Rank.getById(props.rankInProgress.rankId).then((e: RankDTO) => rank.value = e);
-  AppUser.getById(props.rankInProgress.mentorId).then((e: AppUserDTO) => mentor.value = e);
-  AppUser.getById(props.rankInProgress.userId).then((e: AppUserDTO) => user.value = e);
-});
-
-function addNewRank() {
-  const newRank : RankInProgressDTO = {
-    id: Math.floor(Math.random()*1000000000000000),
-    rankId: 1,
-    userId : 0,
-    mentorId : 0,
-    status: Status.CREATED,
-    style: Style.ONE_TASK_MULTI_REQUIREMENTS_WITH_IDEA,
-    taskIds: []
+onMounted(async () => {
+  if (props.rankInProgress) {
+    User.getById(props.rankInProgress.userId).then(user => mentee.value = user);
+    User.getById(props.rankInProgress.mentorId).then(user => mentor.value = user);
+    Rank.getById(props.rankInProgress.rankId).then(r => rank.value = r);
   }
-  RankInProgress.add(newRank).then(
-      (rankInProgress: RankInProgressDTO) => router.push(pagesLinks.advancement + rankInProgress.id)
-  );
-}
+});
 </script>
 
 <template>
-  <div v-if="rankInProgress && rank && mentor && user && type == 'default'"
-      class="box-shadow advancement-card-out">
-    <div class="advancement-card-delete" @click="emits('delete-rank', rankInProgress.id)">
-      <img src="@/assets/images/delete.svg"  alt="delete"/> 
+  <div
+      class="box-shadow advancement-card-out"
+      :class="{ 'centered-card': type !== CardType.DEFAULT }"
+      @click="type !== CardType.DEFAULT && emits('click')">
+
+    <div v-if="type === CardType.DEFAULT">
+      <div class="advancement-card-delete" @click.stop="emits('delete-rank')">
+        <img src="@/assets/images/delete.svg" alt="delete"/>
+      </div>
+
+      <div class="advancement-card-in shifts-up"
+           @click="emits('click')"
+           :style="{ '--bg-image': `url(data:image/png;base64,${rank?.iconInBase64})` }">
+        <h3>{{ t('user.mentee') }}</h3>
+        <h4>{{ mentee?.fullName }}</h4>
+        <h3>{{ t('user.mentor') }}</h3>
+        <h4>{{ mentor?.fullName }}</h4>
+      </div>
     </div>
 
-    <div class="advancement-card-in"
-         :style="{ '--bg-image': `url(data:image/png;base64,${rank.iconInBase64})` }"
-         @click="router.push(pagesLinks.advancement + rankInProgress.id)"
-    >
-
-      <h3> {{ t('user.mentee') }} </h3>
-      <h4> {{ user.fullName }} </h4>
-      <h3> {{ t('user.mentor') }} </h3>
-      <h4> {{ mentor.fullName }} </h4>
+    <div v-else-if="type === CardType.ADD" class="advancement-card-in static-layout">
+      <PlusIconComponent
+          class="card-icon"
+          :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'"
+      />
+      <h3>{{ t('advancement.add') }}</h3>
     </div>
+
+    <div v-else class="advancement-card-in static-layout">
+      <ImportIconComponent
+          class="card-icon"
+          :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'"
+      />
+      <h3>{{ t('advancement.import') }}</h3>
+    </div>
+
   </div>
-  <div v-if="type == 'add'"
-       class="advancement-card-out box-shadow" style="justify-content: center; align-items: center;"
-       @click="addNewRank()"
-  >
-    <div class="advancement-card-in" style="transform: translateY(0px)">
-      <PlusIconComponent :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'" style="width: 150px; height: 150px; margin-bottom: 10px;"/>
-      <h3 style="transform: none">{{t('advancement.add')}}</h3>
-    </div>
-
-  </div>
-  <div v-if="type == 'import'"
-       class="advancement-card-out box-shadow"
-       @click="generateImport().then((thisRankInProgress: RankInProgressDTO | null) => { if (thisRankInProgress) router.push(pagesLinks.advancement + thisRankInProgress.id) })"
-  >
-    <div class="advancement-card-in" style="transform: translateY(0px)">
-      <ImportIconComponent :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'" style="width: 150px; height: 150px; margin-bottom: 10px;"/>
-      <h3 style="transform: none">{{t('advancement.import')}}</h3>
-    </div>
-  </div>
-
 </template>
 
 <style scoped>
@@ -182,5 +164,8 @@ h4{
   margin : 5px;
   position: absolute;
   transform: translate(20px, -20px);
+}
+.card-icon{
+  transform: translateY(-50px);
 }
 </style>

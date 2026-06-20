@@ -2,11 +2,10 @@ import { fileURLToPath, URL } from 'url'
 
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
-import { pagesLinks } from '@/main.ts'
 import { version } from './package.json'
 
 export default {
-    base: pagesLinks.roadToSuccess,
+    base: '/',
     plugins: [
         vue(),
         vueDevTools(),

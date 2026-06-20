@@ -4,33 +4,32 @@ import {
     type RouteLocationNormalized,
     type RouteRecordRaw,
 } from 'vue-router'
-import { pagesLinks } from '@/main'
 
 const routes: RouteRecordRaw[] = [
     {
-        path: pagesLinks.roadToSuccess + '/',
+        path: '/',
         name: 'Home',
         component: () => import('@/views/AllAdvancementsView.vue'),
     },
     {
-        path: pagesLinks.advancement + '/:id',
+        path: '/stopien/:id',
         name: 'Advancement',
         component: () => import('@/views/CreatingAdvancement.vue'),
         props: (route: RouteLocationNormalized) => ({ id: Number(route.params.id) }),
     },
     {
-        path: pagesLinks.advancement + '/:id',
+        path: '/stopien/report/:id',
         name: 'AdvancementReport',
         component: () => import('@/views/CreatingAdvancementReport.vue'),
         props: (route: RouteLocationNormalized) => ({ id: Number(route.params.id) }),
     },
     {
-        path: pagesLinks.addPerson,
+        path: '/dodaj-osobe/',
         name: 'AddPerson',
         component: () => import('@/views/AddPersonView.vue'),
     },
     {
-        path: pagesLinks.addAdvancement,
+        path: '/stopnie/',
         name: 'RankManagement',
         component: () => import('@/views/RankManagementView.vue'),
     },

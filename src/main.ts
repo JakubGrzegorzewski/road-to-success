@@ -8,20 +8,12 @@ import './scripts/bootstrap'
 
 const app = createApp(App)
 
-export const pagesLinks: {
-    roadToSuccess: string;
-    advancement: string;
-    advancementReport: string;
-    addPerson: string;
-    addAdvancement: string;
-} = {
-    roadToSuccess: '/',
-    advancement: '/stopien/',
-    advancementReport: '/stopien/report/',
-    addPerson: '/dodaj-osobe/',
-    addAdvancement: '/stopnie/',
-};
 
+export enum CardType {
+    DEFAULT = 'default',
+    ADD = 'add',
+    IMPORT = 'import'
+}
 
 app.use(router)
 app.use(i18n)
