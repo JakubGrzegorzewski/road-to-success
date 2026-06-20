@@ -4,7 +4,7 @@ import {
     type RouteLocationNormalized,
     type RouteRecordRaw,
 } from 'vue-router'
-import { pagesLinks } from '@/scripts/pagesLinks'
+import { pagesLinks } from '@/main'
 
 const routes: RouteRecordRaw[] = [
     {
@@ -15,7 +15,13 @@ const routes: RouteRecordRaw[] = [
     {
         path: pagesLinks.advancement + '/:id',
         name: 'Advancement',
-        component: () => import('@/views/AdvancementDetailView.vue'),
+        component: () => import('@/views/CreatingAdvancement.vue'),
+        props: (route: RouteLocationNormalized) => ({ id: Number(route.params.id) }),
+    },
+    {
+        path: pagesLinks.advancement + '/:id',
+        name: 'AdvancementReport',
+        component: () => import('@/views/CreatingAdvancementReport.vue'),
         props: (route: RouteLocationNormalized) => ({ id: Number(route.params.id) }),
     },
     {

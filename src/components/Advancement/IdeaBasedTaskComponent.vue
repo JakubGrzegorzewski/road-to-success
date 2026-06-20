@@ -7,7 +7,6 @@ import {RankInProgressDTO} from "@/scripts/Model/RankInProgress";
 import {RankDTO} from "@/scripts/Model/Rank";
 import {Style} from "@/scripts/Model/Style";
 import {RequirementDTO} from "@/scripts/Model/Requirement";
-import {doShowIdea} from "@/scripts/whatToShow";
 import {AppUserDTO} from "@/scripts/Model/AppUser";
 import {useI18n} from "vue-i18n";
 
@@ -73,7 +72,6 @@ function getRequirementSubIndex(requirement : RequirementDTO) {
     >
       <div class="task-content">
         <TextSelectionComponent
-            v-if="doShowIdea(rankInProgress.style)"
             :text="props.task.partIdea"
             :original-text="rank?.idea.split(' ')"
             @text-highlighted="data => onTextHighlighted(data.reset, data.text)"

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {isIdeaBased} from "@/scripts/whatToShow.js";
 import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
 import {Task, TaskDTO} from "@/scripts/Model/Task.js";
 import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
@@ -16,7 +15,7 @@ import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {pagesLinks} from "@/scripts/pagesLinks";
+import {pagesLinks} from "@/main";
 
 const { t } = useI18n();
 
@@ -325,7 +324,7 @@ function manageExport() {
           </div>
       </details>
     </div>
-    <div v-if="isIdeaBased(editedRankInProgress.style)" style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
       <IdeaBasedTaskComponent
           v-for="task in tasks"
           :key="task.id"

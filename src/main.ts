@@ -8,6 +8,21 @@ import './scripts/bootstrap'
 
 const app = createApp(App)
 
+export const pagesLinks: {
+    roadToSuccess: string;
+    advancement: string;
+    advancementReport: string;
+    addPerson: string;
+    addAdvancement: string;
+} = {
+    roadToSuccess: '/',
+    advancement: '/stopien/',
+    advancementReport: '/stopien/report/',
+    addPerson: '/dodaj-osobe/',
+    addAdvancement: '/stopnie/',
+};
+
+
 app.use(router)
 app.use(i18n)
 app.use(vuetify)

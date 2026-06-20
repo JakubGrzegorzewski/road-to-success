@@ -8,7 +8,7 @@ import {generateImport, isDarkMode} from "@/scripts/helperFunctions.js";
 import PlusIconComponent from "@/components/Universal/Icons/PlusIconComponent.vue";
 import {Status} from "@/scripts/Model/Status";
 import {Style} from "@/scripts/Model/Style.js";
-import {pagesLinks} from "@/scripts/pagesLinks.ts";
+import {pagesLinks} from "@/main";
 import {useI18n} from "vue-i18n";
 import ImportIconComponent from "@/components/Universal/Icons/ImportIconComponent.vue";
 
