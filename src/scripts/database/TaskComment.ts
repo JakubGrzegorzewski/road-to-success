@@ -1,7 +1,7 @@
 import { db } from '../db';
 import type { ITaskComment} from '../interfaces';
 
-export class Scout {
+export class TaskComment {
     static async getAll(): Promise<Array<ITaskComment>> {
         return db.taskComments.toArray();
     }

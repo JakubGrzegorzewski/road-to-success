@@ -1,5 +1,5 @@
-import { db } from '../db';
-import type { IRequirement } from '../interfaces';
+import {db} from '../db';
+import type {IRequirement} from '../interfaces';
 
 export class Requirement {
     static async getAll(): Promise<Array<IRequirement>> {
@@ -10,6 +10,10 @@ export class Requirement {
         const requirement = await db.requirements.get(id);
         if (!requirement) throw new Error(`requirement with id ${id} not found`);
         return requirement;
+    }
+
+    static async getByRankId(id: number): Promise<IRequirement[]>{
+        return db.requirements.where('rankId').equals(id).toArray();
     }
 
     static async add(requirement: IRequirement): Promise<IRequirement> {

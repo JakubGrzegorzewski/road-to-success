@@ -7,7 +7,7 @@ import ImportIconComponent from "@/components/Universal/Icons/ImportIconComponen
 import {IRank, IRankInProgress, IUser} from "@/scripts/interfaces.ts";
 import {onMounted, ref} from "vue";
 import {User} from "@/scripts/database/User.js";
-import {Rank} from "@/scripts/Model/Rank.ts";
+import {Rank} from "@/scripts/database/Rank.ts";
 
 const { t } = useI18n();
 
@@ -36,20 +36,21 @@ onMounted(async () => {
 });
 </script>
 
-<template>
+<template v-if="rank">
   <div
       class="box-shadow advancement-card-out"
       :class="{ 'centered-card': type !== CardType.DEFAULT }"
-      @click="type !== CardType.DEFAULT && emits('click')">
+      >
 
     <div v-if="type === CardType.DEFAULT">
-      <div class="advancement-card-delete" @click.stop="emits('delete-rank')">
+      <div class="advancement-card-delete" @click="$emit('delete-rank')">
         <img src="@/assets/images/delete.svg" alt="delete"/>
       </div>
 
       <div class="advancement-card-in shifts-up"
-           @click="emits('click')"
-           :style="{ '--bg-image': `url(data:image/png;base64,${rank?.iconInBase64})` }">
+           :style="{ '--bg-image': `url(data:image/png;base64,${rank?.iconInBase64})` }"
+           v-if="rank?.iconInBase64"
+           @click="$emit('click')">
         <h3>{{ t('user.mentee') }}</h3>
         <h4>{{ mentee?.fullName }}</h4>
         <h3>{{ t('user.mentor') }}</h3>
@@ -57,7 +58,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-else-if="type === CardType.ADD" class="advancement-card-in static-layout">
+    <div v-else-if="type === CardType.ADD" class="advancement-card-in static-layout" @click="$emit('click');">
       <PlusIconComponent
           class="card-icon"
           :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'"
@@ -65,7 +66,7 @@ onMounted(async () => {
       <h3>{{ t('advancement.add') }}</h3>
     </div>
 
-    <div v-else class="advancement-card-in static-layout">
+    <div v-else class="advancement-card-in static-layout" @click="$emit('click')">
       <ImportIconComponent
           class="card-icon"
           :fill-color="isDarkMode() ? 'var(--background-color)' : 'var(--primary-color)'"
@@ -167,5 +168,6 @@ h4{
 }
 .card-icon{
   transform: translateY(-50px);
+  pointer-events: none;
 }
 </style>

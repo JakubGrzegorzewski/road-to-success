@@ -3,31 +3,24 @@ import EditCommentComponent from "@/components/Universal/EditCommentComponent.vu
 import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {onMounted, Ref, ref} from "vue";
-import {TaskDTO} from "@/scripts/Model/Task.js";
-import {AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {TaskCommentDTO, TaskComment} from "@/scripts/Model/TaskComment.js";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
-import {Status} from "@/scripts/Model/Status.js";
 import {useI18n} from "vue-i18n";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
+import {ITask, ITaskComment, IUser, Status} from "@/scripts/interfaces.ts";
+import {TaskComment} from "@/scripts/database/TaskComment.ts"
 
-const props = withDefaults(defineProps<{
-  task : TaskDTO,
-  user : AppUserDTO
-  showDeleteTaskButton: boolean
-}>(), {
-  showDeleteTaskButton: true
-});
-
-const emits = defineEmits<{
-  (e: 'update:task', task: TaskDTO): void;
-  (e: 'delete:task', task: TaskDTO): void;
+const props = defineProps<{
+  task : ITask,
 }>();
 
-const taskIdToDelete = ref<number | null>(null);
-const commentIdToDelete = ref<number | null>(null);
+const emits = defineEmits<{
+  (e: 'delete:task'): void;
+}>();
 
-const comments : Ref<TaskCommentDTO[] | []> = ref([]);
+const shouldShowAccept = ref<boolean>( false);
+const commentIdToDelete = ref<number | undefined>(undefined);
+
+const comments : Ref<ITaskComment[] | []> = ref([]);
 
 const showCommentAdding = ref(false);
 const contentDivRef = ref(null);
@@ -47,37 +40,14 @@ function sizeObserver() {
 onMounted(() => {
   sizeObserver()
   props.task.commentIds.forEach((commentId: number) => {
-    TaskComment.getById(commentId).then((comment: TaskCommentDTO | null) => {
-      console.log("Comment loaded:", comment);
+    TaskComment.getById(commentId).then((comment: ITaskComment | null) => {
       if (comment) {
-        console.log("Comment loaded:", comment);
         comments.value = [comment, ...comments.value || [] ];
       }
     });
   })
 });
 
-function updateComment(updatedComment: TaskCommentDTO) {
-  if (comments.value) {
-    const index = comments.value.findIndex(comment => comment.id === updatedComment.id);
-    if (index !== -1) {
-      comments.value[index] = updatedComment;
-      TaskComment.update(updatedComment);
-    }
-  }
-}
-
-function addComment(newComment: TaskCommentDTO) {
-  if (comments.value) {
-    comments.value = [newComment, ...comments.value || [] ];
-    TaskComment.add(newComment, props.task.id);
-  }
-}
-
-function deleteComment(commentId: number) {
-  comments.value = comments.value?.filter(comment => comment.id !== commentId);
-  TaskComment.deleteObject(commentId, props.task.id);
-}
 const { t } = useI18n();
 
 const statusOptions = [
@@ -110,65 +80,64 @@ const getStatusStyle = (status: Status) => {
   <div class="task-content box-shadow" ref="contentDivRef" :style="{'border-color': getStatusStyle(task.status)}">
     <DropDownSelectionComponent
         v-model="task.status"
-        @update:modelValue="emits('update:task', props.task)"
         :options="statusOptions"
         styles="align-self: flex-end;"
         :backgroundColor="getStatusStyle(task.status)"
     />
     <slot/>
     <ButtonComponent
-        v-if="showDeleteTaskButton && task"
+        v-if="task"
         class="task-delete"
         button-style="error"
         :button-text="t('advancement.task.delete')"
-        @click="taskIdToDelete = task.id"
+        @click="shouldShowAccept = true"
     />
     <PopupComponent
-        v-if="taskIdToDelete !== null"
+        v-if="shouldShowAccept"
         :title="t('popups.delete.title')"
         :message="t('popups.delete.message')"
-        :option-one="{ text: t('edit.delete'), action: () => { emits('delete:task', task); taskIdToDelete = null } }"
-        :option-two="{ text: t('edit.cancel'), action: () => { taskIdToDelete = null } }"
+        :option-one="{ text: t('edit.delete'), action: () => { emits('delete:task'); shouldShowAccept = false } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { shouldShowAccept = false} }"
     />
 
   </div>
-  <div class="comments box-shadow">
-    <CommentComponent
-        v-for="currentComment in comments"
-        :comment="currentComment"
-        :taskId="props.task.id"
-        :user="user"
-        @comment:update="updateComment"
-        @comment:delete="commentIdToDelete = currentComment.id"
-    />
-    <PopupComponent
-        v-if="commentIdToDelete !== null"
-        :title="t('popups.delete.title')"
-        :message="t('popups.delete.message')"
-        :option-one="{ text: t('edit.delete'), action: () => { commentIdToDelete ? deleteComment(commentIdToDelete) : null; commentIdToDelete = null } }"
-        :option-two="{ text: t('edit.cancel'), action: () => { commentIdToDelete = null } }"
-    />
+<!--  <div class="comments box-shadow">-->
+<!--    <CommentComponent-->
+<!--        v-for="currentComment in comments"-->
+<!--        :comment="currentComment"-->
+<!--        :taskId="props.task.id"-->
+<!--        :user="user"-->
+<!--        @comment:update="updateComment"-->
+<!--        @comment:delete="commentIdToDelete = currentComment.id"-->
+<!--    />-->
+<!--    <PopupComponent-->
+<!--        v-if="commentIdToDelete !== null"-->
+<!--        :title="t('popups.delete.title')"-->
+<!--        :message="t('popups.delete.message')"-->
+<!--        :option-one="{ text: t('edit.delete'), action: () => { commentIdToDelete ? emits('delete:task') : null; commentIdToDelete = null } }"-->
+<!--        :option-two="{ text: t('edit.cancel'), action: () => { commentIdToDelete = null } }"-->
+<!--    />-->
 
-    <EditCommentComponent
-        v-if="showCommentAdding"
-        :comment=null
-        :taskId="props.task.id"
-        :user="user"
-        @comment:close="showCommentAdding = false"
-        @comment:save="addComment"
-    />
+<!--    <EditCommentComponent-->
+<!--        v-if="showCommentAdding"-->
+<!--        :comment=null-->
+<!--        :taskId="props.task.id"-->
+<!--        :user="user"-->
+<!--        @comment:close="showCommentAdding = false"-->
+<!--        @comment:save="addComment"-->
+<!--    />-->
 
-    <p v-if="comments && comments.length === 0" style="align-self: center">
-      {{ t("advancement.comment.noComments") }}
-    </p>
+<!--    <p v-if="comments && comments.length === 0" style="align-self: center">-->
+<!--      {{ t("advancement.comment.noComments") }}-->
+<!--    </p>-->
 
-    <ButtonComponent
-        style="align-self: center"
-        :button-text="t('advancement.comment.add')"
-        buttonStyle="default"
-        @click="showCommentAdding = true"
-    />
-  </div>
+<!--    <ButtonComponent-->
+<!--        style="align-self: center"-->
+<!--        :button-text="t('advancement.comment.add')"-->
+<!--        buttonStyle="default"-->
+<!--        @click="showCommentAdding = true"-->
+<!--    />-->
+<!--  </div>-->
 </div>
 </template>
 
