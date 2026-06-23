@@ -4,17 +4,22 @@ import type {IRankInProgress} from '@/scripts/interfaces.ts';
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {CardType} from "@/main.ts";
+import {CardType, eventBus, ITypesEnum} from "@/main.ts";
 import {RankInProgress} from "@/scripts/database/RankInProgress.ts";
 import router from "@/scripts/router.ts";
 
 const { t } = useI18n();
 
 const ranks = ref<IRankInProgress[]>([]);
-const rankToDelete = ref<number | null>(null);
+const rankToDelete = ref<number | undefined>(undefined);
 
 onMounted(async () => {
   ranks.value = await RankInProgress.getAll();
+  eventBus.on("db-update", async (data: { type: ITypesEnum}) => {
+    if (data.type === ITypesEnum.ERankInProgress) {
+      ranks.value = await RankInProgress.getAll();
+    }
+  });
 
 });
 
@@ -34,17 +39,17 @@ onMounted(async () => {
     />
     <AdvancementCardComponent
         :type="CardType.ADD"
-        @click="RankInProgress.addDefault()"
+        @click="RankInProgress.addDefault();"
     />
     <AdvancementCardComponent
         :type="CardType.IMPORT"
     />
     <PopupComponent
-        v-if="rankToDelete !== null"
+        v-if="rankToDelete"
         :title="t('popups.delete.title')"
         :message="t('popups.delete.message')"
-        :option-one="{ text: t('edit.delete'), action: () => { if (rankToDelete !== null) RankInProgress.deleteObject(rankToDelete); rankToDelete = null } }"
-        :option-two="{ text: t('edit.cancel'), action: () => { rankToDelete = null } }"
+        :option-one="{ text: t('edit.delete'), action: () => { if (rankToDelete !== undefined) RankInProgress.deleteObject(rankToDelete); rankToDelete = undefined } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { rankToDelete = undefined } }"
     />
   </div>
   </template>

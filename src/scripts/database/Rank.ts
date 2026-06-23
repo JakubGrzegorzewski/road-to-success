@@ -2,11 +2,11 @@ import { db } from '../db';
 import type {IRank} from '../interfaces';
 
 export class Rank {
-    static async getAll(): Promise<Array<Rank>> {
+    static async getAll(): Promise<Array<IRank>> {
         return db.ranks.toArray();
     }
 
-    static async getById(id: number): Promise<Rank> {
+    static async getById(id: number): Promise<IRank> {
         const rank = await db.ranks.get(id);
         if (!rank) throw new Error(`rank with id ${id} not found`);
         return rank;

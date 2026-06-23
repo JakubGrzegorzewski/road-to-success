@@ -17,7 +17,7 @@ export enum Status {
 // ==========================================
 
 export interface IUser {
-    id: number;
+    id?: number;
     fullName: string;
     ranksInProgressIds: number[];
     mentorRanksInProgressIds: number[];
@@ -25,7 +25,7 @@ export interface IUser {
 }
 
 export interface IRank {
-    id: number;
+    id?: number;
     fullName: string;
     shortName: string;
     idea: string;
@@ -39,7 +39,7 @@ export interface IRank {
 }
 
 export interface IRankInProgress {
-    id: number;
+    id?: number;
     rankId: number;
     userId: number;
     mentorId: number;
@@ -47,7 +47,7 @@ export interface IRankInProgress {
 }
 
 export interface IRequirement {
-    id: number;
+    id?: number;
     number: string;
     content: string;
     rankId: number;
@@ -55,7 +55,7 @@ export interface IRequirement {
 }
 
 export interface ITask {
-    id: number;
+    id?: number;
     rankInProgressId: number;
     requirementsIds: number[];
     content: string;
@@ -65,7 +65,7 @@ export interface ITask {
 }
 
 export interface ITaskComment{
-    id: number;
+    id?: number;
     date: string;
     content: string;
     taskId: number;

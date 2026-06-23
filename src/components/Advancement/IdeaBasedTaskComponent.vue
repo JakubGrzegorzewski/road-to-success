@@ -2,27 +2,22 @@
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import TextSelectionComponent from "@/components/Universal/TextSelectionComponent.vue";
 import TaskComponent from "@/components/Advancement/TaskComponent.vue";
-import {TaskDTO} from "@/scripts/Model/Task";
-import {RankInProgressDTO} from "@/scripts/Model/RankInProgress";
-import {RankDTO} from "@/scripts/Model/Rank";
-import {Style} from "@/scripts/Model/Style";
-import {RequirementDTO} from "@/scripts/Model/Requirement";
-import {AppUserDTO} from "@/scripts/Model/AppUser";
 import {useI18n} from "vue-i18n";
+import {IRank, IRankInProgress, IRequirement, ITask, IUser} from "@/scripts/interfaces.ts";
 
 const { t } = useI18n()
 
 const props = defineProps<{
-  task: TaskDTO
-  rankInProgress: RankInProgressDTO
-  rank : RankDTO,
-  requirements : RequirementDTO[]
-  user: AppUserDTO
+  task: ITask
+  rankInProgress: IRankInProgress
+  rank : IRank,
+  requirements : IRequirement[]
+  user: IUser
 }>();
 
 const emits = defineEmits<{
-  (e: 'delete:task', task: TaskDTO): void;
-  (e: 'update:task', task: TaskDTO): void;
+  (e: 'delete:task'): void;
+  (e: 'update:task', task: ITask): void;
 }>();
 
 function onTextHighlighted (reset: boolean, text: string[]) {
@@ -39,17 +34,18 @@ function getReqIds(): number[] {
   return Array.isArray(props.task.requirementsIds) ? props.task.requirementsIds : [];
 }
 
-function toggleRequirement(requirement: RequirementDTO) {
+function toggleRequirement(requirement: IRequirement) {
   console.log("Toggle requirement", props.task.requirementsIds, requirement.id,);
   if (!Array.isArray(props.task.requirementsIds)) return;
   if (isRequirementSelected(requirement))
     props.task.requirementsIds = props.task.requirementsIds.filter(req => req !== requirement.id);
-  else
+  else if (requirement.id != null) {
     props.task.requirementsIds.push(requirement.id);
+  }
   emits('update:task', props.task)
 }
 
-function isRequirementSelected(requirement: RequirementDTO) {
+function isRequirementSelected(requirement: IRequirement) {
   return getReqIds().find(req => req === requirement.id) !== undefined;
 }
 
@@ -57,7 +53,7 @@ function hasMoreThenOneRequirementWithSameNumber(number : string) {
   return props.requirements.filter(req => req.number === number).length > 1;
 }
 
-function getRequirementSubIndex(requirement : RequirementDTO) {
+function getRequirementSubIndex(requirement : IRequirement) {
   return props.requirements.filter(req => req.number === requirement.number).indexOf(requirement) + 1;
 }
 </script>
@@ -68,7 +64,7 @@ function getRequirementSubIndex(requirement : RequirementDTO) {
         :task="props.task"
         :user="user"
         :show-delete-task-button="true"
-        @delete:task="emits('delete:task', $event)"
+        @delete:task="emits('delete:task')"
     >
       <div class="task-content">
         <TextSelectionComponent
@@ -78,9 +74,9 @@ function getRequirementSubIndex(requirement : RequirementDTO) {
         />
         <textarea class="multiline-text-input" v-model="props.task.content" @change="emits('update:task', props.task)"/>
 
-        <h3 v-if="props.rankInProgress.style !== Style.IDEA_SELECTION"> {{t("advancement.requirements")}}</h3>
+        <h3> {{t("advancement.requirements")}}</h3>
 
-        <div class="task-requirements" v-if="props.rankInProgress.style !== Style.IDEA_SELECTION">
+        <div class="task-requirements">
           <ButtonComponent
               v-for="requirement in requirements"
               :key="requirement.id"

@@ -13,15 +13,14 @@ class AppDatabase extends Dexie {
 
     constructor() {
         super('RoadSuccessDB');
-
         // Define the schema. Only list primary keys and properties you will filter/query by.
         this.version(1).stores({
-            users: 'id, email',
-            ranks: 'id',
-            ranksInProgress: 'id, rankId, userId, mentorId',
-            requirements: 'id, rankId',
-            tasks: 'id, rankInProgressId',
-            taskComments: 'id, taskId, userId'
+            users: '++id, email',
+            ranks: '++id',
+            ranksInProgress: '++id, rankId, userId, mentorId',
+            requirements: '++id, rankId',
+            tasks: '++id, rankInProgressId',
+            taskComments: '++id, taskId, userId'
         });
     }
 }
