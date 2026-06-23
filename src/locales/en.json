@@ -86,7 +86,8 @@
     "in_progress": "In progress",
     "completed": "Completed",
     "inCompleted": "Incomplete",
-    "failed": "Failed"
+    "failed": "Failed",
+    "loading": "Loading"
   },
   "user": {
     "name": "First name",

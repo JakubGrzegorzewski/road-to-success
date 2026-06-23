@@ -86,7 +86,8 @@
     "in_progress": "W trakcie",
     "completed": "Zakończona",
     "inCompleted": "Niezakończona",
-    "failed": "Nieudana"
+    "failed": "Nieudana",
+    "loading" : "Ładowanie"
   },
   "user": {
     "name": "Imię",
