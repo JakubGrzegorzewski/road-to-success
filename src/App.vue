@@ -7,23 +7,17 @@ const icon = useFavicon()
 
 icon.value = '@/assets/favicon.ico'
 
-import { onMounted } from 'vue';
+import {onMounted} from 'vue';
 import { db } from './scripts/db';
 import defaultRanks from '@/assets/json/rank.json';
 import defaultRequirements from '@/assets/json/requirements.json';
+import {Rank} from "@/scripts/database/Rank.ts";
 
 onMounted(async () => {
-  const count = await db.ranks.count();
-  if (count === 0) {
+  const ranks = await Rank.getAll();
+  if (ranks.length === 0) {
     await db.ranks.bulkPut(defaultRanks);
     await db.requirements.bulkPut(defaultRequirements);
-    await db.users.put({
-      id: 0,
-      fullName: "Default User",
-      ranksInProgressIds: [],
-      mentorRanksInProgressIds: [],
-      commentIds: []
-    });
   }
 });
 </script>
