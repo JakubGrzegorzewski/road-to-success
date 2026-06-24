@@ -13,6 +13,7 @@ import {Requirement} from "@/scripts/database/Requirement.ts";
 import {Task} from "@/scripts/database/Task.ts";
 import {getIdeaWithSelectedParts, isDarkMode} from "@/scripts/helperFunctions.ts";
 import {eventBus, ITypesEnum} from "@/main.ts";
+import router from "@/scripts/router.ts";
 
 const { t } = useI18n();
 
@@ -73,7 +74,11 @@ onMounted(() => {
       cashedRankInProgress.value = rankInProgress;
       rankToChangeTo.value = rankInProgress.rankId;
     }),
-    User.getAll().then(users => cashedUsers.value = users),
+    User.getAll().then(async users => {
+      cashedUsers.value = users
+      if (users.length === 0)
+        await router.push("/dodaj-osobe/");
+    }),
     Requirement.getByRankId(props.id).then(requirements => cashedRequirements.value = requirements),
     Task.getByRankInProgressId(props.id).then(tasks => cashedTasks.value = tasks)
   ]).then(() => {
