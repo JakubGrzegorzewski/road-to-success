@@ -93,18 +93,14 @@ header { display: flex; justify-content: space-between; border-bottom: 2px solid
 .rank-idea { text-align: justify; line-height: 1.6; }
 h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px; }
 
-/* Ładowanie kratek */
-.loading-dots::after { content: '.'; animation: dots 1.5s steps(4, end) infinite; }
-@keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } 80%, 100% { content: ''; } }
-
-/* --- 2. EMULACJA KARTKI A4 NA EKRANIE (Po kliknięciu checkboxa) --- */
 .report-container {
+  font-family: 'Museo', sans-serif;
   background: white;
   width: 210mm;
   min-height: 297mm;
   padding: 20mm;
   margin: 20px auto;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* Cień symulujący kartkę papieru */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   color: #000;
   font-size: 11pt;
   gap: 15px;
@@ -126,10 +122,7 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
   border-color: #000;
 }
 
-/* --- 3. PRAWDZIWY WYDRUK (Automatyczny przez Ctrl+P) --- */
 @media print {
-  .print-controls { display: none !important; } /* Ukrywa przyciski na papierze */
-
   @page { size: A4; margin: 20mm; }
 
   .report-container {

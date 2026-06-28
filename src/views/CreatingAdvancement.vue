@@ -16,6 +16,9 @@ import {eventBus, ITypesEnum} from "@/main.ts";
 import router from "@/scripts/router.ts";
 import AdvancementPrintComponent from "@/components/Advancement/AdvancementPrintComponent.vue";
 import EyeIconComponent from "@/components/Universal/Icons/EyeIconComponent.vue";
+import AdvancementTablePrintComponent from "@/components/Advancement/AdvancementTablePrintComponent.vue";
+import AdvancementModeIconComponent from "@/components/Universal/Icons/AdvancementModeIconComponent.vue";
+import PrintIconComponent from "@/components/Universal/Icons/PrintIconComponent.vue";
 
 const { t } = useI18n();
 
@@ -51,8 +54,13 @@ function GetIsRequirementCompleted(id:number | undefined) : boolean{
   return false;
 }
 
+function Print(): void {
+  window.print();
+}
+
 const isDataLoaded = ref(false);
 const isPdfHidden = ref(true);
+const isTableMode = ref(true);
 
 onMounted(() => {
   eventBus.on('db-update', async (data: { type: ITypesEnum}) => {
@@ -213,17 +221,25 @@ onMounted(() => {
           @click="Task.add(cashedRankInProgress.id);"
       />
   </div>
-  <AdvancementPrintComponent v-if="!isPdfHidden && cashedRankInProgress"
+  <AdvancementPrintComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
                              :rank-in-progress="cashedRankInProgress"
                              :rank="GetMyRank()"
                              :requirements="cashedRequirements"
                              :tasks="cashedTasks"
                              :mentee="GetMe()"
                              :mentor="GetMentor()"
-
   />
-  <EyeIconComponent class="show-pdf" color="var(--primary-color)" v-model="isPdfHidden" />
-
+  <AdvancementTablePrintComponent v-if="!isPdfHidden && cashedRankInProgress && isTableMode"
+                             :rank-in-progress="cashedRankInProgress"
+                             :rank="GetMyRank()"
+                             :requirements="cashedRequirements"
+                             :tasks="cashedTasks"
+                             :mentee="GetMe()"
+                             :mentor="GetMentor()"
+  />
+  <EyeIconComponent class="icon-button show-pdf-button" color="var(--primary-color)" v-model="isPdfHidden" />
+  <AdvancementModeIconComponent class="icon-button mode-button" color="var(--primary-color)" v-if="!isPdfHidden" v-model="isTableMode" />
+  <PrintIconComponent color="var(--primary-color)" v-if="!isPdfHidden" @click="Print()" class="icon-button print-button" />
   <img v-if="GetMyRank() && isPdfHidden" :src="'data:image/png;base64,'+GetMyRank().iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
 </template>
 
@@ -253,13 +269,22 @@ onMounted(() => {
 
 }
 
-.show-pdf {
+.show-pdf-button {
+  bottom: 10px;
+}
+.mode-button{
+  bottom: 70px;
+}
+.print-button{
+  bottom: 130px;
+}
+
+.icon-button {
   @media print {
     display: none;
   }
   position: fixed;
   right: 10px;
-  bottom: 10px;
   width: 50px;
   height: 50px;
   line-height: 50px;
