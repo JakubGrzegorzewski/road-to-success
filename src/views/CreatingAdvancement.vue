@@ -14,6 +14,8 @@ import {Task} from "@/scripts/database/Task.ts";
 import {getIdeaWithSelectedParts, isDarkMode} from "@/scripts/helperFunctions.ts";
 import {eventBus, ITypesEnum} from "@/main.ts";
 import router from "@/scripts/router.ts";
+import AdvancementPrintComponent from "@/components/Advancement/AdvancementPrintComponent.vue";
+import EyeIconComponent from "@/components/Universal/Icons/EyeIconComponent.vue";
 
 const { t } = useI18n();
 
@@ -36,6 +38,10 @@ function GetMe() : IUser{
   return cashedUsers.value?.find(u => u.id === cashedRankInProgress.value?.userId) as IUser;
 }
 
+function GetMentor() : IUser{
+  return cashedUsers.value?.find(u => u.id === cashedRankInProgress.value?.mentorId) as IUser;
+}
+
 function GetIsRequirementCompleted(id:number | undefined) : boolean{
   if (id == undefined)
     return false;
@@ -46,6 +52,7 @@ function GetIsRequirementCompleted(id:number | undefined) : boolean{
 }
 
 const isDataLoaded = ref(false);
+const isPdfHidden = ref(true);
 
 onMounted(() => {
   eventBus.on('db-update', async (data: { type: ITypesEnum}) => {
@@ -95,7 +102,7 @@ onMounted(() => {
     <p>{{ t('statusOptions.loading') }}<span class="loading-dots"></span></p>
   </div>
 
-  <div class="rank" v-else v-if="cashedRankInProgress">
+  <div class="rank" v-else v-if="cashedRankInProgress && isPdfHidden">
     <div class="rank-details">
       <div class="option-selection">
         <DropDownSelectionComponent
@@ -119,11 +126,12 @@ onMounted(() => {
                 rankToChangeTo = cashedRankInProgress.rankId;
             }}"
         />
-        <router-link :to="'/dodaj-osobe/'"><button class="add-button">✎</button></router-link>
+<!--        <router-link :to="'/stopnie/'"><button class="add-button">+</button></router-link>-->
       </div>
       <div class="option-selection">
         <DropDownSelectionComponent
             v-model="cashedRankInProgress.userId"
+            @update:model-value="RankInProgress.update(cashedRankInProgress)"
             :label="t('advancement.selectMentee') + ':'"
             :options="cashedUsers.map((s : IUser) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentee"
@@ -131,61 +139,62 @@ onMounted(() => {
         <DropDownSelectionComponent
             v-model="cashedRankInProgress.mentorId"
             :label="t('advancement.selectMentor') + ':'"
+            @update:model-value="RankInProgress.update(cashedRankInProgress)"
             :options="cashedUsers.map((s : IUser) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
-        <router-link :to="'/dodaj-osobe/'"><button class="add-button">✎</button></router-link>
+        <router-link :to="'/dodaj-osobe/'"><button class="add-button">+</button></router-link>
       </div>
-      </div>
-
-      <h1 style="margin-top: 20px; justify-self: center">{{ GetMyRank().fullName }}</h1>
-      <details style="margin-bottom: 20px;" v-if="GetMyRank().startRequirements.length > 0 && GetMyRank().endRequirements.length >0">
-        <summary>{{ t('advancement.requirement.showRequirements') }}</summary>
-        <div
-            class="requirement-item box-shadow"
-            style="padding: 20px"
-        >
-          <h3> {{ t('advancement.requirement.start') }} </h3>
-          <br/>
-          <ul
-               v-for="req in GetMyRank().startRequirements"
-               :key="req"
-               style="padding-left: 30px"
-          >
-            <li> {{ req }} </li>
-          </ul>
-          <br/>
-          <h3> {{ t('advancement.requirement.end') }} </h3>
-          <br/>
-          <ul
-               v-for="req in GetMyRank().endRequirements"
-               :key="req"
-                style="padding-left: 30px"
-          >
-            <li> {{ req }} </li>
-          </ul>
-        </div>
-      </details>
-      <p style="text-align: justify" v-if="GetMyRank().idea" v-html="getIdeaWithSelectedParts(GetMyRank(), cashedTasks)"/>
-      <details style="margin-top: 20px; cursor: pointer " v-if="cashedRequirements && cashedTasks">
-          <summary>{{ t('advancement.requirement.showSelected') }}</summary>
-          <div class="requirements-collapsed">
-            <div class="requirement-item box-shadow"
-                 v-for="requirement in cashedRequirements"
-                 :key="requirement.id"
-            >
-              <div
-                  class="requirement-item-status"
-                  :style="{ backgroundColor: GetIsRequirementCompleted(requirement.id) ? 'var(--accent-success)' : 'var(--accent-error)' }"
-              >
-                {{  GetIsRequirementCompleted(requirement.id)  ? "✔ " + t('advancement.requirement.added') : "𐄂 " + t('advancement.requirement.notAdded') }}
-              </div>
-              <p> {{ requirement.content }} </p>
-            </div>
-          </div>
-      </details>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 20px;" v-if="isDataLoaded && cashedRankInProgress">
+
+    <h1 style="margin-top: 20px; justify-self: center">{{ GetMyRank().fullName }}</h1>
+    <details style="margin-bottom: 20px;" v-if="GetMyRank().startRequirements.length > 0 && GetMyRank().endRequirements.length >0">
+      <summary>{{ t('advancement.requirement.showRequirements') }}</summary>
+      <div
+          class="requirement-item box-shadow"
+          style="padding: 20px"
+      >
+        <h3> {{ t('advancement.requirement.start') }} </h3>
+        <br/>
+        <ul
+             v-for="req in GetMyRank().startRequirements"
+             :key="req"
+             style="padding-left: 30px"
+        >
+          <li> {{ req }} </li>
+        </ul>
+        <br/>
+        <h3> {{ t('advancement.requirement.end') }} </h3>
+        <br/>
+        <ul
+             v-for="req in GetMyRank().endRequirements"
+             :key="req"
+              style="padding-left: 30px"
+        >
+          <li> {{ req }} </li>
+        </ul>
+      </div>
+    </details>
+    <p style="text-align: justify" v-if="GetMyRank().idea" v-html="getIdeaWithSelectedParts(GetMyRank(), cashedTasks)"/>
+    <details style="margin-top: 20px; cursor: pointer " v-if="cashedRequirements && cashedTasks">
+        <summary>{{ t('advancement.requirement.showSelected') }}</summary>
+        <div class="requirements-collapsed">
+          <div class="requirement-item box-shadow"
+               v-for="requirement in cashedRequirements"
+               :key="requirement.id"
+          >
+            <div
+                class="requirement-item-status"
+                :style="{ backgroundColor: GetIsRequirementCompleted(requirement.id) ? 'var(--accent-success)' : 'var(--accent-error)' }"
+            >
+              {{  GetIsRequirementCompleted(requirement.id)  ? "✔ " + t('advancement.requirement.added') : "𐄂 " + t('advancement.requirement.notAdded') }}
+            </div>
+            <p> {{ requirement.content }} </p>
+          </div>
+        </div>
+    </details>
+    </div>
+  <div class="rank-content" v-if="isDataLoaded && cashedRankInProgress && isPdfHidden">
       <IdeaBasedTaskComponent
           v-for="task in cashedTasks"
           :key="task.id"
@@ -201,10 +210,21 @@ onMounted(() => {
           class="add-task-button"
           :button-text="t('advancement.task.add')"
           :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
-          @click="Task.addDefault(cashedRankInProgress.id);"
+          @click="Task.add(cashedRankInProgress.id);"
       />
-    </div>
-  <img v-if="GetMyRank()" :src="'data:image/png;base64,'+GetMyRank().iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
+  </div>
+  <AdvancementPrintComponent v-if="!isPdfHidden && cashedRankInProgress"
+                             :rank-in-progress="cashedRankInProgress"
+                             :rank="GetMyRank()"
+                             :requirements="cashedRequirements"
+                             :tasks="cashedTasks"
+                             :mentee="GetMe()"
+                             :mentor="GetMentor()"
+
+  />
+  <EyeIconComponent class="show-pdf" color="var(--primary-color)" v-model="isPdfHidden" />
+
+  <img v-if="GetMyRank() && isPdfHidden" :src="'data:image/png;base64,'+GetMyRank().iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
 </template>
 
 <style scoped>
@@ -215,6 +235,40 @@ onMounted(() => {
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
+}
+
+.rank-content{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media print {
+  .rank-content{
+    display: none;
+  }
+  .rank{
+    display: none;
+  }
+
+}
+
+.show-pdf {
+  @media print {
+    display: none;
+  }
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  padding: 5px;
+  cursor: pointer;
+  border: var(--secondary-color) 2px solid;
+
+  background-color: var(--secondary-color);
+  border-radius: 5px;
 }
 
 .add-task-button {
