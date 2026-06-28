@@ -24,11 +24,11 @@ onMounted(async () => {
 
 <template>
   <div class="app-container">
-    <NavBarComponent/>
+    <NavBarComponent class="app-bar" />
     <main class="main-content">
       <router-view/>
     </main>
-    <FooterComponent/>
+    <FooterComponent class="footer" />
   </div>
 </template>
 
@@ -41,6 +41,12 @@ onMounted(async () => {
 
 .main-content {
   flex: 1;
+}
+
+@media print {
+  .app-bar, .footer {
+    display: none;
+  }
 }
 </style>
 

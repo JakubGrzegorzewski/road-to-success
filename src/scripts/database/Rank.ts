@@ -13,7 +13,6 @@ export class Rank {
     }
 
     static async add(rank: IRank): Promise<IRank> {
-        // .put adds if new, updates if key exists
         await db.ranks.put(rank);
         return rank;
     }

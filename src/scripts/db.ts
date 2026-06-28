@@ -15,7 +15,7 @@ class AppDatabase extends Dexie {
         super('RoadSuccessDB');
         // Define the schema. Only list primary keys and properties you will filter/query by.
         this.version(1).stores({
-            users: '++id, email',
+            users: '++id',
             ranks: '++id',
             ranksInProgress: '++id, rankId, userId, mentorId',
             requirements: '++id, rankId',

@@ -32,7 +32,6 @@ export interface IRank {
     startRequirements: string[];
     endRequirements: string[];
     requirementIds: number[];
-    ranksInProgressIds: number[];
     colorHex: string;
     iconInBase64: string;
     backgroundInBase64: string;
@@ -51,7 +50,6 @@ export interface IRequirement {
     number: string;
     content: string;
     rankId: number;
-    taskIds: number[];
 }
 
 export interface ITask {

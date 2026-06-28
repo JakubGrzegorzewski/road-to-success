@@ -2,11 +2,11 @@
 import {onMounted, ref} from "vue";
 import type {IRankInProgress} from '@/scripts/interfaces.ts';
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
-import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
 import {CardType, eventBus, ITypesEnum} from "@/main.ts";
 import {RankInProgress} from "@/scripts/database/RankInProgress.ts";
 import router from "@/scripts/router.ts";
+import PopupComponent from "@/components/Universal/PopupComponent.vue";
 
 const { t } = useI18n();
 
@@ -27,7 +27,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h1>{{ t('advancement.your') }}</h1>
+  <h1 style="margin-top: 40px">{{ t('advancement.your') }}</h1>
   <div class="advancement-container">
     <AdvancementCardComponent
         v-for="rankInProgress in ranks"
@@ -39,7 +39,7 @@ onMounted(async () => {
     />
     <AdvancementCardComponent
         :type="CardType.ADD"
-        @click="RankInProgress.addDefault();"
+        @click="async ()=>{const rank = await RankInProgress.addDefault(); await router.push('/stopien/' + rank.id)}"
     />
     <AdvancementCardComponent
         :type="CardType.IMPORT"
