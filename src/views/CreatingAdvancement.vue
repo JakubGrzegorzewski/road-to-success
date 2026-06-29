@@ -221,22 +221,25 @@ onMounted(() => {
           @click="Task.add(cashedRankInProgress.id);"
       />
   </div>
-  <AdvancementPrintComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
-                             :rank-in-progress="cashedRankInProgress"
-                             :rank="GetMyRank()"
-                             :requirements="cashedRequirements"
-                             :tasks="cashedTasks"
-                             :mentee="GetMe()"
-                             :mentor="GetMentor()"
-  />
-  <AdvancementTablePrintComponent v-if="!isPdfHidden && cashedRankInProgress && isTableMode"
-                             :rank-in-progress="cashedRankInProgress"
-                             :rank="GetMyRank()"
-                             :requirements="cashedRequirements"
-                             :tasks="cashedTasks"
-                             :mentee="GetMe()"
-                             :mentor="GetMentor()"
-  />
+  <div id="print-capture-target">
+    <AdvancementPrintComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
+                               :rank-in-progress="cashedRankInProgress"
+                               :rank="GetMyRank()"
+                               :requirements="cashedRequirements"
+                               :tasks="cashedTasks"
+                               :mentee="GetMe()"
+                               :mentor="GetMentor()"
+    />
+    <AdvancementTablePrintComponent v-if="!isPdfHidden && cashedRankInProgress && isTableMode"
+                                    :rank-in-progress="cashedRankInProgress"
+                                    :rank="GetMyRank()"
+                                    :requirements="cashedRequirements"
+                                    :tasks="cashedTasks"
+                                    :mentee="GetMe()"
+                                    :mentor="GetMentor()"
+    />
+  </div>
+
   <EyeIconComponent class="icon-button show-pdf-button" color="var(--primary-color)" v-model="isPdfHidden" />
   <AdvancementModeIconComponent class="icon-button mode-button" color="var(--primary-color)" v-if="!isPdfHidden" v-model="isTableMode" />
   <PrintIconComponent color="var(--primary-color)" v-if="!isPdfHidden" @click="Print()" class="icon-button print-button" />
