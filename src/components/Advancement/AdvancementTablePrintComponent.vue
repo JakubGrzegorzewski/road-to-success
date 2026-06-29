@@ -23,31 +23,13 @@ function getTasksForRequirement(requirement: IRequirement): ITask[] {
 
 <template>
   <div class="report-container">
-    <header>
-      <h1>{{ rank.fullName }}</h1>
-      <div class="header-meta">
-        <p><strong>{{ t('advancement.mentee') }}:</strong> {{ mentee.fullName || '—' }}</p>
-        <p><strong>{{ t('advancement.mentor') }}:</strong> {{ mentor.fullName || '—' }}</p>
-      </div>
-    </header>
+    <div class="report-header">
+      <img v-if="rank.iconInBase64" :src="'data:image/png;base64,'+rank.iconInBase64" :alt="rank.fullName" class="rank-image"/>
+      <h1 style="padding-top: 10mm">{{ rank.fullName }}</h1>
+      <div><strong>{{ t('advancement.mentee') }}:</strong> {{ mentee.fullName || '—' }}</div>
+      <div><strong>{{ t('advancement.mentor') }}:</strong> {{ mentor.fullName || '—' }}</div>
+    </div>
 
-    <section v-if="rank.startRequirements?.length > 0 && rank.endRequirements?.length > 0" class="requirements-section">
-      <h2>{{ t('advancement.requirement.showRequirements') }}</h2>
-      <div class="requirements-grid">
-        <div class="req-box">
-          <h3>{{ t('advancement.requirement.start') }}</h3>
-          <ul>
-            <li v-for="req in rank.startRequirements" :key="req">{{ req }}</li>
-          </ul>
-        </div>
-        <div class="req-box">
-          <h3>{{ t('advancement.requirement.end') }}</h3>
-          <ul>
-            <li v-for="req in rank.endRequirements" :key="req">{{ req }}</li>
-          </ul>
-        </div>
-      </div>
-    </section>
 
     <article v-if="rank.idea" class="rank-idea" v-html="rank.idea"/>
 
@@ -75,9 +57,6 @@ function getTasksForRequirement(requirement: IRequirement): ITask[] {
                   class="task-item"
               >
                 <p class="task-content">{{ task.content }}</p>
-                <p v-if="task.partIdea && task.partIdea.length > 0" class="task-idea">
-                  <small><strong>{{ t('advancement.task.idea') }}:</strong> {{ task.partIdea.join(' ') }}</small>
-                </p>
               </div>
             </div>
             <span v-else class="no-tasks">—</span>
@@ -90,9 +69,27 @@ function getTasksForRequirement(requirement: IRequirement): ITask[] {
 </template>
 
 <style scoped>
-header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
-.requirements-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
 h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px; }
+
+.rank-image{
+  width: 300px;
+  padding: 20px;
+}
+
+.report-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20mm  20mm 20mm;
+}
+
+.rank-idea {
+  text-align: justify;
+  line-height: 1.6;
+  break-after: page;
+}
+
 
 .report-container {
   font-family: 'Museo', sans-serif;
@@ -126,7 +123,7 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 
 .matrix-table th,
 .matrix-table td {
-  border: 1px solid #000;
+  border: 1px solid #000 !important;
   padding: 10px;
   vertical-align: top;
   text-align: left;
@@ -175,19 +172,34 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 }
 
 @media print {
-  @page { size: A4; margin: 20mm; }
+  @page { size: A4; margin: 15mm; }
 
-  .report-container {
-    width: 100% !important;
+  html, body {
+    margin: 0 !important;
     padding: 0 !important;
+    background: #fff !important;
+  }
+
+  #app, main, .v-application {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .report-container {
+    position: static !important;
+    width: 210mm !important;
+    padding: 5mm !important;
     box-shadow: none !important;
-    background: transparent !important;
     color: #000 !important;
     display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
   }
 
   header, h2 { border-color: #000 !important; }
-  h2 { page-break-after: avoid; }
 
   .matrix-table th {
     background-color: transparent !important;
@@ -195,15 +207,8 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 
   .task-item {
     border-color: #000 !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
 
-  tr {
-    page-break-inside: avoid;
-    break-inside: avoid;
   }
-
   strong, p, li, div, span, th, td { color: #000 !important; }
 }
 </style>
