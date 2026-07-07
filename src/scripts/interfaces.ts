@@ -34,7 +34,6 @@ export interface IRank {
     requirementIds: number[];
     colorHex: string;
     iconInBase64: string;
-    backgroundInBase64: string;
 }
 
 export interface IRankInProgress {
@@ -60,6 +59,20 @@ export interface ITask {
     status: Status; // Uses the Status Enum above
     partIdea: string[];
     commentIds: number[];
+}
+
+export interface ITaskReport {
+    id?: number;
+    taskId: number;
+    content: string;
+    attachments: IAttachment[];
+}
+
+export interface IAttachment {
+    name: string;
+    type: string;
+    size: number;
+    fileData: File;
 }
 
 export interface ITaskComment{
