@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
+import IdeaTaskComponent from "@/components/Advancement/IdeaTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
@@ -14,9 +14,9 @@ import {Task} from "@/scripts/database/Task.ts";
 import {getIdeaWithSelectedParts, isDarkMode} from "@/scripts/helperFunctions.ts";
 import {eventBus, ITypesEnum} from "@/main.ts";
 import router from "@/scripts/router.ts";
-import AdvancementPrintComponent from "@/components/Advancement/AdvancementPrintComponent.vue";
+import AsSimpleAdvancementComponent from "@/components/Advancement/AsSimpleAdvancementComponent.vue";
 import EyeIconComponent from "@/components/Universal/Icons/EyeIconComponent.vue";
-import AdvancementTablePrintComponent from "@/components/Advancement/AdvancementTablePrintComponent.vue";
+import AsTableAdvancementComponent from "@/components/Advancement/AsTableAdvancementComponent.vue";
 import AdvancementModeIconComponent from "@/components/Universal/Icons/AdvancementModeIconComponent.vue";
 import PrintIconComponent from "@/components/Universal/Icons/PrintIconComponent.vue";
 
@@ -203,7 +203,7 @@ onMounted(() => {
     </details>
     </div>
   <div class="rank-content" v-if="isDataLoaded && cashedRankInProgress && isPdfHidden">
-      <IdeaBasedTaskComponent
+      <IdeaTaskComponent
           v-for="task in cashedTasks"
           :key="task.id"
           :task="task"
@@ -222,7 +222,7 @@ onMounted(() => {
       />
   </div>
   <div id="print-capture-target">
-    <AdvancementPrintComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
+    <AsSimpleAdvancementComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
                                :rank-in-progress="cashedRankInProgress"
                                :rank="GetMyRank()"
                                :requirements="cashedRequirements"
@@ -230,7 +230,7 @@ onMounted(() => {
                                :mentee="GetMe()"
                                :mentor="GetMentor()"
     />
-    <AdvancementTablePrintComponent v-if="!isPdfHidden && cashedRankInProgress && isTableMode"
+    <AsTableAdvancementComponent v-if="!isPdfHidden && cashedRankInProgress && isTableMode"
                                     :rank-in-progress="cashedRankInProgress"
                                     :rank="GetMyRank()"
                                     :requirements="cashedRequirements"
