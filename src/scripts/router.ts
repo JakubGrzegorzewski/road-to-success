@@ -28,11 +28,11 @@ const routes: RouteRecordRaw[] = [
         name: 'AddPerson',
         component: () => import('@/views/AddPersonView.vue'),
     },
-    {
-        path: '/stopnie/',
-        name: 'RankManagement',
-        component: () => import('@/views/RankManagementView.vue'),
-    },
+    // {
+    //     path: '/stopnie/',
+    //     name: 'RankManagement',
+    //     component: () => import('@/views/RankManagementView.vue'),
+    // },
 ]
 const router = createRouter({
     history: createWebHistory(),
