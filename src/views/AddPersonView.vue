@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {onMounted, ref} from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {useI18n} from "vue-i18n";
 import {IUser} from "@/scripts/interfaces.ts";
@@ -11,6 +11,7 @@ const { t } = useI18n();
 
 const fullName = ref('')
 const popupMessage = ref('')
+const isFirst = ref(false);
 
 async function onSubmit() {
   const user: Omit<IUser, 'id'> = {
@@ -24,16 +25,25 @@ async function onSubmit() {
   fullName.value = ''
   popupMessage.value = 'Użytkownik dodany'
 }
+
+onMounted(async () => {
+  User.getAll().then(users => {
+    if (users.length === 0)
+      isFirst.value = true;
+  })
+})
 </script>
 
 <template>
     <form @submit.prevent="onSubmit" class="form">
       <div>
+        <h2 v-if="isFirst">{{ t('user.addFirstUser') }}</h2>
+        <h2 v-else>{{ t('user.addUser') }}</h2>
         <label>{{ t('user.nameRankCombo') }}</label>
         <input v-model="fullName" required />
       </div>
       <button type="submit" style="display: flex; justify-content: center;">
-        <ButtonComponent :button-text="t('user.addUser')"/>
+        <ButtonComponent :button-text="t('edit.add')"/>
       </button>
       <PopupComponent
           v-if="popupMessage"

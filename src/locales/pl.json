@@ -103,6 +103,7 @@
     "mentee": "Podopieczny",
     "admin": "Administrator",
     "addUser": "Dodaj użytkownika",
+    "addFirstUser": "Dodaj pierwszego użytkownika",
     "noUsers": "Brak użytkowników do wyświetlenia",
     "editUser": "Edytuj użytkownika",
     "deleteUser": "Usuń użytkownika",

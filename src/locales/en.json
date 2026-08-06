@@ -98,6 +98,7 @@
     "mentee": "Mentee",
     "admin": "Administrator",
     "addUser": "Add user",
+    "addFirstUser": "Add first user",
     "noUsers": "No users to display",
     "editUser": "Edit user",
     "deleteUser": "Delete user",
