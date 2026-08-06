@@ -32,7 +32,9 @@
     "delete": "Usuń próbę",
     "select": "Wybierz próbę",
     "selectMentee": "Wybierz podopiecznego",
+    "mentee": "Podopieczny",
     "selectMentor": "Wybierz opiekuna",
+    "mentor": "Opiekun",
     "selectStyle": "Wybierz styl",
     "noAdvancements": "Brak prób do wyświetlenia",
     "comment": {
@@ -61,7 +63,10 @@
       "placeholder": "Napisz swoje zadanie tutaj...",
       "save": "Zapisz zadanie",
       "cancel": "Anuluj",
-      "noTasks": "Brak zadań do wyświetlenia"
+      "noTasks": "Brak zadań do wyświetlenia",
+      "content": "Treść zadania",
+      "idea": "Idea stopnia realizaowana zadaniem",
+      "tasks" : "Zadania"
     },
     "requirement" : {
       "selected": "Zaznaczone wymagania:",
@@ -86,7 +91,8 @@
     "in_progress": "W trakcie",
     "completed": "Zakończona",
     "inCompleted": "Niezakończona",
-    "failed": "Nieudana"
+    "failed": "Nieudana",
+    "loading" : "Ładowanie"
   },
   "user": {
     "name": "Imię",

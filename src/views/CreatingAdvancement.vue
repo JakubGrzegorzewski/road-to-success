@@ -1,21 +1,24 @@
 <script setup lang="ts">
-import IdeaBasedTaskComponent from "@/components/Advancement/IdeaBasedTaskComponent.vue";
+import IdeaTaskComponent from "@/components/Advancement/IdeaTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {RankInProgress, RankInProgressDTO} from "@/scripts/Model/RankInProgress.js";
-import {Task, TaskDTO} from "@/scripts/Model/Task.js";
-import {Rank, RankDTO} from "@/scripts/Model/Rank.js";
-import {Requirement, RequirementDTO} from "@/scripts/Model/Requirement.js";
-import {
-  addTaskToDB, generateExport,
-  isDarkMode,
-  loadDatabaseData,
-} from "@/scripts/helperFunctions.js";
-import {AppUser, AppUserDTO} from "@/scripts/Model/AppUser.js";
-import {onMounted, ref, Ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import {useI18n} from "vue-i18n";
-import {pagesLinks} from "@/main";
+import {onMounted, ref} from "vue";
+import {Rank} from "@/scripts/database/Rank.ts";
+import {IRank, IRankInProgress, IRequirement, ITask, IUser} from "@/scripts/interfaces.ts";
+import {RankInProgress} from "@/scripts/database/RankInProgress.ts";
+import {User} from "@/scripts/database/User.ts";
+import {Requirement} from "@/scripts/database/Requirement.ts";
+import {Task} from "@/scripts/database/Task.ts";
+import {getIdeaWithSelectedParts, isDarkMode} from "@/scripts/helperFunctions.ts";
+import {eventBus, ITypesEnum} from "@/main.ts";
+import router from "@/scripts/router.ts";
+import AsSimpleAdvancementComponent from "@/components/Advancement/AsSimpleAdvancementComponent.vue";
+import EyeIconComponent from "@/components/Universal/Icons/EyeIconComponent.vue";
+import AsTableAdvancementComponent from "@/components/Advancement/AsTableAdvancementComponent.vue";
+import AdvancementModeIconComponent from "@/components/Universal/Icons/AdvancementModeIconComponent.vue";
+import PrintIconComponent from "@/components/Universal/Icons/PrintIconComponent.vue";
 
 const { t } = useI18n();
 
@@ -23,328 +26,224 @@ const props = defineProps<{
   id: number,
 }>();
 
+const cashedRankInProgress = ref<IRankInProgress>();
+const rankToChangeTo = ref<number>();
+const cashedRanks = ref<IRank[]>([]);
+const cashedUsers = ref<IUser[]>([]);
+const cashedRequirements = ref<IRequirement[]>([]);
+const cashedTasks = ref<ITask[]>([])
 
-const editedRankInProgress : Ref<RankInProgressDTO> = ref(null as unknown as RankInProgressDTO);
-const tempRankId = ref<number | null>(null);
-
-const tasks : Ref<TaskDTO[]> = ref([]);
-const requirements : Ref<RequirementDTO[]> = ref([]);
-
-const user : Ref<AppUserDTO | undefined> = ref(undefined);
-const allUsers : Ref<AppUserDTO[]> = ref([]);
-const rank : Ref<RankDTO | undefined> = ref();
-const allRanks : Ref<RankDTO[]> = ref([]);
-
-const isLoadingData = ref(false);
-const loadingScreenTitle = ref("");
-const loadingScreenMessage = ref("");
-
-
-async function reload() {
-  if (isLoadingData.value) return;
-
-  isLoadingData.value = true;
-  console.log("Reloading...");
-  tasks.value = [];
-  requirements.value = [];
-
-  try {
-    // Load user
-    AppUser.getById(editedRankInProgress.value.userId).then((fetchedUser: AppUserDTO) => {
-      console.info("User loaded:", fetchedUser);
-      user.value = fetchedUser
-    })
-
-    AppUser.getAll().then((fetchedUsers: AppUserDTO[]) => {
-      console.info("Users loaded:", fetchedUsers);
-      allUsers.value = fetchedUsers
-    })
-
-    // Load ranks
-    allRanks.value = await Rank.getAll();
-    rank.value = allRanks.value.find((el) => el.id === editedRankInProgress.value.rankId);
-    console.info("Rank loaded:", rank.value);
-
-    // Load requirements
-    const requirementIds = rank.value?.requirementIds ?? [];
-    requirements.value = await Promise.all(
-        requirementIds.map((id: number) => Requirement.getById(id))
-    );
-    console.info("Requirements loaded:", requirements.value);
-
-    // Load tasks
-    const taskIds = editedRankInProgress.value.taskIds ?? [];
-    tasks.value = await Promise.all(
-        taskIds.map((id: number) => Task.getById(id))
-    );
-    console.info("Tasks loaded:", tasks.value);
-  } catch (error) {
-    console.error("Error reloading:", error);
-  } finally {
-    isLoadingData.value = false;
-  }
+function GetMyRank() : IRank{
+  return cashedRanks.value?.find(r => r.id === cashedRankInProgress.value?.rankId) as IRank;
 }
 
-function addTask(thisReq : number[] = []) {
-  if (!rank.value) return;
-
-  addTaskToDB(editedRankInProgress.value.id, rank.value, thisReq)?.then(task => {
-    if (task) {
-      tasks.value = [...tasks.value, { ...task }];
-    }
-  });
+function GetMe() : IUser{
+  return cashedUsers.value?.find(u => u.id === cashedRankInProgress.value?.userId) as IUser;
 }
 
-function updateTask(updatedTask: TaskDTO) {
-  const index = tasks.value.findIndex(task => task.id === updatedTask.id);
-  if (index !== -1) {
-    tasks.value[index] = updatedTask;
-    Task.update(updatedTask);
-  }
+function GetMentor() : IUser{
+  return cashedUsers.value?.find(u => u.id === cashedRankInProgress.value?.mentorId) as IUser;
 }
 
-function deleteTask(task: TaskDTO) {
-  tasks.value = tasks.value.filter(t => t.id !== task.id);
-  Task.deleteObject(task.id, editedRankInProgress.value.id);
+function GetIsRequirementCompleted(id:number | undefined) : boolean{
+  if (id == undefined)
+    return false;
+  for (const task of cashedTasks.value)
+    if (task.requirementsIds.includes(id))
+      return true
+  return false;
 }
 
-function getIdeaWithSelectedParts() {
-  type IdeaPart = { index: number; indexEnd: number };
-
-  const ideaText = rank.value?.idea ?? "";
-  if (!ideaText) return "";
-
-  const rawParts: IdeaPart[] = [];
-
-  for (const task of tasks.value) {
-    if (task.partIdea.length === rank.value?.idea.split(" ").length) continue;
-    const parts = Array.isArray((task as any).partIdea) ? ((task as any).partIdea as string[]) : [];
-    const cleaned = parts.map(p => (p ?? "").trim()).filter(p => p.length > 0);
-    if (cleaned.length === 0) continue;
-
-    // Highlight each selected fragment separately (also works when there is a gap between fragments)
-    for (const fragment of cleaned) {
-      if (!fragment) continue;
-      if (fragment === ideaText) continue;
-
-      let fromIndex = 0;
-      while (true) {
-        const idx = ideaText.indexOf(fragment, fromIndex);
-        if (idx < 0) break;
-
-        rawParts.push({ index: idx, indexEnd: idx + fragment.length });
-        fromIndex = idx + fragment.length;
-      }
-    }
-  }
-
-  if (rawParts.length === 0) return ideaText;
-
-  rawParts.sort((a, b) => a.index - b.index);
-
-  // Merge overlaps / touching ranges
-  const merged: IdeaPart[] = [];
-  for (const part of rawParts) {
-    const last = merged[merged.length - 1];
-    if (last && part.index <= last.indexEnd) {
-      last.indexEnd = Math.max(last.indexEnd, part.indexEnd);
-    } else {
-      merged.push({ ...part });
-    }
-  }
-
-  // Build HTML using range pointers (no per\-char .some() scans)
-  let result = "";
-  let rangeIndex = 0;
-
-  for (let i = 0; i < ideaText.length; i++) {
-    const range = merged[rangeIndex];
-
-    if (range && i === range.index) result += "<span class='idea-part-highlight'>";
-    result += ideaText[i];
-    if (range && i + 1 === range.indexEnd) {
-      result += "</span>";
-      rangeIndex++;
-    }
-  }
-
-  return result;
+function Print(): void {
+  window.print();
 }
+
+const isDataLoaded = ref(false);
+const isPdfHidden = ref(true);
+const isTableMode = ref(true);
 
 onMounted(() => {
-  console.log("Mounted with id:", props.id);
-  if (!props.id) return;
-  // Load ranks in progress
-  loadDatabaseData().then(()=>{
-    RankInProgress.getById(props.id)
-        .then((rankInProgress: RankInProgressDTO) => {
-          editedRankInProgress.value = rankInProgress;
-          tempRankId.value = rankInProgress.rankId;
-          console.log("Rank in progress loaded:", rankInProgress);
-        })
-        .then(reload)
-  })
-})
-
-function changeRank() {
-  if (!tempRankId.value || !editedRankInProgress.value) return;
-  Promise.all(
-    tasks.value.map(task => Task.deleteObject(task.id, editedRankInProgress.value.id))
-  ).then(() => {
-    console.log("All tasks deleted for rank change.");
-    tasks.value = [];
-    if (tempRankId.value !== null)
-      editedRankInProgress.value.rankId = tempRankId.value;
-    console.log("Rank in progress loaded:", editedRankInProgress.value.rankId, "changed to rank:", tempRankId.value);
-    reload();
-  });
-
-}
-
-function gerRequirementsStatus() {
-  const isRequirementCompleted = (reqId: number) : boolean => {
-    return tasks.value.some((task: TaskDTO) => {
-      return task.requirementsIds.includes(reqId)
-    })
-  }
-  return requirements.value.map((req : RequirementDTO) => {
-    return {isCompleted: isRequirementCompleted(req.id), requirement : req}
-  })
-}
-
-function manageExport() {
-  loadingScreenTitle.value = t('advancement.exporting');
-  generateExport(editedRankInProgress.value).then(() => {
-      loadingScreenTitle.value = t('advancement.exported')
+  eventBus.on('db-update', async (data: { type: ITypesEnum}) => {
+    switch (data.type) {
+      case ITypesEnum.ERank:
+        cashedRanks.value = await Rank.getAll();
+        break;
+      case ITypesEnum.ERankInProgress:
+        cashedRankInProgress.value = await RankInProgress.getById(props.id);
+        rankToChangeTo.value = cashedRankInProgress.value?.rankId;
+        break;
+      case ITypesEnum.EUser:
+        cashedUsers.value = await User.getAll();
+        break;
+      case ITypesEnum.ERequirement:
+        cashedRequirements.value = await Requirement.getByRankId(props.id);
+        break;
+      case ITypesEnum.ETask:
+        cashedTasks.value = await Task.getByRankInProgressId(props.id);
+        break;
     }
-  )
-}
+  });
+  Promise.all([
+    Rank.getAll().then(ranks => cashedRanks.value = ranks),
+    RankInProgress.getById(props.id).then(rankInProgress => {
+      cashedRankInProgress.value = rankInProgress;
+      rankToChangeTo.value = rankInProgress.rankId;
+    }),
+    User.getAll().then(async users => {
+      cashedUsers.value = users
+      if (users.length === 0)
+        await router.push("/dodaj-osobe/");
+    }),
+    Requirement.getByRankId(props.id).then(requirements => cashedRequirements.value = requirements),
+    Task.getByRankInProgressId(props.id).then(tasks => cashedTasks.value = tasks)
+  ]).then(() => {
+    isDataLoaded.value = true;
+  }).catch(err => {
+    console.error("Failed to load data:", err);
+  });
+});
 
 </script>
 
 <template>
-  <div class="rank" v-if="tempRankId && editedRankInProgress && rank && allRanks && user && Array.isArray(tasks) && Array.isArray(requirements)">
+  <div v-if="!isDataLoaded" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <p>{{ t('statusOptions.loading') }}<span class="loading-dots"></span></p>
+  </div>
+
+  <div class="rank" v-else v-if="cashedRankInProgress && isPdfHidden">
     <div class="rank-details">
       <div class="option-selection">
         <DropDownSelectionComponent
-            v-model="tempRankId"
+            v-model="rankToChangeTo"
             :label="t('advancement.select') + ':'"
-            :options="allRanks.map(r => ({ value: r.id, label: r.fullName }))"
+            :options="cashedRanks.map(r => ({ value: r.id, label: r.fullName }))"
             placeholder="Select rank"
         />
         <PopupComponent
-            v-if="tempRankId !== editedRankInProgress.rankId"
+            v-if="rankToChangeTo !== cashedRankInProgress.rankId"
             :title="t('popups.changeRank.title')"
             :message="t('popups.changeRank.message')"
-            :option-one="{text: t('edit.yes'), action: () => { changeRank() }}"
-            :option-two="{text: t('edit.no'), action: () => { tempRankId = editedRankInProgress.rankId; }}"
+            :option-one="{text: t('edit.yes'), action: () => {
+              if (cashedRankInProgress){
+                cashedRankInProgress.rankId = <number>rankToChangeTo;
+                RankInProgress.update(cashedRankInProgress);
+              }
+            }}"
+            :option-two="{text: t('edit.no'), action: () => {
+              if (cashedRankInProgress)
+                rankToChangeTo = cashedRankInProgress.rankId;
+            }}"
         />
-        <router-link :to="pagesLinks.addAdvancement"><button class="add-button">✎</button></router-link>
+<!--        <router-link :to="'/stopnie/'"><button class="add-button">+</button></router-link>-->
       </div>
       <div class="option-selection">
         <DropDownSelectionComponent
-            v-model="editedRankInProgress.userId"
+            v-model="cashedRankInProgress.userId"
+            @update:model-value="RankInProgress.update(cashedRankInProgress)"
             :label="t('advancement.selectMentee') + ':'"
-            :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
+            :options="cashedUsers.map((s : IUser) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentee"
         />
         <DropDownSelectionComponent
-            v-model="editedRankInProgress.mentorId"
+            v-model="cashedRankInProgress.mentorId"
             :label="t('advancement.selectMentor') + ':'"
-            :options="Object.values(allUsers).map((s : AppUserDTO) => ({ value: s.id, label: s.fullName }))"
+            @update:model-value="RankInProgress.update(cashedRankInProgress)"
+            :options="cashedUsers.map((s : IUser) => ({ value: s.id, label: s.fullName }))"
             placeholder="Select mentor"
         />
-        <router-link :to="pagesLinks.addPerson"><button class="add-button">✎</button></router-link>
+        <router-link :to="'/dodaj-osobe/'"><button class="add-button">+</button></router-link>
       </div>
-      <div style="display: flex; gap: 15px">
-        <div v-if="loadingScreenTitle.length > 0">
-          <PopupComponent
-              v-if="loadingScreenTitle == t('advancement.generating')"
-              :title="loadingScreenTitle"
-              :message="loadingScreenMessage"
-          />
-          <PopupComponent
-              v-else
-              :title="loadingScreenTitle"
-              :message="loadingScreenMessage"
-              :option-one="{text: t('edit.ok'), action: () => { loadingScreenTitle = ''; loadingScreenMessage = ''; }}"
-          />
-        </div>
-        <ButtonComponent
-            :button-text="t('advancement.export')"
-            buttonStyle="primary"
-            @click="manageExport()"
-        />
-      </div>
-
-      <h1 style="margin-top: 20px; justify-self: center">{{ rank.fullName }}</h1>
-      <details style="margin-bottom: 20px;" v-if="rank.startRequirements.length > 0 && rank.endRequirements.length >0">
-        <summary>{{ t('advancement.requirement.showRequirements') }}</summary>
-        <div
-            class="requirement-item box-shadow"
-            style="padding: 20px"
-        >
-          <h3> {{ t('advancement.requirement.start') }} </h3>
-          <br/>
-          <ul
-               v-for="req in rank.startRequirements"
-               :key="req"
-               style="padding-left: 30px"
-          >
-            <li> {{ req }} </li>
-          </ul>
-          <br/>
-          <h3> {{ t('advancement.requirement.end') }} </h3>
-          <br/>
-          <ul
-               v-for="req in rank.endRequirements"
-               :key="req"
-                style="padding-left: 30px"
-          >
-            <li> {{ req }} </li>
-          </ul>
-        </div>
-      </details>
-      <p style="text-align: justify" v-if="rank.idea" v-html="getIdeaWithSelectedParts()"/>
-      <details style="margin-top: 20px; cursor: pointer " v-if="Array.isArray(requirements) && Array.isArray(tasks)">
-          <summary>{{ t('advancement.requirement.showSelected') }}</summary>
-          <div class="requirements-collapsed">
-            <div class="requirement-item box-shadow"
-                 v-for="reqStatus in gerRequirementsStatus()"
-                 :key="reqStatus.requirement.id"
-            >
-              <div
-                  class="requirement-item-status"
-                  :style="{ backgroundColor: reqStatus.isCompleted ? 'var(--accent-success)' : 'var(--accent-error)' }"
-              >
-                {{ reqStatus.isCompleted ? "✔ " + t('advancement.requirement.added') : "𐄂 " + t('advancement.requirement.notAdded') }}
-              </div>
-              <p> {{ reqStatus.requirement.content }} </p>
-            </div>
-          </div>
-      </details>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 20px;">
-      <IdeaBasedTaskComponent
-          v-for="task in tasks"
+
+    <h1 style="margin-top: 20px; justify-self: center">{{ GetMyRank().fullName }}</h1>
+    <details style="margin-bottom: 20px;" v-if="GetMyRank().startRequirements.length > 0 && GetMyRank().endRequirements.length >0">
+      <summary>{{ t('advancement.requirement.showRequirements') }}</summary>
+      <div
+          class="requirement-item box-shadow"
+          style="padding: 20px"
+      >
+        <h3> {{ t('advancement.requirement.start') }} </h3>
+        <br/>
+        <ul
+             v-for="req in GetMyRank().startRequirements"
+             :key="req"
+             style="padding-left: 30px"
+        >
+          <li> {{ req }} </li>
+        </ul>
+        <br/>
+        <h3> {{ t('advancement.requirement.end') }} </h3>
+        <br/>
+        <ul
+             v-for="req in GetMyRank().endRequirements"
+             :key="req"
+              style="padding-left: 30px"
+        >
+          <li> {{ req }} </li>
+        </ul>
+      </div>
+    </details>
+    <p style="text-align: justify" v-if="GetMyRank().idea" v-html="getIdeaWithSelectedParts(GetMyRank(), cashedTasks)"/>
+    <details style="margin-top: 20px; cursor: pointer " v-if="cashedRequirements && cashedTasks">
+        <summary>{{ t('advancement.requirement.showSelected') }}</summary>
+        <div class="requirements-collapsed">
+          <div class="requirement-item box-shadow"
+               v-for="requirement in cashedRequirements"
+               :key="requirement.id"
+          >
+            <div
+                class="requirement-item-status"
+                :style="{ backgroundColor: GetIsRequirementCompleted(requirement.id) ? 'var(--accent-success)' : 'var(--accent-error)' }"
+            >
+              {{  GetIsRequirementCompleted(requirement.id)  ? "✔ " + t('advancement.requirement.added') : "𐄂 " + t('advancement.requirement.notAdded') }}
+            </div>
+            <p> {{ requirement.content }} </p>
+          </div>
+        </div>
+    </details>
+    </div>
+  <div class="rank-content" v-if="isDataLoaded && cashedRankInProgress && isPdfHidden">
+      <IdeaTaskComponent
+          v-for="task in cashedTasks"
           :key="task.id"
           :task="task"
-          :rank-in-progress="editedRankInProgress"
-          :rank="rank"
-          :requirements="requirements"
-          :user="user"
-          @update:task="updateTask"
-          @delete:task="deleteTask"
+          :rank-in-progress="cashedRankInProgress"
+          :rank="GetMyRank()"
+          :requirements="cashedRequirements"
+          :user="GetMe()"
+          @update:task="Task.update"
+          @delete:task="Task.deleteObject(task.id); console.log(task)"
       />
       <ButtonComponent
           class="add-task-button"
           :button-text="t('advancement.task.add')"
           :buttonStyle="isDarkMode() ? 'default-light' : 'default'"
-          @click="addTask()"
+          @click="Task.add(cashedRankInProgress.id);"
       />
-    </div>
   </div>
-  <img v-if="rank" :src="'data:image/png;base64,'+rank.iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
+  <div id="print-capture-target">
+    <AsSimpleAdvancementComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
+                               :rank-in-progress="cashedRankInProgress"
+                               :rank="GetMyRank()"
+                               :requirements="cashedRequirements"
+                               :tasks="cashedTasks"
+                               :mentee="GetMe()"
+                               :mentor="GetMentor()"
+    />
+    <AsTableAdvancementComponent v-if="!isPdfHidden && cashedRankInProgress && isTableMode"
+                                    :rank-in-progress="cashedRankInProgress"
+                                    :rank="GetMyRank()"
+                                    :requirements="cashedRequirements"
+                                    :tasks="cashedTasks"
+                                    :mentee="GetMe()"
+                                    :mentor="GetMentor()"
+    />
+  </div>
+
+  <EyeIconComponent class="icon-button show-pdf-button" color="var(--primary-color)" v-model="isPdfHidden" />
+  <AdvancementModeIconComponent class="icon-button mode-button" color="var(--primary-color)" v-if="!isPdfHidden" v-model="isTableMode" />
+  <PrintIconComponent color="var(--primary-color)" v-if="!isPdfHidden" @click="Print()" class="icon-button print-button" />
+  <img v-if="GetMyRank() && isPdfHidden" :src="'data:image/png;base64,'+GetMyRank().iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
 </template>
 
 <style scoped>
@@ -355,6 +254,49 @@ function manageExport() {
   flex-direction: column;
   align-items: stretch;
   gap: 20px;
+}
+
+.rank-content{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media print {
+  .rank-content{
+    display: none;
+  }
+  .rank{
+    display: none;
+  }
+
+}
+
+.show-pdf-button {
+  bottom: 10px;
+}
+.mode-button{
+  bottom: 70px;
+}
+.print-button{
+  bottom: 130px;
+}
+
+.icon-button {
+  @media print {
+    display: none;
+  }
+  position: fixed;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  padding: 5px;
+  cursor: pointer;
+  border: var(--secondary-color) 2px solid;
+
+  background-color: var(--secondary-color);
+  border-radius: 5px;
 }
 
 .add-task-button {
@@ -426,6 +368,17 @@ function manageExport() {
   position: relative;
   align-self: flex-end;
   font-size: 12px;
+}
+.loading-dots::after {
+ content: '.';
+ animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60% { content: '...'; }
+  80%, 100% { content: ''; }
 }
 </style>
 

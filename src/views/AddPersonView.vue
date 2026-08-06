@@ -1,62 +1,47 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AppUser, AppUserDTO } from '@/scripts/Model/AppUser'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {useI18n} from "vue-i18n";
+import {IUser} from "@/scripts/interfaces.ts";
+import {User} from "@/scripts/database/User.ts";
+import PopupComponent from "@/components/Universal/PopupComponent.vue";
+import router from "@/scripts/router.ts";
 
 const { t } = useI18n();
 
 const fullName = ref('')
-const email = ref('')
-const password = ref('')
-const role = ref('USER')
-const ranks = ref('') // np. "1,2,3"
-const mentorRanks = ref('')
-const comments = ref('')
-const success = ref('')
-
-const toNumArray = (s: string): number[] =>
-    s
-        .split(',')
-        .map(x => Number(x.trim()))
-        .filter(n => !Number.isNaN(n))
+const popupMessage = ref('')
 
 async function onSubmit() {
-  const user: AppUserDTO = {
-    id: Math.floor(Math.random()*1000000000000000),
+  const user: Omit<IUser, 'id'> = {
     fullName: fullName.value,
-    email: email.value,
-    password: password.value,
-    role: role.value,
-    ranksInProgressIds: toNumArray(ranks.value),
-    mentorRanksInProgressIds: toNumArray(mentorRanks.value),
-    commentIds: toNumArray(comments.value),
+    ranksInProgressIds: [],
+    mentorRanksInProgressIds: [],
+    commentIds: [],
   }
-
-  await AppUser.add(user)
+  await User.add(user)
 
   fullName.value = ''
-  email.value = ''
-  password.value = ''
-  role.value = 'USER'
-  ranks.value = ''
-  mentorRanks.value = ''
-  comments.value = ''
-  success.value = 'Użytkownik dodany'
+  popupMessage.value = 'Użytkownik dodany'
 }
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit" class="form">
-    <div>
-      <label>{{ t('user.nameRankCombo') }}</label>
-      <input v-model="fullName" required />
-    </div>
-    <button type="submit">
-      <button-component :button-text="t('user.addUser')"/>
-    </button>
-    <p v-if="success">{{ success }}</p>
-  </form>
+    <form @submit.prevent="onSubmit" class="form">
+      <div>
+        <label>{{ t('user.nameRankCombo') }}</label>
+        <input v-model="fullName" required />
+      </div>
+      <button type="submit" style="display: flex; justify-content: center;">
+        <ButtonComponent :button-text="t('user.addUser')"/>
+      </button>
+      <PopupComponent
+          v-if="popupMessage"
+          :title="popupMessage"
+          message=""
+          :option-two="{ text: t('edit.ok'), action: () => { popupMessage = ''; router.go(-1) } }"
+      />
+    </form>
 </template>
 
 /* css */

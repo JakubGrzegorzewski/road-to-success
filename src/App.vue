@@ -7,16 +7,28 @@ const icon = useFavicon()
 
 icon.value = '@/assets/favicon.ico'
 
+import {onMounted} from 'vue';
+import { db } from './scripts/db';
+import defaultRanks from '@/assets/json/rank.json';
+import defaultRequirements from '@/assets/json/requirements.json';
+import {Rank} from "@/scripts/database/Rank.ts";
 
+onMounted(async () => {
+  const ranks = await Rank.getAll();
+  if (ranks.length === 0) {
+    await db.ranks.bulkPut(defaultRanks);
+    await db.requirements.bulkPut(defaultRequirements);
+  }
+});
 </script>
 
 <template>
   <div class="app-container">
-    <NavBarComponent/>
+    <NavBarComponent class="app-bar" />
     <main class="main-content">
       <router-view/>
     </main>
-    <FooterComponent/>
+    <FooterComponent class="footer" />
   </div>
 </template>
 
@@ -29,6 +41,12 @@ icon.value = '@/assets/favicon.ico'
 
 .main-content {
   flex: 1;
+}
+
+@media print {
+  .app-bar, .footer {
+    display: none;
+  }
 }
 </style>
 
