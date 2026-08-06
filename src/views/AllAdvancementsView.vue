@@ -7,6 +7,7 @@ import {CardType, eventBus, ITypesEnum} from "@/main.ts";
 import {RankInProgress} from "@/scripts/database/RankInProgress.ts";
 import router from "@/scripts/router.ts";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
+import {User} from "@/scripts/database/User.ts";
 
 const { t } = useI18n();
 
@@ -20,6 +21,14 @@ onMounted(async () => {
       ranks.value = await RankInProgress.getAll();
     }
   });
+
+  await User.getAll().then(
+    users => {
+      if (users.length === 0) {
+        router.push("/dodaj-osobe/");
+      }
+    }
+  );
 
 });
 
