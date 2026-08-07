@@ -24,7 +24,7 @@ function isRequirementSelected(task: ITask, requirement: IRequirement) {
 <template>
   <div
       class="report-container"
-      :style="rank.backgroundInBase64 ? { '--bg-image': `url(data:image/png;base64,${rank.backgroundInBase64})` } : {}"
+      :style="rank.iconInBase64 ? { '--bg-image': `url(data:image/png;base64,${rank.iconInBase64})` } : {}"
   >
 
       <div class="report-header">

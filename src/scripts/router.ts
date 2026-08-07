@@ -18,21 +18,10 @@ const routes: RouteRecordRaw[] = [
         props: (route: RouteLocationNormalized) => ({ id: Number(route.params.id) }),
     },
     {
-        path: '/stopien/sprawozdanie/:id',
-        name: 'AdvancementReport',
-        component: () => import('@/views/CreatingAdvancementReport.vue'),
-        props: (route: RouteLocationNormalized) => ({ id: Number(route.params.id) }),
-    },
-    {
         path: '/dodaj-osobe/',
         name: 'AddPerson',
         component: () => import('@/views/AddPersonView.vue'),
     },
-    // {
-    //     path: '/stopnie/',
-    //     name: 'RankManagement',
-    //     component: () => import('@/views/RankManagementView.vue'),
-    // },
 ]
 const router = createRouter({
     history: createWebHistory(),

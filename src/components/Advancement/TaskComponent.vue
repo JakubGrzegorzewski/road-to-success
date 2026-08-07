@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import EditCommentComponent from "@/components/Universal/EditCommentComponent.vue";
-import CommentComponent from "@/components/Universal/CommentComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import {onMounted, Ref, ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
 import {useI18n} from "vue-i18n";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
-import {ITask, ITaskComment, IUser, Status} from "@/scripts/interfaces.ts";
+import {ITask, ITaskComment, Status} from "@/scripts/interfaces.ts";
 import {TaskComment} from "@/scripts/database/TaskComment.ts"
 
 const props = defineProps<{
@@ -18,11 +16,9 @@ const emits = defineEmits<{
 }>();
 
 const shouldShowAccept = ref<boolean>( false);
-const commentIdToDelete = ref<number | undefined>(undefined);
 
 const comments : Ref<ITaskComment[] | []> = ref([]);
 
-const showCommentAdding = ref(false);
 const contentDivRef = ref(null);
 const contentDivHeight = ref(0);
 
@@ -99,45 +95,7 @@ const getStatusStyle = (status: Status) => {
         :option-one="{ text: t('edit.delete'), action: () => { emits('delete:task'); shouldShowAccept = false } }"
         :option-two="{ text: t('edit.cancel'), action: () => { shouldShowAccept = false} }"
     />
-
   </div>
-<!--  <div class="comments box-shadow">-->
-<!--    <CommentComponent-->
-<!--        v-for="currentComment in comments"-->
-<!--        :comment="currentComment"-->
-<!--        :taskId="props.task.id"-->
-<!--        :user="user"-->
-<!--        @comment:update="updateComment"-->
-<!--        @comment:delete="commentIdToDelete = currentComment.id"-->
-<!--    />-->
-<!--    <PopupComponent-->
-<!--        v-if="commentIdToDelete !== null"-->
-<!--        :title="t('popups.delete.title')"-->
-<!--        :message="t('popups.delete.message')"-->
-<!--        :option-one="{ text: t('edit.delete'), action: () => { commentIdToDelete ? emits('delete:task') : null; commentIdToDelete = null } }"-->
-<!--        :option-two="{ text: t('edit.cancel'), action: () => { commentIdToDelete = null } }"-->
-<!--    />-->
-
-<!--    <EditCommentComponent-->
-<!--        v-if="showCommentAdding"-->
-<!--        :comment=null-->
-<!--        :taskId="props.task.id"-->
-<!--        :user="user"-->
-<!--        @comment:close="showCommentAdding = false"-->
-<!--        @comment:save="addComment"-->
-<!--    />-->
-
-<!--    <p v-if="comments && comments.length === 0" style="align-self: center">-->
-<!--      {{ t("advancement.comment.noComments") }}-->
-<!--    </p>-->
-
-<!--    <ButtonComponent-->
-<!--        style="align-self: center"-->
-<!--        :button-text="t('advancement.comment.add')"-->
-<!--        buttonStyle="default"-->
-<!--        @click="showCommentAdding = true"-->
-<!--    />-->
-<!--  </div>-->
 </div>
 </template>
 
@@ -177,29 +135,5 @@ const getStatusStyle = (status: Status) => {
   align-self: flex-end;
   margin: 10px;
   justify-self: flex-end
-}
-
-.comments {
-  background-image: url("@/assets/images/chatBubble.svg");
-  background-repeat: no-repeat;
-  background-size: 300px;
-  background-position: bottom;
-  background-position-x: 170px;
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--primary-color-light);
-    color: var(--background-color);
-  }
-  @media (prefers-color-scheme: light) {
-    background-color: var(--background-color);
-    color: var(--primary-color);
-  }
-  flex: 1;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  border-radius: 8px;
-  padding: 20px;
-  max-width: 400px;
 }
 </style>
