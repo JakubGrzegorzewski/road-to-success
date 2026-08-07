@@ -184,7 +184,7 @@ onMounted(() => {
       </div>
     </details>
     <p style="text-align: justify" v-if="GetMyRank().idea" v-html="getIdeaWithSelectedParts(GetMyRank(), cashedTasks)"/>
-    <details style="margin-top: 20px; cursor: pointer " v-if="cashedRequirements && cashedTasks">
+    <details style="margin-top: 20px;" v-if="cashedRequirements && cashedTasks">
         <summary>{{ t('advancement.requirement.showSelected') }}</summary>
         <div class="requirements-collapsed">
           <div class="requirement-item box-shadow"
@@ -379,6 +379,10 @@ onMounted(() => {
   40% { content: '..'; }
   60% { content: '...'; }
   80%, 100% { content: ''; }
+}
+
+summary{
+  cursor: pointer
 }
 </style>
 
