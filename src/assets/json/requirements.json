@@ -1,266 +1,278 @@
 [
   {
-    "id":1,
+    "id":1001,
     "number":"1",
-    "content":"Kształtuje własną osobowość zgodnie z Prawem Harcerskim, w tym ułożył i konsekwentnie realizował plan swojego rozwoju.",
+    "content":"Kształtuje własny charakter zgodnie z Prawem Harcerskim, w tym dokonał samooceny i na tej podstawie ułożył i konsekwentnie realizował plan swojego rozwoju.",
     "rankId":1
   },
   {
-    "id":2,
+    "id":1002,
     "number":"2",
     "content":"Pogłębia swoją wiedzę i rozwija swoje zainteresowania.",
     "rankId":1
   },
   {
-    "id":3,
+    "id":1003,
     "number":"3",
     "content":"Zachowuje właściwe proporcje w wypełnianiu obowiązków wynikających z przynależności do różnych grup społecznych (rodzina, szkoła, drużyna, środowisko zawodowe).",
     "rankId":1
   },
   {
-    "id":4,
+    "id":1004,
     "number":"4",
-    "content":"Podejmuje stałą służbę w swoim harcerskim środowisku.",
-    "rankId":1
-  },
-  {
-    "id":5,
-    "number":"5",
     "content":"Bierze udział w życiu hufca.",
     "rankId":1
   },
   {
-    "id":6,
-    "number":"6",
-    "content":"W trakcie minimum 9-miesięcznej aktywnej służby w gromadzie/drużynie wykazał się umiejętnością pracy wychowawczej metodą harcerską z dziećmi lub młodzieżą w wybranej grupie wiekowej,",
+    "id":1005,
+    "number":"5",
+    "content":"W okresie próby, w trakcie minimum 9-miesięcznej aktywnej pracy wychowawczej w gromadzie/drużynie wykazał się umiejętnością stosowania Harcerskiego Systemu Wychowawczego w wybranej grupie wiekowej, w tym umiejętnościami: ",
     "rankId":1
   },
   {
-    "id":7,
-    "number":"6.1",
+    "id":1006,
+    "number":"5a",
     "content":"w tym umiejętnościami: stosowania instrumentów metodycznych,",
     "rankId":1
   },
   {
-    "id":8,
-    "number":"6.2",
+    "id":1007,
+    "number":"5b",
     "content":"w tym umiejętnościami: stosowania systemu małych grup,",
     "rankId":1
   },
   {
-    "id":9,
-    "number":"6.3",
+    "id":1008,
+    "number":"5c",
     "content":"w tym umiejętnościami: tworzenia programu gromady/drużyny, jego realizacji i podsumowania,",
     "rankId":1
   },
   {
-    "id":10,
-    "number":"6.4",
+    "id":1009,
+    "number":"5d",
     "content":"w tym umiejętnościami: pracy z Prawem i Przyrzeczeniem / Prawem i Obietnicą,",
     "rankId":1
   },
   {
-    "id":11,
-    "number":"6.5",
-    "content":"w tym umiejętnościami: samodzielnego prowadzenia zbiórek",
+    "id":1010,
+    "number":"5e",
+    "content":"w tym umiejętnościami: samodzielnego prowadzenia zbiórek,",
     "rankId":1
   },
   {
-    "id":12,
-    "number":"6.6",
-    "content":"oraz uczestniczył w: organizacji wyjazdowych form pracy wykorzystujących kontakt z przyrodą,",
+    "id":1011,
+    "number":"5f",
+    "content":"w tym umiejętnościami: stosowania służby jako narzędzia pracy wychowawczej,",
     "rankId":1
   },
   {
-    "id":13,
-    "number":"6.7",
-    "content":"oraz uczestniczył w: organizowaniu oraz przeprowadzeniu gier i form pracy w terenie uwzględniających współdziałanie i współzawodnictwo,",
+    "id":1013,
+    "number":"5g",
+    "content":"w tym umiejętnościami: stosowania zasad dotyczących umundurowania, musztry i ceremoniału harcerskiego,",
     "rankId":1
   },
   {
-    "id":14,
-    "number":"6.8",
-    "content":"oraz uczestniczył w: pozyskiwaniu środków finansowych lub innych form wsparcia działalności gromady/drużyny,",
+    "id":1014,
+    "number":"5h",
+    "content":"w tym umiejętnościami: wykorzystania wiedzy zdobytej w harcerskiej literaturze i mediach w pracy wychowawczej (w tym przeczytanie minimum 3 książek),",
     "rankId":1
   },
   {
-    "id":15,
-    "number":"6.9",
-    "content":"oraz uczestniczył w: organizacji obozu (kolonii) lub zimowiska drużyny/gromady i pełnił na nim funkcję,",
+    "id":1015,
+    "number":"5i",
+    "content":"współorganizował gry i formy pracy w terenie uwzględniające współdziałanie i współzawodnictwo,",
     "rankId":1
   },
   {
-    "id":16,
-    "number":"6.10",
-    "content":"oraz uczestniczył w: prowadzeniu dokumentacji niezbędnej do działania gromady/drużyny,",
+    "id":1016,
+    "number":"5j",
+    "content":"współorganizował wyjazdowe formy pracy wykorzystujące kontakt z przyrodą (w tym minimum 1 z nocowaniem),",
     "rankId":1
   },
   {
-    "id":17,
-    "number":"6.11",
-    "content":"oraz uczestniczył w: współpracy ze środowiskiem działania – rodzicami, szkołą itp.",
+    "id":1017,
+    "number":"5k",
+    "content":"współorganizował obóz (kolonię) lub zimowisko dla gromady/drużyny i pełnił na nim funkcję,",
     "rankId":1
   },
   {
-    "id":18,
-    "number":"7",
-    "content":"Wykazał się umiejętnością stosowania zasad dotyczących umundurowania, musztry, ceremoniału harcerskiego w pracy z drużyną.",
+    "id":1018,
+    "number":"5l",
+    "content":"uczestniczył w prowadzeniu dokumentacji niezbędnej do działania gromady/drużyny,",
     "rankId":1
   },
   {
-    "id":19,
-    "number":"8",
-    "content":"Wiedzę zdobytą w harcerskiej literaturze i mediach wykorzystał w pracy wychowawczej. Przeczytał minimum 3 książki harcerskie.",
+    "id":1019,
+    "number":"5m",
+    "content":"brał udział we współpracy ze środowiskiem działania – rodzicami, szkołą itp.",
     "rankId":1
   },
   {
-    "id":20,
+    "id":1020,
+    "number":"5n",
+    "content":"uczestniczył w pozyskiwaniu wsparcia dla działalności gromady/drużyny. ",
+    "rankId":1
+  },
+  {
+    "id":1021,
+    "number":"6",
+    "content":"W ostatnich 3 latach ukończył minimum 15-godzinny kurs pierwszej pomocy zawierający zajęcia w praktyce.",
+    "rankId":1
+  },
+  {
+    "id":2001,
     "number":"1",
     "content":"Wykazał się umiejętnością pracy nad sobą, stawiania celów w życiu, podejmowania działań (do ich realizacji), ich oceny i wyciągania wniosków.",
     "rankId":2
   },
   {
-    "id":21,
+    "id":2002,
     "number":"2",
     "content":"Podnosi swoje umiejętności i kwalifikacje.",
     "rankId":2
   },
   {
-    "id":22,
+    "id":2003,
     "number":"3",
     "content":"Bierze czynny udział w życiu otaczającego go środowiska społecznego.",
     "rankId":2
   },
   {
-    "id":23,
+    "id":2004,
     "number":"4",
-    "content":"W swojej pracy instruktorskiej świadomie wykorzystuje służbę.",
+    "content":"W swojej pracy instruktorskiej świadomie wykorzystuje służbę jako narzędzie pracy wychowawczej.",
     "rankId":2
   },
   {
-    "id":24,
+    "id":2005,
     "number":"5",
-    "content":"Wykazał się umiejętnością pracy w zespole, komunikowania się oraz motywowania innych. Zrealizował zadanie instruktorskie na poziomie szczepu lub hufca.",
+    "content":"Wykazał się umiejętnością pracy w zespole instruktorskim, w tym współpracy i komunikowania się.",
     "rankId":2
   },
   {
-    "id":25,
+    "id":2006,
     "number":"6",
-    "content":"Pogłębił znajomość harcerskiego systemu wychowawczego oraz zasad metodyki grup wiekowych.",
+    "content":"Kierował realizacją zadania instruktorskiego na poziomie szczepu lub hufca.",
     "rankId":2
   },
   {
-    "id":26,
+    "id":2007,
     "number":"7",
-    "content":"Stosuje metodę harcerską w pracy z instruktorami.",
+    "content":"Pogłębił znajomość Harcerskiego Systemu Wychowawczego, nabytą wiedzę wykorzystał w praktyce.",
     "rankId":2
   },
   {
-    "id":27,
+    "id":2008,
     "number":"8",
-    "content":"Świadomie stosuje System pracy z kadrą.",
+    "content":"Poszerzył wiedzę na temat zasad wszystkich metodyk, wykorzystał ją w praktyce.",
     "rankId":2
   },
   {
-    "id":28,
+    "id":2009,
     "number":"9",
-    "content":"Pracuje nad swoją postawą instruktorską. Doskonali swoje umiejętności harcerskie i instruktorskie – w trakcie próby brał udział w minimum 2 wybranych formach kształceniowych.",
+    "content":"Świadomie stosuje \"System pracy z kadrą w ZHP\"",
     "rankId":2
   },
   {
-    "id":29,
+    "id":2010,
     "number":"10",
-    "content":"Przygotował się do roli opiekuna próby na stopnie instruktorskie.",
+    "content":"Pracuje nad swoją postawą instruktorską. Doskonali swoje umiejętności harcerskie i instruktorskie – w trakcie próby brał udział w minimum 2 wybranych formach kształceniowych (innych niż wymienione w warunkach zamknięcia próby).",
     "rankId":2
   },
   {
-    "id":30,
+    "id":2011,
     "number":"11",
-    "content":"Pozyskał sojuszników do działalności harcerskiej.",
+    "content":"Rozpoczął lub rozwinął współpracę z sojusznikami harcerstwa.",
     "rankId":2
   },
   {
-    "id":31,
+    "id":2012,
     "number":"12",
-    "content":"Pełnił funkcję instruktorską w czasie roku harcerskiego i był członkiem komendy kolonii/obozu lub zimowiska.",
+    "content":"Pełnił stałą funkcję w czasie roku harcerskiego.",
     "rankId":2
   },
   {
-    "id":32,
+    "id":2013,
     "number":"13",
-    "content":"Orientuje się w historii i aktualnej sytuacji harcerstwa. Korzysta z harcerskiej literatury i mediów. Przeczytał minimum 3 wybrane książki harcerskie.",
+    "content":"Uczestniczył w HAL lub HAZ – był członkiem komendy kolonii/obozu lub zimowiska.",
     "rankId":2
   },
   {
-    "id":33,
+    "id":2014,
     "number":"14",
-    "content":"Wykazał się znajomością przepisów finansowych i organizacyjnych oraz zasad prowadzenia obozu harcerskiego odpowiadających wymaganiom stawianym kierownikom wypoczynku.",
+    "content":"Orientuje się w historii i aktualnej sytuacji harcerstwa. Korzysta z harcerskiej lub skautowej literatury i mediów. Przeczytał minimum 3 wybrane książki przydatne w pracy instruktorskiej.",
     "rankId":2
   },
   {
-    "id":34,
+    "id":2015,
     "number":"15",
-    "content":"Wykazał się umiejętnością pozyskiwania środków na działalność harcerską.",
+    "content":"Wykazał się znajomością przepisów finansowych i organizacyjnych oraz zasad prowadzenia obozu harcerskiego.",
     "rankId":2
   },
   {
-    "id":35,
+    "id":2016,
+    "number":"16",
+    "content":"Zrealizował działanie związane z zarządzaniem budżetem i pracą z majątkiem.",
+    "rankId":2
+  },
+  {
+    "id":3001,
     "number":"1",
     "content":"W świadomy sposób określa i realizuje własne plany życiowe.",
     "rankId":3
   },
   {
-    "id":36,
+    "id":3002,
     "number":"2",
     "content":"Pogłębia swoją wiedzę zawodową.",
     "rankId":3
   },
   {
-    "id":37,
+    "id":3003,
     "number":"3",
     "content":"Poza swoimi zainteresowaniami zawodowymi poznaje wybraną dziedzinę nauki lub kultury.",
     "rankId":3
   },
   {
-    "id":38,
+    "id":3004,
     "number":"4",
-    "content":"Świadomie stosuje harcerski system wychowawczy, upowszechnia go i dzieli się własnymi doświadczeniami.",
+    "content":"Świadomie stosuje Harcerski System Wychowawczy, upowszechnia go i dzieli się własnymi doświadczeniami.",
     "rankId":3
   },
   {
-    "id":39,
+    "id":3005,
     "number":"5",
     "content":"Przygotował się do roli opiekuna próby na stopień podharcmistrza i harcmistrza.",
     "rankId":3
   },
   {
-    "id":40,
+    "id":3006,
     "number":"6",
-    "content":"Kierował zespołem instruktorskim. W jego działaniu kształtował postawy oraz poszerzał wiedzę i umiejętności instruktorów.",
+    "content":"Wykazał się skutecznym stosowaniem \"Systemu pracy z kadrą w ZHP\", w kierowanym przez siebie zespole instruktorskim.",
     "rankId":3
   },
   {
-    "id":41,
+    "id":3007,
     "number":"7",
-    "content":"Wykazał się skutecznym stosowaniem Systemu pracy z kadrą w kierowanym przez siebie zespole instruktorskim.",
+    "content":"Kierował przez minimum 6 miesięcy zespołem instruktorskim realizującym w sposób planowy działania wynikające z analizy potrzeb środowiska. W działaniu tego zespołu kształtował postawy oraz poszerzał wiedzę i umiejętności instruktorów.",
     "rankId":3
   },
   {
-    "id":42,
+    "id":3008,
     "number":"8",
+    "content":"Brał udział w kształceniu kadry – dzielił się swoim doświadczeniem instruktorskim.",
+    "rankId":3
+  },
+  {
+    "id":3009,
+    "number":"9",
     "content":"Zrealizował zadanie instruktorskie na poziomie chorągwi lub Związku.",
     "rankId":3
   },
   {
-    "id":43,
-    "number":"9",
-    "content":"Opracował i upowszechnił materiały programowo-metodyczne jako wkład w dorobek Związku.",
-    "rankId":3
-  },
-  {
-    "id":44,
+    "id":3010,
     "number":"10",
-    "content":"W trakcie próby ukończył kurs harcmistrzowski lub aktywnie uczestniczył w minimum 2 innych formach wymiany doświadczeń poziomu harcmistrzowskiego (kursy, warsztaty, seminaria, konferencje itp.).",
+    "content":"Opracował i upowszechnił materiały wspierające realizację misji ZHP (np. opracowania pisemne, aplikacje, filmy) jako wkład w dorobek Związku.",
     "rankId":3
   },
   {
