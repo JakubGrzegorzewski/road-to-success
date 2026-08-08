@@ -77,8 +77,6 @@ function isRequirementSelected(task: ITask, requirement: IRequirement) {
 
 .rank-image{
   width: 300px;
-  max-width: 100%;
-  height: auto;
   padding: 20px;
 }
 
@@ -125,16 +123,6 @@ h2 {
   background: transparent;
   border-radius: 0;
   break-inside: avoid;
-}
-
-@media screen and (max-width: 210mm) {
-  .report-container {
-    width: 100%;
-    min-height: 0;
-    padding: 8vw;
-    margin: 12px auto;
-    box-sizing: border-box;
-  }
 }
 
 @media print {
