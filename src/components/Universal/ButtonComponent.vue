@@ -122,9 +122,16 @@ const hintStyle = computed(() => {
     font-family: 'Museo', sans-serif;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     width: 300px;
+    max-width: min(300px, 80vw);
   }
   .button:hover .button-hint {
     visibility: visible;
   }
 
+  @media (max-width: 600px) {
+    .button {
+      font-size: 13px;
+      padding: 10px 14px;
+    }
+  }
 </style>

@@ -1,11 +1,15 @@
+/* Inputs */
+
 .text-input-component {
     position: relative;
     display: flex;
     box-shadow: 0 4px 14px var(--shadow-light);
-    padding: 8px 12px;
-    font-size: 12px;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 16px;
     border-radius: 6px;
     border: 1px solid rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 100%;
     @media (prefers-color-scheme: dark) {
         background: var(--primary-color);
         color: var(--background-color);
@@ -21,6 +25,27 @@
     outline: none;
 }
 
+.multiline-text-input{
+    resize: none;
+    overflow: visible;
+    min-height: 150px;
+    width: 100%;
+    max-width: 100%;
+    font-family: "Museo", sans-serif;
+    font-size: 16px;
+    @media (prefers-color-scheme: dark) {
+        background-color: var(--primary-color);
+        color: var(--background-color);
+    }
+    @media (prefers-color-scheme: light) {
+        background-color: var(--background-color);
+        color: var(--primary-color);
+    }
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Buttons */
 
 .btn {
     font-family: 'Museo', sans-serif;
@@ -76,24 +101,8 @@
     box-shadow: 0 2px 8px var(--shadow-light);
 }
 
+/* Utilities */
+
 .box-shadow {
     box-shadow: 0 4px 14px var(--shadow-light);
-}
-
-.multiline-text-input{
-    resize: none;
-    overflow: visible;
-    min-height: 150px;
-    font-family: "Museo", sans-serif;
-    font-size: 14px;
-    @media (prefers-color-scheme: dark) {
-        background-color: var(--primary-color);
-        color: var(--background-color);
-    }
-    @media (prefers-color-scheme: light) {
-        background-color: var(--background-color);
-        color: var(--primary-color);
-    }
-    border-radius: 8px;
-    padding: 10px;
 }

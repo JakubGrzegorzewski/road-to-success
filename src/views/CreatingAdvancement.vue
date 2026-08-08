@@ -221,7 +221,7 @@ onMounted(() => {
           @click="Task.add(cashedRankInProgress.id);"
       />
   </div>
-  <div id="print-capture-target">
+  <div id="print-capture-target" class="print-preview-scroll">
     <AsSimpleAdvancementComponent v-if="!isPdfHidden && cashedRankInProgress && !isTableMode"
                                :rank-in-progress="cashedRankInProgress"
                                :rank="GetMyRank()"
@@ -243,23 +243,63 @@ onMounted(() => {
   <EyeIconComponent class="icon-button show-pdf-button" color="var(--primary-color)" v-model="isPdfHidden" />
   <AdvancementModeIconComponent class="icon-button mode-button" color="var(--primary-color)" v-if="!isPdfHidden" v-model="isTableMode" />
   <PrintIconComponent color="var(--primary-color)" v-if="!isPdfHidden" @click="Print()" class="icon-button print-button" />
-  <img v-if="GetMyRank() && isPdfHidden" :src="'data:image/png;base64,'+GetMyRank().iconInBase64" style="width: 500px; height: auto; position: fixed; z-index: -1; top: 200px; right: 50px; opacity: 0.3; transform: rotate(-15deg);" alt="rank-image"/>
+  <img v-if="GetMyRank() && isPdfHidden" :src="'data:image/png;base64,'+GetMyRank().iconInBase64" class="rank-watermark" alt="rank-image"/>
 </template>
 
 <style scoped>
 .rank {
-  padding: 40px;
+  padding: var(--space-lg);
   font-family: 'Museo', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 20px;
+  gap: var(--space-md);
 }
 
 .rank-content{
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-md);
+  padding: 0 var(--space-lg);
+}
+
+.print-preview-scroll {
+  overflow-x: auto;
+  max-width: 100vw;
+}
+
+.rank-watermark {
+  width: 500px;
+  max-width: 60vw;
+  height: auto;
+  position: fixed;
+  z-index: -1;
+  top: 200px;
+  right: 50px;
+  opacity: 0.3;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .rank {
+    padding: var(--space-md);
+  }
+  .rank-content {
+    padding: 0 var(--space-md);
+  }
+}
+
+@media (max-width: 600px) {
+  .rank {
+    padding: var(--space-sm);
+  }
+  .rank-content {
+    padding: 0 var(--space-sm);
+  }
+  .rank-watermark {
+    display: none;
+  }
 }
 
 @media print {
@@ -297,22 +337,46 @@ onMounted(() => {
 
   background-color: var(--secondary-color);
   border-radius: 5px;
+  z-index: 10;
 }
 
 .add-task-button {
   align-self: center;
   justify-self: center;
   margin: 10px;
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
 }
 
 .option-selection {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: var(--space-md);
   align-items: center;
   justify-content: left;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-md);
+}
+
+@media (max-width: 600px) {
+  .icon-button {
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+  .show-pdf-button {
+    bottom: 8px;
+  }
+  .mode-button {
+    bottom: 56px;
+  }
+  .print-button {
+    bottom: 104px;
+  }
+  .option-selection {
+    gap: var(--space-sm);
+  }
 }
 
 .add-button {

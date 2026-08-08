@@ -36,7 +36,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h1 style="margin-top: 40px">{{ t('advancement.your') }}</h1>
+  <h1>{{ t('advancement.your') }}</h1>
   <div class="advancement-container">
     <AdvancementCardComponent
         v-for="rankInProgress in ranks"
@@ -67,13 +67,27 @@ onMounted(async () => {
   h1 {
     text-align: center;
     font-family: 'Museo', sans-serif;
+    margin-top: var(--space-lg);
+    padding: 0 var(--space-sm);
   }
   .advancement-container {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 20px;
-    margin: 40px;
+    gap: var(--space-md);
+    margin: var(--space-lg);
+  }
+
+  @media (max-width: 600px) {
+    h1 {
+      margin-top: var(--space-md);
+      font-size: 1.4rem;
+    }
+    .advancement-container {
+      margin: var(--space-md) var(--space-sm);
+      gap: var(--space-sm);
+    }
   }
 </style>

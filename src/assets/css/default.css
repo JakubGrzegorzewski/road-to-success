@@ -3,7 +3,6 @@
     --primary-color-light: #405058;
     --secondary-color: #329ED5;
 
-
     --accent-success: #10B981;
     --accent-warning: #F59E0B;
     --accent-error: #EF4444;
@@ -11,14 +10,28 @@
 
     --background-color: #F3F6F4;
 
-    /* Add shadow colors for consistency */
     --shadow-light: rgba(0, 0, 0, 0.1);
     --shadow-medium: rgba(0, 0, 0, 0.15);
+
+    /* Spacing scale used across components/media queries */
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 20px;
+    --space-lg: 40px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 
 @font-face {

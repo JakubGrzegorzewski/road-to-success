@@ -104,15 +104,16 @@ const getStatusStyle = (status: Status) => {
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  gap: 20px;
+  gap: var(--space-md);
 }
 .task-content {
   display: flex;
   flex-direction: column;
   border-radius: 8px;
-  padding: 20px;
+  padding: var(--space-md);
   gap: 10px;
   flex: 2;
+  min-width: 0;
   align-items: stretch;
   @media (prefers-color-scheme: dark) {
     background-color: var(--primary-color-light);
@@ -135,5 +136,11 @@ const getStatusStyle = (status: Status) => {
   align-self: flex-end;
   margin: 10px;
   justify-self: flex-end
+}
+
+@media (max-width: 600px) {
+  .task-content {
+    padding: var(--space-sm);
+  }
 }
 </style>

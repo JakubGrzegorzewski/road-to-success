@@ -100,9 +100,9 @@ h3{
 .task-content {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: var(--space-md);
   align-items: stretch;
-  gap: 20px;
+  gap: var(--space-md);
 }
 
 .task-requirements {
@@ -110,5 +110,12 @@ h3{
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .task-content {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
 }
 </style>

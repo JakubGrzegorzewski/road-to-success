@@ -54,7 +54,6 @@ onMounted(async () => {
     </form>
 </template>
 
-/* css */
 <style scoped>
 .form {
   max-width: 640px;
@@ -107,11 +106,10 @@ input:focus, select:focus, textarea:focus {
   margin-top: 8px;
 }
 
-/* drobne dopasowania responsywne */
 @media (max-width: 600px) {
   .form {
-    padding: 14px;
-    margin: 12px;
+    padding: var(--space-sm);
+    margin: var(--space-sm);
   }
 }
 </style>

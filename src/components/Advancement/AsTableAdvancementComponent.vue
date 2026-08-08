@@ -73,6 +73,8 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 
 .rank-image{
   width: 300px;
+  max-width: 100%;
+  height: auto;
   padding: 20px;
 }
 
@@ -107,6 +109,16 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 .report-container h2,
 .report-container header {
   border-color: #000;
+}
+
+@media screen and (max-width: 210mm) {
+  .report-container {
+    width: 100%;
+    min-height: 0;
+    padding: 8vw;
+    margin: 12px auto;
+    box-sizing: border-box;
+  }
 }
 
 /* Style tabeli */

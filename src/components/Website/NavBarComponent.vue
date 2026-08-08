@@ -44,16 +44,33 @@ const langOptions = [
     justify-content: space-between;
     background-color: var(--primary-color);
     box-shadow: 0 10px 10px var(--shadow-light);
-    padding: 0 20px;
+    padding: 0 var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-xs);
   }
 
   .nav-logo {
     width: 64px;
+    max-width: 100%;
   }
 
   .selector-style {
     display: flex;
     align-items: center;
-    gap: 20px;
-}
+    gap: var(--space-md);
+  }
+
+  @media (max-width: 600px) {
+    nav {
+      padding: 8px var(--space-sm);
+    }
+
+    .nav-logo {
+      width: 48px;
+    }
+
+    .selector-style {
+      gap: var(--space-xs);
+    }
+  }
 </style>

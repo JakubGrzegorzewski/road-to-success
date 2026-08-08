@@ -20,14 +20,23 @@ footer {
   justify-content: flex-end;
   background-color: var(--primary-color);
   box-shadow: 0 10px 10px var(--shadow-light);
-  padding: 0 20px;
-  gap: 50px
+  padding: var(--space-sm) var(--space-md);
 }
-
 
 .footer-thing {
   font-family: 'Museo', sans-serif;
   color: white;
-  gap: 20px;
+  font-size: 14px;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  footer {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .footer-thing {
+    font-size: 12px;
+  }
 }
 </style>

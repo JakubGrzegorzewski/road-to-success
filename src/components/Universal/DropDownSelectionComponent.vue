@@ -124,6 +124,7 @@ watch(() => props.modelValue, () => {
 .dropdown-root {
   position: relative;
   width: 240px;
+  max-width: 100%;
   font-family: 'Museo', sans-serif;
 }
 .dropdown-root.is-disabled {
