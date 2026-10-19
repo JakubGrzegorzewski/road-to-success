@@ -312,7 +312,6 @@ function print(): void {
         </label>
         <div class="toolbar-actions">
           <ButtonComponent :button-text="pdfBusy ? t('pdf.generating') : t('pdf.download')" button-style="primary" :disabled="pdfBusy" @click="generatePdf" />
-          <ButtonComponent v-if="!isMobile" :button-text="t('pdf.print')" button-style="ghost" @click="print" />
         </div>
       </div>
 
