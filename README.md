@@ -4,6 +4,7 @@ Aplikacja do planowania i prowadzenia prób na stopnie harcerskie i instruktorsk
 
 - Plan architektury: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Co zostało zrobione i czym różni się od planu: [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md)
+- Komentarze opiekuna i zakładka Pomoc (plan i stan wdrożenia): [docs/COMMENTS-AND-HELP.md](docs/COMMENTS-AND-HELP.md)
 
 ## W skrócie
 
@@ -12,6 +13,8 @@ Aplikacja do planowania i prowadzenia prób na stopnie harcerskie i instruktorsk
 - **Serwer bez danych.** Cloudflare Worker serwuje statyczną aplikację, pomaga urządzeniom się odnaleźć (`/signal`, Durable Object) i wydaje krótkotrwałe poświadczenia TURN (`/api/turn`). Niczego nie zapisuje.
 - **Kopie zapasowe.** Plik `.rts` (aktualizacja Yjs). Import scala dane, niczego nie nadpisuje.
 - **PDF z danych.** `pdfmake` (ładowany na żądanie). Na telefonie plik trafia do arkusza udostępniania, na komputerze jest pobierany.
+- **Komentarze.** Uwagi opiekuna i odpowiedzi podopiecznego przy zadaniach, wymaganiach i całej próbie, z oznaczaniem „Załatwione”. Synchronizują się jak reszta danych.
+- **Pomoc.** Poradniki w Markdown (`src/help/<język>/*.md`) kompilowane do HTML przy budowaniu (`vite/helpMarkdown.ts`), z wyszukiwarką i linkami „?” na ekranach. Działają offline.
 
 ## Uruchomienie lokalne
 
@@ -30,8 +33,9 @@ npm run typecheck    # vue-tsc (aplikacja), tsc (configi), tsc (worker)
 npm test             # Vitest: fasady na Y.Doc, migracja z Dexie, scalanie, eksport/import, PDF, worker
 npm run build
 npm run test:worker  # prawdziwy Worker + Durable Object w lokalnym workerd (po buildzie)
-npm run test:e2e     # Playwright: telefon 360 px, PDF, kopia zapasowa, synchronizacja dwóch przeglądarek
+npm run test:e2e     # Playwright: telefon 360 px, PDF, kopia zapasowa, synchronizacja dwóch przeglądarek, komentarze, pomoc
 npm run verify       # typecheck + test + build + test:worker
+npm run help:screens # odświeża zrzuty ekranu do poradników (src/help/img/*.webp)
 ```
 
 Przed pierwszym `test:e2e`: `npx playwright install chromium`.
@@ -71,12 +75,15 @@ Czas ważności poświadczeń ustawia `TURN_TTL` (sekundy, domyślnie 4 h).
 src/
   scripts/
     store/      Y.Doc, IndexedDB, zdarzenia, migracja z Dexie, synchronizacja kart
-    database/   fasady: User, RankInProgress, Task, TaskComment (Yjs) oraz Rank, Requirement (statyczny JSON)
+    database/   fasady: User, RankInProgress, Task, Comment (Yjs; TaskComment = stara nazwa) oraz Rank, Requirement (statyczny JSON)
     sync/       pokój i link, y-webrtc, serwery ICE
     export/     kopie .rts / JSON
     pdf/        widok-model, pdfmake, przekazanie pliku (share/download)
-  views/        Próby, Próba, Dodaj osobę, Synchronizacja, Dołącz, Ustawienia
+  views/        Próby, Próba, Dodaj osobę, Synchronizacja, Dołącz, Ustawienia, Pomoc, Poradnik
+  components/Comments/  wątki komentarzy, kompozytor, panel otwartych uwag
+  help/         poradniki: pl/*.md (źródło), en/*.md (tłumaczenia), img/*.webp (zrzuty)
   assets/ranks/ ikony stopni i tła dokumentów A4
+vite/           wtyczka Vite: Markdown poradników → moduły JS
 worker/         Cloudflare Worker: /signal (Durable Object), /api/turn
 tests/          unit, worker, e2e
 ```

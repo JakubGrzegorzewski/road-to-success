@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import ButtonComponent from '@/components/Universal/ButtonComponent.vue'
 import PopupComponent from '@/components/Universal/PopupComponent.vue'
+import HelpLink from '@/components/Universal/HelpLink.vue'
 import { parseJoinFragment } from '@/scripts/sync/room'
 import { useJoinRoom } from '@/scripts/sync/useJoinRoom'
 
@@ -64,11 +65,22 @@ async function choose(mode: 'merge' | 'replace') {
         :option-one="{ text: t('sync.replace'), action: () => choose('replace'), disabled: joining }"
         :option-two="{ text: t('sync.merge'), action: () => choose('merge'), disabled: joining }"
         :dismiss="cancel"
-    />
+    >
+      <p class="popup-help"><HelpLink to="synchronizacja#scal-czy-zacznij-od-danych-pokoju" new-tab /> {{ t('sync.mergeHelp') }}</p>
+    </PopupComponent>
   </div>
 </template>
 
 <style scoped>
+.popup-help {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 4px 10px;
+  font-size: 14px;
+  text-align: left;
+}
+
 .page {
   max-width: 520px;
   margin: var(--space-lg) auto;

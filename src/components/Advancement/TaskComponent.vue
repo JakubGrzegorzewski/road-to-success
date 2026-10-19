@@ -6,7 +6,7 @@ import DropDownSelectionComponent from "@/components/Universal/DropDownSelection
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import { Status, type ITask } from "@/scripts/interfaces.ts";
 
-/** Card frame of a task: status selector, content slot, delete with confirmation. */
+/** Card frame of a task: status selector (+ `header-actions` slot), content slot, delete with confirmation. */
 const props = defineProps<{
   task: ITask,
   index?: number,
@@ -55,14 +55,17 @@ const getStatusStyle = (status: Status) => {
   <div class="task-content box-shadow" :style="{'border-color': getStatusStyle(props.task.status)}">
     <header class="task-header">
       <h2 v-if="index !== undefined" class="task-number">{{ t('advancement.task.task') }} {{ index }}</h2>
-      <DropDownSelectionComponent
-          :model-value="props.task.status"
-          :options="statusOptions"
-          translate-labels
-          styles="width: 180px"
-          :background-color="getStatusStyle(props.task.status)"
-          @update:model-value="onStatusChange"
-      />
+      <div class="task-header-actions">
+        <slot name="header-actions" />
+        <DropDownSelectionComponent
+            :model-value="props.task.status"
+            :options="statusOptions"
+            translate-labels
+            styles="width: 180px"
+            :background-color="getStatusStyle(props.task.status)"
+            @update:model-value="onStatusChange"
+        />
+      </div>
     </header>
     <slot/>
     <ButtonComponent
@@ -121,6 +124,13 @@ const getStatusStyle = (status: Status) => {
   justify-content: space-between;
   gap: var(--space-sm);
   flex-wrap: wrap;
+}
+
+.task-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-left: auto;
 }
 
 .task-number {

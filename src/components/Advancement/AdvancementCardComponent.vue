@@ -14,8 +14,14 @@ const props = withDefaults(defineProps<{
   rank?: IRank;
   menteeName?: string;
   mentorName?: string;
+  /** Open comments of the advancement (badge). */
+  openComments?: number;
+  /** Someone else wrote since this device last left the advancement. */
+  newComments?: boolean;
 }>(), {
   type: CardType.DEFAULT,
+  openComments: 0,
+  newComments: false,
 });
 
 defineEmits<{
@@ -45,6 +51,10 @@ defineEmits<{
         <h4>{{ menteeName || '—' }}</h4>
         <h3>{{ t('user.mentor') }}</h3>
         <h4>{{ mentorName || '—' }}</h4>
+        <span v-if="openComments > 0" class="comments-badge" :class="{ 'has-new': newComments }">
+          <span v-if="newComments" class="new-dot" aria-hidden="true" />
+          {{ t('advancement.comment.openCount', { n: openComments }, openComments) }}
+        </span>
       </button>
     </template>
 
@@ -183,6 +193,29 @@ h4{
   height: 100%;
 }
 
+.comments-badge {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent-warning);
+  color: #1f1300;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.comments-badge .new-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-error);
+  box-shadow: 0 0 0 2px white;
+}
+
 .card-icon{
   width: 64px;
   height: 64px;
@@ -239,6 +272,10 @@ h4{
 
   h4 {
     font-size: 15px;
+  }
+
+  .comments-badge {
+    margin-top: 6px;
   }
 
   .static-layout {

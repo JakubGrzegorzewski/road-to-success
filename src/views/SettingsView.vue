@@ -6,6 +6,11 @@ import ButtonComponent from '@/components/Universal/ButtonComponent.vue'
 import DropDownSelectionComponent from '@/components/Universal/DropDownSelectionComponent.vue'
 import ImportBackupComponent from '@/components/Universal/ImportBackupComponent.vue'
 import PopupComponent from '@/components/Universal/PopupComponent.vue'
+import HelpLink from '@/components/Universal/HelpLink.vue'
+import type { IUser } from '@/scripts/interfaces'
+import { User } from '@/scripts/database/User'
+import { commentPrefs, loadCommentPrefs, setCommentAuthor } from '@/scripts/commentPrefs'
+import { ITypesEnum } from '@/scripts/eventBus'
 import { setLocale, type AppLocale } from '@/scripts/i18n'
 import { appState } from '@/scripts/appState'
 import { exportBackup, exportReadableJson } from '@/scripts/export/backupActions'
@@ -13,7 +18,7 @@ import { applyImport, encodeRtsFile, exportFileName } from '@/scripts/export/exp
 import { deliverFile } from '@/scripts/pdf/deliverPdf'
 import { getLocal } from '@/scripts/store/localState'
 import { requestPersistentStorage, storeReady } from '@/scripts/store/persistence'
-import { formatDate } from '@/scripts/composables'
+import { formatDate, useDbUpdates } from '@/scripts/composables'
 
 const { t, locale } = useI18n()
 const version = __APP_VERSION__
@@ -24,6 +29,22 @@ const backupBeforeJoin = ref<{ at: number; update: Uint8Array } | null>(null)
 const usage = ref<string>('')
 const busy = ref(false)
 const notice = ref<string | null>(null)
+const people = ref<IUser[]>([])
+
+/** "Piszę jako" — who this device writes comments as. */
+const authorOptions = computed(() => [
+  { value: '', label: t('advancement.comment.notChosen') },
+  ...people.value.map((p) => ({ value: p.id, label: p.fullName })),
+])
+const commentAuthor = computed<string>({
+  get: () => (people.value.some((p) => p.id === commentPrefs.authorId) ? commentPrefs.authorId : ''),
+  set: (id) => void setCommentAuthor(id),
+})
+
+async function loadPeople() {
+  people.value = await User.getAll()
+}
+useDbUpdates([ITypesEnum.EUser], loadPeople)
 
 const currentLocale = computed<AppLocale>({
   get: () => locale.value as AppLocale,
@@ -42,6 +63,7 @@ function formatBytes(bytes: number): string {
 
 async function refresh() {
   await storeReady()
+  await Promise.all([loadPeople(), loadCommentPrefs()])
   lastExportAt.value = (await getLocal('lastExportAt')) ?? null
   backupBeforeJoin.value = (await getLocal('backupBeforeRoomJoin')) ?? null
   try {
@@ -104,7 +126,13 @@ async function askPersist() {
     </section>
 
     <section class="card">
-      <h2>{{ t('backup.title') }}</h2>
+      <h2 class="with-help">{{ t('settings.comments') }} <HelpLink to="ustawienia#pisze-jako" /></h2>
+      <p class="muted">{{ t('settings.commentsText') }}</p>
+      <DropDownSelectionComponent v-model="commentAuthor" :label="t('advancement.comment.writingAs') + ':'" :options="authorOptions" :block="true" />
+    </section>
+
+    <section class="card">
+      <h2 class="with-help">{{ t('backup.title') }} <HelpLink to="kopie-zapasowe" /></h2>
       <p class="muted">{{ t('backup.description') }}</p>
       <p class="status">{{ lastExportAt ? t('backup.lastExport', { date: formatDate(lastExportAt, locale) }) : t('backup.neverExported') }}</p>
       <div class="actions">
@@ -171,6 +199,12 @@ h2 {
 
 .card p {
   line-height: 1.5;
+}
+
+.with-help {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .muted {

@@ -34,8 +34,12 @@ export default defineConfig({
         },
         {
             name: 'desktop',
-            testMatch: /(desktop|sync)\.spec\.ts/,
+            testMatch: /(desktop|sync|comments|help)\.spec\.ts/,
             use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 860 } },
         },
+        // screenshots for the help articles, only with `npm run help:screens` (writes src/help/img)
+        ...(process.env.HELP_SCREENS
+            ? [{ name: 'help-screens', testMatch: /help-screens\.spec\.ts/, use: { ...devices['Desktop Chrome'] } }]
+            : []),
     ],
 })

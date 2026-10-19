@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import IdeaTaskComponent from "@/components/Advancement/IdeaTaskComponent.vue";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
@@ -9,22 +9,32 @@ import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import AsSimpleAdvancementComponent from "@/components/Advancement/AsSimpleAdvancementComponent.vue";
 import AsTableAdvancementComponent from "@/components/Advancement/AsTableAdvancementComponent.vue";
 import EyeIconComponent from "@/components/Universal/Icons/EyeIconComponent.vue";
-import { Status, type IRankInProgress, type ITask, type IUser } from "@/scripts/interfaces.ts";
+import HelpLink from "@/components/Universal/HelpLink.vue";
+import CommentButton from "@/components/Comments/CommentButton.vue";
+import CommentSheet from "@/components/Comments/CommentSheet.vue";
+import CommentsSummary from "@/components/Comments/CommentsSummary.vue";
+import GeneralComments from "@/components/Comments/GeneralComments.vue";
+import { anchorIdFor, COMMENTS_CONTEXT, keyFromHash, type CommentsContext } from "@/components/Comments/commentsContext";
+import { Status, type IComment, type IRankInProgress, type ITask, type IUser } from "@/scripts/interfaces.ts";
 import { ITypesEnum } from "@/scripts/eventBus";
 import { Rank } from "@/scripts/database/Rank.ts";
 import { RankInProgress } from "@/scripts/database/RankInProgress.ts";
 import { User } from "@/scripts/database/User.ts";
-import { Requirement } from "@/scripts/database/Requirement.ts";
+import { Requirement, requirementLabel } from "@/scripts/database/Requirement.ts";
 import { Task } from "@/scripts/database/Task.ts";
+import { Comment, groupByTarget, openCount, type CommentTargetKey } from "@/scripts/database/Comment";
+import { commentPrefs, loadCommentPrefs, markCommentsSeen } from "@/scripts/commentPrefs";
 import { getIdeaSegments, isDarkMode } from "@/scripts/helperFunctions.ts";
 import { rankBackgroundUrl, rankIconUrl } from "@/scripts/rankAssets";
 import { buildAdvancementViewModel } from "@/scripts/pdf/advancementViewModel";
 import { buildAdvancementPdf, loadPdfMake, pdfFileName, type PdfLabels, type PdfLayout } from "@/scripts/pdf/buildAdvancementPdf";
+import type { CommentScope } from "@/scripts/pdf/advancementViewModel";
 import { deliverPdf } from "@/scripts/pdf/deliverPdf";
 import { useDbUpdates, useLayout } from "@/scripts/composables";
 
 const { t, locale } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const { isMobile } = useLayout();
 
 const props = defineProps<{
@@ -35,6 +45,7 @@ const props = defineProps<{
 const rankInProgress = ref<IRankInProgress>();
 const people = ref<IUser[]>([]);
 const tasks = ref<ITask[]>([]);
+const comments = ref<IComment[]>([]);
 const state = ref<'loading' | 'ready' | 'missing'>('loading');
 
 const rank = computed(() => Rank.find(rankInProgress.value?.rankId));
@@ -54,31 +65,175 @@ async function loadRankInProgress() {
   else if (state.value === 'missing') await load();
 }
 
+async function loadComments() {
+  comments.value = await Comment.getByRankInProgressId(props.id);
+}
+
 async function load() {
   state.value = 'loading';
   await loadRankInProgress();
   if (!rankInProgress.value) return;
-  [people.value, tasks.value] = await Promise.all([User.getAll(), Task.getByRankInProgressId(props.id)]);
+  [people.value, tasks.value, comments.value] = await Promise.all([
+    User.getAll(),
+    Task.getByRankInProgressId(props.id),
+    Comment.getByRankInProgressId(props.id),
+    loadCommentPrefs(),
+  ]);
   state.value = 'ready';
+  onCommentsLoaded();
 }
 
-useDbUpdates([ITypesEnum.ERankInProgress, ITypesEnum.EUser, ITypesEnum.ETask], async (type) => {
-  if (type === ITypesEnum.ERankInProgress) await loadRankInProgress();
-  else if (type === ITypesEnum.EUser) people.value = await User.getAll();
-  else if (type === ITypesEnum.ETask) tasks.value = await Task.getByRankInProgressId(props.id);
+useDbUpdates([ITypesEnum.ERankInProgress, ITypesEnum.EUser, ITypesEnum.ETask, ITypesEnum.ETaskComment], async (type) => {
+  if (type === ITypesEnum.ERankInProgress) {
+    await loadRankInProgress();
+    await loadComments();
+  } else if (type === ITypesEnum.EUser) people.value = await User.getAll();
+  else if (type === ITypesEnum.ETask) {
+    tasks.value = await Task.getByRankInProgressId(props.id);
+    await loadComments();
+  } else if (type === ITypesEnum.ETaskComment) await loadComments();
 });
 
 onMounted(load);
-watch(() => props.id, load);
+watch(() => props.id, (_id, previous) => {
+  if (previous) void markCommentsSeen(previous);
+  commentsInitialised = false;
+  void load();
+});
+
+// ---------------------------------------------------------------- comments
+const commentGroups = computed(() => groupByTarget(comments.value));
+const seenAt = ref<number | undefined>();
+const sheetKey = ref<CommentTargetKey | null>(null);
+const expanded = ref(new Set<CommentTargetKey>());
+const requirementsDetails = ref<HTMLDetailsElement | null>(null);
+let commentsInitialised = false;
+
+const usesSheet = (key: CommentTargetKey) => key.startsWith('req:') || (key.startsWith('task:') && isMobile.value);
+const isOpen = (key: CommentTargetKey) => (usesSheet(key) ? sheetKey.value === key : expanded.value.has(key));
+
+function setExpanded(key: CommentTargetKey, value: boolean) {
+  const next = new Set(expanded.value);
+  if (value) next.add(key);
+  else next.delete(key);
+  expanded.value = next;
+}
+
+function openThread(key: CommentTargetKey) {
+  if (usesSheet(key)) sheetKey.value = key;
+  else setExpanded(key, true);
+}
+
+function toggleThread(key: CommentTargetKey) {
+  if (!isOpen(key)) openThread(key);
+  else if (usesSheet(key)) sheetKey.value = null;
+  else setExpanded(key, false);
+}
+
+async function reveal(key: CommentTargetKey) {
+  if (key.startsWith('req:') && requirementsDetails.value) requirementsDetails.value.open = true;
+  openThread(key);
+  await nextTick();
+  document.getElementById(anchorIdFor(key))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function targetLabel(key: CommentTargetKey): string {
+  if (key === 'adv') return t('advancement.comment.general');
+  if (key.startsWith('task:')) {
+    const index = tasks.value.findIndex(task => task.id === key.slice(5));
+    return t('advancement.comment.targetTask', { n: index + 1 });
+  }
+  const requirement = Requirement.find(Number(key.slice(4)));
+  return t('advancement.comment.targetRequirement', { label: requirement ? requirementLabel(requirement, requirements.value) : key.slice(4) });
+}
+
+const commentsContext: CommentsContext = {
+  rankInProgress,
+  people,
+  groups: commentGroups,
+  seenAt,
+  sheetKey,
+  expanded,
+  usesSheet,
+  isOpen,
+  toggle: toggleThread,
+  open: openThread,
+  reveal: (key) => void reveal(key),
+  closeSheet: () => { sheetKey.value = null },
+  targetLabel,
+  anchorId: anchorIdFor,
+  linkFor: (key) => `${location.origin}/stopien/${props.id}#${anchorIdFor(key)}`,
+};
+provide(COMMENTS_CONTEXT, commentsContext);
+
+/** Targets in page order (summary panel). */
+const commentOrder = computed<CommentTargetKey[]>(() => [
+  'adv',
+  ...tasks.value.map(task => `task:${task.id}` as const),
+  ...requirements.value.map(r => `req:${r.id}` as const),
+]);
+
+const sheetSubtitle = computed(() => {
+  const key = sheetKey.value;
+  if (!key) return '';
+  if (key.startsWith('req:')) {
+    const requirement = Requirement.find(Number(key.slice(4)));
+    return requirement ? `${requirementLabel(requirement, requirements.value)}. ${requirement.content}` : '';
+  }
+  if (key.startsWith('task:')) return tasks.value.find(task => task.id === key.slice(5))?.content.trim().slice(0, 240) ?? '';
+  return '';
+});
+
+/** First load: snapshot "last visit", expand open general notes, follow a #zadanie-… link. */
+function onCommentsLoaded() {
+  if (commentsInitialised) return;
+  commentsInitialised = true;
+  seenAt.value = commentPrefs.seenAt[props.id];
+  expanded.value = new Set();
+  sheetKey.value = null;
+  if (openCount(commentGroups.value.get('adv') ?? []) > 0) setExpanded('adv', true);
+  void followHash();
+}
+
+async function followHash() {
+  const key = keyFromHash(route.hash);
+  if (!key) return;
+  await nextTick();
+  await reveal(key);
+}
+
+watch(() => route.hash, () => {
+  if (state.value === 'ready') void followHash();
+});
+
+// "new since the last visit" is measured from leaving the view (or hiding the app)
+function onVisibility() {
+  if (document.visibilityState === 'hidden') void markCommentsSeen(props.id);
+}
+onMounted(() => document.addEventListener('visibilitychange', onVisibility));
+onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', onVisibility);
+  if (state.value === 'ready') void markCommentsSeen(props.id);
+});
 
 // ---------------------------------------------------------------- editing
 const pendingRankId = ref<number | null>(null);
+const lostRequirementComments = ref(0);
 
-function requestRankChange(rankId: number) {
+async function requestRankChange(rankId: number) {
   if (!rankInProgress.value || rankId === rankInProgress.value.rankId) return;
-  if (tasks.value.length === 0) void RankInProgress.update({ ...rankInProgress.value, rankId });
-  else pendingRankId.value = rankId;
+  const lost = await Comment.countLostOnRankChange(rankInProgress.value.id, rankId);
+  if (tasks.value.length === 0 && lost === 0) void RankInProgress.update({ ...rankInProgress.value, rankId });
+  else {
+    lostRequirementComments.value = lost;
+    pendingRankId.value = rankId;
+  }
 }
+
+const rankChangeMessage = computed(() => {
+  const lost = lostRequirementComments.value;
+  return t('popups.changeRank.message') + (lost > 0 ? ' ' + t('advancement.comment.orphanedOnRankChange', { n: lost }, lost) : '');
+});
 
 async function confirmRankChange() {
   if (rankInProgress.value && pendingRankId.value !== null) {
@@ -103,6 +258,9 @@ async function addTask() {
 const isPdfHidden = ref(true);
 const layout = ref<PdfLayout>(readPreference('rts.pdfLayout', 'table') as PdfLayout);
 const withBackground = ref(readPreference('rts.pdfBackground', '1') === '1');
+// off by default: the PDF is usually the document handed in
+const withComments = ref(readPreference('rts.pdfComments', '0') === '1');
+const commentScope = ref<CommentScope>(readPreference('rts.pdfCommentScope', 'open') === 'all' ? 'all' : 'open');
 const pdfBusy = ref(false);
 const pdfError = ref(false);
 const pdfReady = ref<{ blob: Blob; name: string } | null>(null);
@@ -125,6 +283,8 @@ function writePreference(key: string, value: string) {
 
 watch(layout, v => writePreference('rts.pdfLayout', v));
 watch(withBackground, v => writePreference('rts.pdfBackground', v ? '1' : '0'));
+watch(withComments, v => writePreference('rts.pdfComments', v ? '1' : '0'));
+watch(commentScope, v => writePreference('rts.pdfCommentScope', v));
 watch(isPdfHidden, hidden => {
   // warm up the PDF engine while the user looks at the preview
   if (!hidden) void loadPdfMake().catch(() => undefined);
@@ -140,6 +300,7 @@ const viewModel = computed(() => {
     rank: rank.value,
     person: mentee.value,
     mentor: mentor.value,
+    ...(withComments.value ? { comments: comments.value, people: people.value, commentScope: commentScope.value } : {}),
   });
 });
 
@@ -157,6 +318,18 @@ function pdfLabels(): PdfLabels {
     ideaFragment: t('pdf.ideaFragment'),
     none: '—',
     generatedOn: t('pdf.generatedOn'),
+    comments: {
+      title: t('pdf.comments'),
+      general: t('advancement.comment.general'),
+      appendix: t('pdf.commentsAppendix'),
+      resolved: t('advancement.comment.resolved'),
+      mentor: t('advancement.comment.roleMentor'),
+      mentee: t('advancement.comment.roleMentee'),
+      // the builder fills the placeholders in
+      taskRef: t('pdf.taskRef', { n: '{n}' }),
+      requirementRef: t('pdf.requirementRef', { label: '{label}' }),
+      generalRef: t('pdf.generalRef'),
+    },
     statuses: {
       [Status.DRAFT]: t('statusOptions.draft'),
       [Status.CREATED]: t('statusOptions.created'),
@@ -267,20 +440,26 @@ function print(): void {
 
       <p class="idea"><template v-for="(segment, i) in ideaSegments" :key="i"><span :class="{ 'idea-part-highlight': segment.highlighted }">{{ segment.text }}</span></template></p>
 
-      <details>
+      <details ref="requirementsDetails">
         <summary>{{ t('advancement.requirement.showSelected') }}</summary>
         <div class="requirements-collapsed">
-          <div class="requirement-item box-shadow" v-for="requirement in requirements" :key="requirement.id">
-            <div
-                class="requirement-item-status"
-                :style="{ backgroundColor: coveredRequirements.has(requirement.id) ? 'var(--accent-success)' : 'var(--accent-error)' }"
-            >
-              {{ coveredRequirements.has(requirement.id) ? "✔ " + t('advancement.requirement.added') : "✕ " + t('advancement.requirement.notAdded') }}
+          <div v-for="requirement in requirements" :id="anchorIdFor(`req:${requirement.id}`)" :key="requirement.id" class="requirement-item box-shadow">
+            <div class="requirement-item-head">
+              <CommentButton :target-key="`req:${requirement.id}`" />
+              <div
+                  class="requirement-item-status"
+                  :style="{ backgroundColor: coveredRequirements.has(requirement.id) ? 'var(--accent-success)' : 'var(--accent-error)' }"
+              >
+                {{ coveredRequirements.has(requirement.id) ? "✔ " + t('advancement.requirement.added') : "✕ " + t('advancement.requirement.notAdded') }}
+              </div>
             </div>
             <p><strong>{{ requirement.number }}.</strong> {{ requirement.content }}</p>
           </div>
         </div>
       </details>
+
+      <CommentsSummary :order="commentOrder" />
+      <GeneralComments />
     </section>
 
     <section v-if="isPdfHidden" class="rank-content">
@@ -310,6 +489,17 @@ function print(): void {
           <input v-model="withBackground" type="checkbox" />
           {{ t('pdf.background') }}
         </label>
+        <span class="comments-option">
+          <label class="checkbox">
+            <input v-model="withComments" type="checkbox" />
+            {{ t('advancement.comment.pdfInclude') }}
+          </label>
+          <span v-if="withComments" class="segmented small" role="radiogroup" :aria-label="t('advancement.comment.pdfInclude')">
+            <button type="button" role="radio" :aria-checked="commentScope === 'open'" :class="{ active: commentScope === 'open' }" @click="commentScope = 'open'">{{ t('advancement.comment.pdfOnlyOpen') }}</button>
+            <button type="button" role="radio" :aria-checked="commentScope === 'all'" :class="{ active: commentScope === 'all' }" @click="commentScope = 'all'">{{ t('advancement.comment.pdfAll') }}</button>
+          </span>
+        </span>
+        <HelpLink to="pdf#opcje-podgladu" />
         <div class="toolbar-actions">
           <ButtonComponent :button-text="pdfBusy ? t('pdf.generating') : t('pdf.download')" button-style="primary" :disabled="pdfBusy" @click="generatePdf" />
         </div>
@@ -332,10 +522,11 @@ function print(): void {
     </button>
     <img v-if="isPdfHidden && rankIconUrl(rank)" :src="rankIconUrl(rank)" class="rank-watermark" alt=""/>
 
+    <CommentSheet v-if="sheetKey" :key="sheetKey" :target-key="sheetKey" :subtitle="sheetSubtitle" />
     <PopupComponent
         v-if="pendingRankId !== null"
         :title="t('popups.changeRank.title')"
-        :message="t('popups.changeRank.message')"
+        :message="rankChangeMessage"
         :option-one="{ text: t('edit.yes'), style: 'error', action: confirmRankChange }"
         :option-two="{ text: t('edit.no'), action: () => { pendingRankId = null } }"
     />
@@ -596,6 +787,31 @@ function print(): void {
   margin: 0;
 }
 
+.requirement-item {
+  scroll-margin-top: 80px;
+}
+
+.requirement-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  align-self: stretch;
+}
+
+.comments-option {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.segmented.small button {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
 .requirement-item-status{
   padding: 4px 8px;
   border-radius: 6px;
@@ -604,7 +820,7 @@ function print(): void {
   min-width: 100px;
   text-align: center;
   position: relative;
-  align-self: flex-end;
+  margin-left: auto;
   font-size: 12px;
 }
 

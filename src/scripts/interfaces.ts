@@ -80,6 +80,34 @@ export interface ITaskComment {
     content: string;
 }
 
+/** What a comment is pinned to: a task, a requirement (within one advancement) or the advancement itself. */
+export type CommentTargetType = 'task' | 'requirement' | 'advancement'
+
+export type CommentTarget =
+    | { type: 'task'; id: string }
+    | { type: 'requirement'; id: number }
+    | { type: 'advancement' }
+
+/**
+ * A mentor's note or a mentee's reply. Stored in the `comments` map; records written before
+ * comments had targets are read as task comments (see Comment.ts).
+ */
+export interface IComment extends Omit<ITaskComment, 'taskId'> {
+    rankInProgressId: string;
+    targetType: CommentTargetType;
+    /** Task uuid, requirement id as a string, or '' for the advancement. */
+    targetId: string;
+    /** Set for task comments (compatibility with versions that only knew task comments). */
+    taskId?: string;
+    /** Author's name when the comment was written (shown if the person is deleted later). */
+    authorName: string;
+    /** ISO date of the last content edit. */
+    editedAt?: string;
+    resolved: boolean;
+    resolvedAt?: string;
+    resolvedById?: string;
+}
+
 // Attachments are out of scope for the first local-first version (phase 6).
 export interface IAttachment {
     name: string;

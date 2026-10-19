@@ -9,6 +9,10 @@ import type { IRank, IRequirement, ITask, Status } from "@/scripts/interfaces.ts
 import { Task } from "@/scripts/database/Task";
 import { requirementLabel } from "@/scripts/database/Requirement";
 import { useLayout } from "@/scripts/composables";
+import CommentButton from "@/components/Comments/CommentButton.vue";
+import CommentThread from "@/components/Comments/CommentThread.vue";
+import { useCommentsContext } from "@/components/Comments/commentsContext";
+import { targetKey } from "@/scripts/database/Comment";
 
 const { t } = useI18n()
 const { isWide } = useLayout()
@@ -41,10 +45,17 @@ function remove() {
 }
 
 const label = (r: IRequirement) => requirementLabel(r, props.requirements)
+
+const comments = useCommentsContext()
+const commentKey = computed(() => targetKey({ type: 'task', id: props.task.id }))
+const threadInline = computed(() => comments.isOpen(commentKey.value) && !comments.usesSheet(commentKey.value))
 </script>
 
 <template>
-  <TaskComponent :task="props.task" :index="index" @delete:task="remove" @update:status="setStatus">
+  <TaskComponent :id="comments.anchorId(commentKey)" class="task-anchor" :task="props.task" :index="index" @delete:task="remove" @update:status="setStatus">
+    <template #header-actions>
+      <CommentButton :target-key="commentKey" />
+    </template>
     <div class="task-content">
       <TextSelectionComponent
           :text="props.task.partIdea"
@@ -82,6 +93,11 @@ const label = (r: IRequirement) => requirementLabel(r, props.requirements)
           </li>
         </ul>
       </details>
+
+      <section v-if="threadInline" class="task-comments" :aria-label="t('advancement.comment.title')">
+        <h3>{{ t('advancement.comment.title') }}</h3>
+        <CommentThread :target="{ type: 'task', id: props.task.id }" />
+      </section>
     </div>
   </TaskComponent>
 </template>
@@ -89,6 +105,16 @@ const label = (r: IRequirement) => requirementLabel(r, props.requirements)
 <style scoped>
 h3 {
   margin: 0;
+}
+.task-anchor {
+  scroll-margin-top: 80px;
+}
+.task-comments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border);
 }
 .task-content {
   display: flex;

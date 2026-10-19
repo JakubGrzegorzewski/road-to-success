@@ -17,6 +17,10 @@ export interface LocalStateSchema {
     lastSyncedAt: number;
     /** Copy of the local document taken before "start from the room's data" replaced it. */
     backupBeforeRoomJoin: { at: number; update: Uint8Array };
+    /** Person (`people` id) this device writes comments as ("Piszę jako"). A declaration, not an account. */
+    commentAuthorId: string;
+    /** Per advancement: when this device last left its view (comments newer than that are "new"). */
+    commentsSeenAt: Record<string, number>;
 }
 
 export type LocalKey = keyof LocalStateSchema

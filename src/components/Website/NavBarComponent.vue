@@ -25,6 +25,7 @@ const links = computed(() => [
   { to: '/', label: t('nav.advancements'), active: ['Home', 'Advancement', 'AddPerson'].includes(String(route.name)) },
   { to: '/synchronizacja', label: t('nav.sync'), active: ['Sync', 'JoinRoom'].includes(String(route.name)) },
   { to: '/ustawienia', label: t('nav.settings'), active: route.name === 'Settings' },
+  { to: '/pomoc', label: t('nav.help'), active: ['Help', 'HelpArticle'].includes(String(route.name)) },
 ])
 </script>
 

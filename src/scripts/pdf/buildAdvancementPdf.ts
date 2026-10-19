@@ -1,5 +1,5 @@
 import { Status } from '@/scripts/interfaces'
-import type { AdvancementViewModel } from './advancementViewModel'
+import type { AdvancementViewModel, CommentRow } from './advancementViewModel'
 
 export type PdfLayout = 'table' | 'simple'
 
@@ -17,6 +17,38 @@ export interface PdfLabels {
     none: string;
     generatedOn: string;
     statuses: Record<Status, string>;
+    /** Needed only when the view model includes comments. */
+    comments?: CommentLabels;
+}
+
+export interface CommentLabels {
+    /** Heading above a task's comments ("Uwagi"). */
+    title: string;
+    /** "Uwagi ogólne". */
+    general: string;
+    /** Appendix heading in the table layout ("Uwagi"). */
+    appendix: string;
+    resolved: string;
+    mentor: string;
+    mentee: string;
+    /** "Zad. {n}" */
+    taskRef: string;
+    /** "Wym. {label}" */
+    requirementRef: string;
+    /** "Ogólne" */
+    generalRef: string;
+}
+
+const DEFAULT_COMMENT_LABELS: CommentLabels = {
+    title: 'Uwagi',
+    general: 'Uwagi ogólne',
+    appendix: 'Uwagi',
+    resolved: 'załatwione',
+    mentor: 'Opiekun',
+    mentee: 'Podopieczny',
+    taskRef: 'Zad. {n}',
+    requirementRef: 'Wym. {label}',
+    generalRef: 'Ogólne',
 }
 
 export interface PdfOptions {
@@ -51,6 +83,66 @@ function ideaParagraph(vm: AdvancementViewModel): Content {
     }
 }
 
+function commentDate(iso: string, locale: string | undefined): string {
+    const d = new Date(iso)
+    return Number.isFinite(d.getTime()) ? d.toLocaleDateString(locale ?? 'pl-PL', { year: 'numeric', month: 'short', day: 'numeric' }) : ''
+}
+
+function commentBlock(c: CommentRow, labels: PdfLabels, locale: string | undefined): Content {
+    const cl = labels.comments ?? DEFAULT_COMMENT_LABELS
+    const role = c.role === 'mentor' ? cl.mentor : c.role === 'mentee' ? cl.mentee : ''
+    const meta = [role, commentDate(c.date, locale), c.resolved ? cl.resolved : ''].filter(Boolean).join(' · ')
+    return {
+        stack: [
+            { text: [{ text: c.author || labels.none, bold: true }, meta ? { text: ` · ${meta}`, color: '#6b7280' } : ''], fontSize: 8.5 },
+            { text: c.content, margin: [0, 1, 0, 0], color: c.resolved ? '#4b5563' : '#111827' },
+        ],
+        margin: [0, 0, 0, 5],
+    }
+}
+
+/** Comment groups with a reference label ("Ogólne", "Zad. 2", "Wym. 5"), in page order. */
+export function commentEntries(vm: AdvancementViewModel, labels: PdfLabels, withTasks: boolean): { ref: string; rows: CommentRow[] }[] {
+    if (!vm.includeComments) return []
+    const cl = labels.comments ?? DEFAULT_COMMENT_LABELS
+    return [
+        { ref: cl.generalRef, rows: vm.generalComments },
+        ...(withTasks ? vm.tasks.map((t) => ({ ref: cl.taskRef.replace('{n}', String(t.index)), rows: t.comments })) : []),
+        ...vm.requirements.map((r) => ({ ref: cl.requirementRef.replace('{label}', r.label), rows: r.comments })),
+    ].filter((e) => e.rows.length > 0)
+}
+
+function commentsAppendix(vm: AdvancementViewModel, labels: PdfLabels, withTasks: boolean, locale: string | undefined): Content[] {
+    const entries = commentEntries(vm, labels, withTasks)
+    if (entries.length === 0) return []
+    const cl = labels.comments ?? DEFAULT_COMMENT_LABELS
+    return [
+        {
+            stack: [
+                { text: cl.appendix, style: 'h2', margin: [0, 18, 0, 8] },
+                {
+                    table: {
+                        headerRows: 0,
+                        dontBreakRows: true,
+                        widths: [62, '*'],
+                        body: entries.map((e) => [{ text: e.ref, bold: true, fontSize: 9.5 }, { stack: e.rows.map((c) => commentBlock(c, labels, locale)) }]),
+                    },
+                    layout: {
+                        hLineWidth: () => 0.6,
+                        vLineWidth: () => 0,
+                        hLineColor: () => '#cbd5e1',
+                        paddingLeft: () => 4,
+                        paddingRight: () => 4,
+                        paddingTop: () => 5,
+                        paddingBottom: () => 2,
+                    },
+                    fontSize: 9.5,
+                },
+            ],
+        },
+    ]
+}
+
 function requirementsTable(vm: AdvancementViewModel, labels: PdfLabels): Content {
     const body: Content[] = [
         [
@@ -83,8 +175,9 @@ function requirementsTable(vm: AdvancementViewModel, labels: PdfLabels): Content
     }
 }
 
-function taskList(vm: AdvancementViewModel, labels: PdfLabels): Content[] {
+function taskList(vm: AdvancementViewModel, labels: PdfLabels, locale?: string): Content[] {
     if (vm.tasks.length === 0) return [{ text: labels.none, color: '#94a3b8' }]
+    const cl = labels.comments ?? DEFAULT_COMMENT_LABELS
     return vm.tasks.map((t) => ({
         unbreakable: t.content.length < 1200,
         margin: [0, 0, 0, 14],
@@ -106,6 +199,12 @@ function taskList(vm: AdvancementViewModel, labels: PdfLabels): Content[] {
             t.requirements.length > 0
                 ? { ul: t.requirements.map((r) => ({ text: [{ text: `${r.label}. `, bold: true }, r.content] })), margin: [0, 2, 0, 0], fontSize: 9.5 }
                 : { text: labels.none, color: '#94a3b8' },
+            ...(vm.includeComments && t.comments.length > 0
+                ? [
+                      { text: cl.title, style: 'label', margin: [0, 6, 0, 2] },
+                      { stack: t.comments.map((c) => commentBlock(c, labels, locale)), margin: [8, 0, 0, 0], fontSize: 9.5 },
+                  ]
+                : []),
         ],
     }))
 }
@@ -127,7 +226,9 @@ export function buildDocDefinition(vm: AdvancementViewModel, options: PdfOptions
         ideaParagraph(vm),
         options.layout === 'table'
             ? { stack: [{ text: labels.requirements, style: 'h2' }, requirementsTable(vm, labels)], pageBreak: 'before' }
-            : { stack: [{ text: labels.tasks, style: 'h2' }, ...taskList(vm, labels)], pageBreak: 'before' },
+            : { stack: [{ text: labels.tasks, style: 'h2' }, ...taskList(vm, labels, options.locale)], pageBreak: 'before' },
+        // table: every comment in an appendix; list: task comments sit under their task, the rest here
+        ...commentsAppendix(vm, labels, options.layout === 'table', options.locale),
     ]
 
     return {

@@ -5,6 +5,7 @@ import FooterComponent from '@/components/Website/FooterComponent.vue'
 import MobileNavComponent from '@/components/Website/MobileNavComponent.vue'
 import BackupReminderComponent from '@/components/Website/BackupReminderComponent.vue'
 import ButtonComponent from '@/components/Universal/ButtonComponent.vue'
+import HelpLink from '@/components/Universal/HelpLink.vue'
 import { appState } from '@/scripts/appState'
 import { useLayout } from '@/scripts/composables'
 
@@ -23,6 +24,7 @@ function reload() {
     <v-main id="main" class="main-content" :class="{ 'with-bottom-nav': isMobile }">
       <p v-if="appState.storeReady && appState.storageMode === 'memory'" class="app-banner banner-warning" role="status">
         {{ t('app.memoryOnly') }}
+        <HelpLink to="problemy#zmiany-znikna-po-zamknieciu-karty" class="banner-help" />
       </p>
       <BackupReminderComponent />
       <router-view />
@@ -84,8 +86,16 @@ function reload() {
 }
 
 .app-banner.banner-warning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
   background: var(--accent-warning);
   color: #1f1300;
+}
+
+.banner-help {
+  margin: -10px -6px !important;
 }
 
 .blocking-overlay {

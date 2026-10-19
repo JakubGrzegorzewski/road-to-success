@@ -6,6 +6,7 @@ import { storeReady } from '../store/persistence'
 import { Rank } from './Rank'
 import { Requirement } from './Requirement'
 import { deleteTasksWhere, readTaskRequirementIds } from './Task'
+import { deleteCommentsWhere } from './Comment'
 import { User } from './User'
 
 function read(id: string, m: RecordMap): IRankInProgress {
@@ -80,7 +81,8 @@ export class RankInProgress {
 
     /**
      * Writes only the fields that differ from the document. Changing the rank removes the
-     * advancement's tasks (they belong to the old rank's idea/requirements) in the same transaction.
+     * advancement's tasks (they belong to the old rank's idea/requirements) and the comments on the
+     * old rank's requirements, in the same transaction. General comments stay.
      */
     static async update(rankInProgress: IRankInProgress | undefined): Promise<IRankInProgress | undefined> {
         if (!rankInProgress) throw new Error('ranksInProgress is undefined')
@@ -91,6 +93,12 @@ export class RankInProgress {
         getDoc().transact(() => {
             if (current.rankId !== rankInProgress.rankId) {
                 deleteTasksWhere((t) => readString(t, 'rankInProgressId') === rankInProgress.id)
+                deleteCommentsWhere(
+                    (c) =>
+                        c.rankInProgressId === rankInProgress.id &&
+                        c.targetType === 'requirement' &&
+                        Requirement.find(Number(c.targetId))?.rankId !== rankInProgress.rankId,
+                )
                 m.set('rankId', rankInProgress.rankId)
             }
             if (current.personId !== rankInProgress.personId) m.set('personId', rankInProgress.personId)
@@ -99,11 +107,12 @@ export class RankInProgress {
         return rankInProgress
     }
 
-    /** Deletes the advancement with its tasks and their comments in one transaction. */
+    /** Deletes the advancement with its tasks and all its comments in one transaction. */
     static async deleteObject(id: string): Promise<void> {
         await storeReady()
         getDoc().transact(() => {
             deleteTasksWhere((t) => readString(t, 'rankInProgressId') === id)
+            deleteCommentsWhere((c) => c.rankInProgressId === id)
             getMaps().ranksInProgress.delete(id)
         }, LOCAL_ORIGIN)
     }

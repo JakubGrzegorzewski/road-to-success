@@ -2,14 +2,24 @@
 import { useI18n } from "vue-i18n";
 import type { AdvancementViewModel } from "@/scripts/pdf/advancementViewModel";
 import { Status } from "@/scripts/interfaces";
+import ReportCommentsComponent from "@/components/Advancement/ReportCommentsComponent.vue";
+import { computed } from "vue";
 
 /** Screen preview of the "task list" document (same data as the PDF). */
-defineProps<{
+const props = defineProps<{
   vm: AdvancementViewModel,
   rankIcon?: string,
 }>();
 
 const { t } = useI18n();
+
+/** General and requirement comments go after the tasks (task comments sit under their task). */
+const otherComments = computed(() => props.vm.includeComments
+  ? [
+      { ref: t('advancement.comment.general'), rows: props.vm.generalComments },
+      ...props.vm.requirements.map(r => ({ ref: t('advancement.comment.targetRequirement', { label: r.label }), rows: r.comments })),
+    ].filter(e => e.rows.length > 0)
+  : []);
 
 const statusKey: Record<Status, string> = {
   [Status.DRAFT]: 'statusOptions.draft',
@@ -59,6 +69,19 @@ const statusKey: Record<Status, string> = {
               <span v-if="task.requirements.length === 0">—</span>
             </div>
           </div>
+
+          <div v-if="vm.includeComments && task.comments.length > 0" class="task-row">
+            <strong>{{ t('pdf.comments') }}:</strong>
+            <ReportCommentsComponent :rows="task.comments" />
+          </div>
+        </div>
+      </section>
+
+      <section v-if="otherComments.length > 0" class="comments-section">
+        <h2>{{ t('pdf.commentsAppendix') }}</h2>
+        <div v-for="entry in otherComments" :key="entry.ref" class="task-row">
+          <strong>{{ entry.ref }}</strong>
+          <ReportCommentsComponent :rows="entry.rows" />
         </div>
       </section>
   </div>

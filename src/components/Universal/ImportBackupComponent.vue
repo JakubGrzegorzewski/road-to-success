@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PopupComponent from '@/components/Universal/PopupComponent.vue'
+import HelpLink from '@/components/Universal/HelpLink.vue'
 import { applyImport, previewImport, RtsFileError, type ImportPreview } from '@/scripts/export/exportFile'
 import { formatDate } from '@/scripts/composables'
 
@@ -83,7 +84,9 @@ defineExpose({ pick, load })
       :option-one="{ text: t('edit.cancel'), style: 'ghost', action: () => { pending = null } }"
       :option-two="{ text: t('backup.merge'), action: confirm, disabled: busy }"
       :dismiss="() => { pending = null }"
-  />
+  >
+    <p class="popup-help"><HelpLink to="kopie-zapasowe#import-i-scalanie" new-tab /> {{ t('backup.importHelp') }}</p>
+  </PopupComponent>
   <PopupComponent
       v-if="error"
       :title="t('backup.import')"
@@ -97,3 +100,13 @@ defineExpose({ pick, load })
       :option-two="{ text: t('edit.ok'), action: () => { done = false } }"
   />
 </template>
+
+<style scoped>
+.popup-help {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 4px 10px;
+  font-size: 14px;
+}
+</style>

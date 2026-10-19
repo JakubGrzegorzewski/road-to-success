@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import ButtonComponent from '@/components/Universal/ButtonComponent.vue'
+import HelpLink from '@/components/Universal/HelpLink.vue'
 import { exportBackup, shouldRemindAboutBackup, snoozeBackupReminder } from '@/scripts/export/backupActions'
 
 /** Periodic reminder: when every device is lost, the data is gone — a file backup prevents that. */
@@ -43,6 +44,7 @@ watch(() => route.name, check)
     <div class="actions">
       <ButtonComponent :button-text="t('backup.reminderAction')" button-style="primary" :disabled="busy" @click="exportNow" />
       <ButtonComponent :button-text="t('backup.reminderLater')" button-style="ghost" @click="later" />
+      <HelpLink to="kopie-zapasowe#przypomnienie-o-kopii" class="reminder-help" />
     </div>
   </section>
 </template>
@@ -76,8 +78,13 @@ watch(() => route.name, check)
 
 .actions {
   display: flex;
+  align-items: center;
   gap: var(--space-xs);
   flex-wrap: wrap;
+}
+
+.reminder-help {
+  margin: 0 !important;
 }
 
 @media (max-width: 599px) {

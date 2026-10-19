@@ -7,6 +7,7 @@ import { User } from '@/scripts/database/User'
 import { RankInProgress } from '@/scripts/database/RankInProgress'
 import { Task } from '@/scripts/database/Task'
 import { TaskComment } from '@/scripts/database/TaskComment'
+import { Comment, groupByTarget } from '@/scripts/database/Comment'
 import { getMaps } from '@/scripts/store/doc'
 import { __resetLocalState, getLocal } from '@/scripts/store/localState'
 import { LEGACY_DB_NAME, migrateFromDexie, readLegacySnapshot } from '@/scripts/store/migrateFromDexie'
@@ -101,6 +102,9 @@ describe('migration from Dexie (RoadSuccessDB)', () => {
 
         const comments = await TaskComment.getByTaskId(tasks[0]!.id)
         expect(comments).toMatchObject([{ authorId: anna!.id, content: 'Dobry pomysł', date: '2026-03-01T10:00:00.000Z' }])
+        // …and shows up in the task's thread of the advancement view
+        const thread = groupByTarget(await Comment.getByRankInProgressId(rips[0]!.id)).get(`task:${tasks[0]!.id}`)
+        expect(thread).toMatchObject([{ targetType: 'task', rankInProgressId: rips[0]!.id, authorName: 'hm. Anna Nowak', resolved: false, content: 'Dobry pomysł' }])
 
         // reverse arrays are gone
         for (const [, m] of getMaps(doc).people) expect(m.has('ranksInProgressIds')).toBe(false)

@@ -8,7 +8,11 @@ import * as Y from 'yjs'
  * ranksInProgress: Map<uuid, Map { rankId, personId, mentorId, createdAt }>
  * tasks:           Map<uuid, Map { rankInProgressId, content: Y.Text, status,
  *                                  requirementIds: Map<string, true>, partIdea: string[], order, createdAt }>
- * comments:        Map<uuid, Map { taskId, authorId, date, content }>
+ * comments:        Map<uuid, Map { rankInProgressId, targetType: 'task' | 'requirement' | 'advancement', targetId,
+ *                                     taskId (task comments only), authorId, authorName, date, editedAt?,
+ *                                     content, resolved?, resolvedAt?, resolvedById? }>
+ *                  (records without targetType predate comment targets and are read as task comments;
+ *                   the change is additive, so SCHEMA_VERSION stays 1)
  *
  * Ranks and requirements are static JSON bundled with the app and referenced by id.
  */

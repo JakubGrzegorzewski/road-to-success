@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { VitePWA } from 'vite-plugin-pwa'
+import helpMarkdown from './vite/helpMarkdown'
 import { version } from './package.json'
 
 // "2.0.0" locally, "2.0.0+abc1234" in CI (shown in the footer and stored in exported files)
@@ -12,6 +13,8 @@ const appVersion = commit ? `${version}+${commit}` : version
 export default defineConfig(({ mode }) => ({
     base: '/',
     plugins: [
+        // src/help/**/*.md → JS modules (help articles, no Markdown parser at runtime)
+        helpMarkdown(),
         vue(),
         mode === 'development' && vueDevTools(),
         VitePWA({
@@ -41,8 +44,9 @@ export default defineConfig(({ mode }) => ({
                 ],
             },
             workbox: {
-                // everything needed offline, including pdfmake (PDF works without network)…
-                globPatterns: ['**/*.{js,css,html,svg,png,ico,ttf,woff2,webmanifest}'],
+                // everything needed offline, including pdfmake (PDF works without network) and the
+                // help articles with their screenshots (webp)…
+                globPatterns: ['**/*.{js,css,html,svg,png,webp,ico,ttf,woff2,webmanifest}'],
                 // …except the A4 page backgrounds (≈ 300 KB each): cached on first use instead
                 globIgnores: ['**/*-background-*.png'],
                 maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,

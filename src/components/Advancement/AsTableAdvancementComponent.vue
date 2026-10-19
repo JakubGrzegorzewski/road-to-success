@@ -2,15 +2,26 @@
 import { useI18n } from "vue-i18n";
 import type { AdvancementViewModel } from "@/scripts/pdf/advancementViewModel";
 import { useLayout } from "@/scripts/composables";
+import ReportCommentsComponent from "@/components/Advancement/ReportCommentsComponent.vue";
+import { computed } from "vue";
 
 /** Screen preview of the "requirement table" document (same data as the PDF). */
-defineProps<{
+const props = defineProps<{
   vm: AdvancementViewModel,
   rankIcon?: string,
 }>();
 
 const { t } = useI18n();
 const { isWide } = useLayout();
+
+/** Appendix "Uwagi" with references to the commented items (as in the PDF). */
+const appendix = computed(() => props.vm.includeComments
+  ? [
+      { ref: t('pdf.generalRef'), rows: props.vm.generalComments },
+      ...props.vm.tasks.map(task => ({ ref: t('pdf.taskRef', { n: task.index }), rows: task.comments })),
+      ...props.vm.requirements.map(r => ({ ref: t('pdf.requirementRef', { label: r.label }), rows: r.comments })),
+    ].filter(e => e.rows.length > 0)
+  : []);
 </script>
 
 <template>
@@ -64,6 +75,16 @@ const { isWide } = useLayout();
           </div>
         </li>
       </ul>
+    </section>
+
+    <section v-if="appendix.length > 0" class="comments-appendix">
+      <h2>{{ t('pdf.commentsAppendix') }}</h2>
+      <dl>
+        <template v-for="entry in appendix" :key="entry.ref">
+          <dt>{{ entry.ref }}</dt>
+          <dd><ReportCommentsComponent :rows="entry.rows" /></dd>
+        </template>
+      </dl>
     </section>
   </div>
 </template>
@@ -124,6 +145,37 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 
 .matrix-section {
   margin-top: 25px;
+}
+
+.comments-appendix {
+  margin-top: 25px;
+  break-before: auto;
+}
+
+.comments-appendix dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 14px;
+  margin: 0;
+}
+
+.comments-appendix dt {
+  font-weight: 700;
+}
+
+.comments-appendix dd {
+  margin: 0;
+  min-width: 0;
+}
+
+@media (max-width: 599px) {
+  .comments-appendix dl {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .comments-appendix dd {
+    margin-bottom: 10px;
+  }
 }
 
 .matrix-table {

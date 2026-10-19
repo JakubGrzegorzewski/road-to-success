@@ -5,6 +5,7 @@ import { User } from '@/scripts/database/User'
 import { RankInProgress } from '@/scripts/database/RankInProgress'
 import { Task } from '@/scripts/database/Task'
 import { TaskComment } from '@/scripts/database/TaskComment'
+import { Comment } from '@/scripts/database/Comment'
 import { freshDoc, snapshot, syncDocs } from './helpers'
 
 /** Deterministic PRNG so failures are reproducible. */
@@ -41,7 +42,12 @@ async function randomEdit(rand: () => number) {
     } else if (r < 0.78) {
         await Task.setStatus(pick(rand, tasks)!.id, pick(rand, [Status.CREATED, Status.IN_PROGRESS, Status.COMPLETED])!)
     } else if (r < 0.86) {
-        await TaskComment.add({ taskId: pick(rand, tasks)!.id, authorId: pick(rand, people)!.id, content: 'k' })
+        const comments = await Comment.getAll()
+        const c = rand()
+        if (c < 0.5 || comments.length === 0) await TaskComment.add({ taskId: pick(rand, tasks)!.id, authorId: pick(rand, people)!.id, content: 'k' })
+        else if (c < 0.7) await Comment.add({ rankInProgressId: pick(rand, rips)!.id, target: { type: 'advancement' }, authorId: pick(rand, people)!.id, content: 'g' })
+        else if (c < 0.9) await Comment.setResolved(pick(rand, comments)!.id, rand() < 0.5, pick(rand, people)!.id)
+        else await Comment.edit(pick(rand, comments)!.id, 'e' + Math.floor(rand() * 10))
     } else if (r < 0.92) {
         await Task.deleteObject(pick(rand, tasks)!.id)
     } else if (r < 0.96) {
@@ -110,6 +116,92 @@ describe('merging two independently edited documents', () => {
             const expected = snapshot(docs[0]!)
             expect(snapshot(docs[1]!)).toEqual(expected)
             expect(snapshot(docs[2]!)).toEqual(expected)
+        }
+    })
+})
+
+describe('merging comments', () => {
+    async function sharedAdvancement() {
+        const a = freshDoc()
+        const mentor = await User.add({ fullName: 'hm. Anna' })
+        const mentee = await User.add({ fullName: 'Jan' })
+        const rip = await RankInProgress.add({ rankId: 0, personId: mentee.id, mentorId: mentor.id })
+        const task = await Task.add(rip.id)
+        const b = new Y.Doc()
+        syncDocs(a, b)
+        return { a, b, mentor, mentee, rip, task }
+    }
+
+    it('comments added on two devices at the same time are both kept', async () => {
+        const { a, b, mentor, mentee, rip, task } = await sharedAdvancement()
+        freshDoc(a)
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'task', id: task.id }, authorId: mentor.id, content: 'Uwaga opiekuna' })
+        freshDoc(b)
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'task', id: task.id }, authorId: mentee.id, content: 'Odpowiedź' })
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'requirement', id: 1001 }, authorId: mentee.id, content: 'Pytanie' })
+        syncDocs(a, b)
+        expect(snapshot(a)).toEqual(snapshot(b))
+        for (const doc of [a, b]) {
+            freshDoc(doc)
+            expect((await Comment.getByRankInProgressId(rip.id)).map((c) => c.content).sort()).toEqual(['Odpowiedź', 'Pytanie', 'Uwaga opiekuna'])
+        }
+    })
+
+    it('concurrent resolve and edit of one comment converge (both directions)', async () => {
+        const { a, b, mentor, mentee, rip, task } = await sharedAdvancement()
+        freshDoc(a)
+        const c = await Comment.add({ rankInProgressId: rip.id, target: { type: 'task', id: task.id }, authorId: mentor.id, content: 'Popraw opis' })
+        syncDocs(a, b)
+
+        freshDoc(a)
+        await Comment.edit(c.id, 'Popraw opis zadania')
+        freshDoc(b)
+        await Comment.setResolved(c.id, true, mentee.id)
+
+        const a2 = new Y.Doc()
+        Y.applyUpdate(a2, Y.encodeStateAsUpdate(a))
+        const b2 = new Y.Doc()
+        Y.applyUpdate(b2, Y.encodeStateAsUpdate(b))
+        Y.applyUpdate(a2, Y.encodeStateAsUpdate(b)) // B → A
+        Y.applyUpdate(b2, Y.encodeStateAsUpdate(a)) // A → B
+        expect(snapshot(a2)).toEqual(snapshot(b2))
+        freshDoc(a2)
+        expect(await Comment.getById(c.id)).toMatchObject({ content: 'Popraw opis zadania', resolved: true, resolvedById: mentee.id })
+    })
+
+    it('concurrent resolve and reopen settle on one consistent state', async () => {
+        const { a, b, mentor, mentee, rip } = await sharedAdvancement()
+        freshDoc(a)
+        const c = await Comment.add({ rankInProgressId: rip.id, target: { type: 'advancement' }, authorId: mentor.id, content: 'x' })
+        await Comment.setResolved(c.id, true, mentor.id)
+        syncDocs(a, b)
+        freshDoc(a)
+        await Comment.setResolved(c.id, false, mentor.id)
+        freshDoc(b)
+        await Comment.setResolved(c.id, false, mentee.id)
+        await Comment.setResolved(c.id, true, mentee.id)
+        syncDocs(a, b)
+        expect(snapshot(a)).toEqual(snapshot(b))
+        freshDoc(a)
+        const merged = await Comment.getById(c.id)
+        // either outcome is fine, but the fields must agree with each other
+        if (merged.resolved) expect(merged.resolvedAt).toBeDefined()
+        else expect(merged.resolvedAt).toBeUndefined()
+    })
+
+    it('an advancement deleted on A while B comments leaves a hidden orphan on both', async () => {
+        const { a, b, mentor, rip, task } = await sharedAdvancement()
+        freshDoc(a)
+        await RankInProgress.deleteObject(rip.id)
+        freshDoc(b)
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'task', id: task.id }, authorId: mentor.id, content: 'spóźniona uwaga' })
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'advancement' }, authorId: mentor.id, content: 'ogólna' })
+        syncDocs(a, b)
+        expect(snapshot(a)).toEqual(snapshot(b))
+        for (const doc of [a, b]) {
+            freshDoc(doc)
+            expect(await Comment.getAll()).toHaveLength(0)
+            expect(await Comment.getByRankInProgressId(rip.id)).toHaveLength(0)
         }
     })
 })

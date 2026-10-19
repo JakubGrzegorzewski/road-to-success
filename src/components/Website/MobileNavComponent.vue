@@ -13,10 +13,12 @@ const tabs = [
   { value: 'home', to: '/', routes: ['Home', 'Advancement', 'AddPerson'] },
   { value: 'sync', to: '/synchronizacja', routes: ['Sync', 'JoinRoom'] },
   { value: 'settings', to: '/ustawienia', routes: ['Settings'] },
+  { value: 'help', to: '/pomoc', routes: ['Help', 'HelpArticle'] },
 ] as const
 
 const active = computed(() => tabs.find((tab) => (tab.routes as readonly string[]).includes(String(route.name)))?.value ?? 'home')
 
+/** Also from a sub-page of the active tab (an advancement, a help article) back to the tab's start. */
 function go(value: string) {
   const tab = tabs.find((x) => x.value === value)
   if (tab && route.path !== tab.to) void router.push(tab.to)
@@ -33,22 +35,25 @@ function go(value: string) {
       color="#6cc4f0"
       class="mobile-nav"
       :aria-label="t('app.name')"
-      @update:model-value="go"
   >
-    <v-btn value="home" :aria-current="active === 'home' ? 'page' : undefined">
+    <v-btn value="home" :aria-current="active === 'home' ? 'page' : undefined" @click="go('home')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5zM7 8h10M7 12h10M7 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <span>{{ t('nav.advancements') }}</span>
     </v-btn>
-    <v-btn value="sync" :aria-current="active === 'sync' ? 'page' : undefined">
+    <v-btn value="sync" :aria-current="active === 'sync' ? 'page' : undefined" @click="go('sync')">
       <span class="icon-wrap">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7h-9a5 5 0 0 0-5 5M4 17h9a5 5 0 0 0 5-5M17 4l3 3-3 3M7 20l-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="status-dot" :class="`state-${syncStatus.state}`" aria-hidden="true" />
       </span>
       <span>{{ t('nav.sync') }}</span>
     </v-btn>
-    <v-btn value="settings" :aria-current="active === 'settings' ? 'page' : undefined">
+    <v-btn value="settings" :aria-current="active === 'settings' ? 'page' : undefined" @click="go('settings')">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4L10.6 6a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.4 2.5h4l.4-2.5c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
       <span>{{ t('nav.settings') }}</span>
+    </v-btn>
+    <v-btn value="help" :aria-current="active === 'help' ? 'page' : undefined" @click="go('help')">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2.9-1.2 1.8v.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.1" fill="currentColor"/></svg>
+      <span>{{ t('nav.help') }}</span>
     </v-btn>
   </v-bottom-navigation>
 </template>
@@ -67,6 +72,7 @@ function go(value: string) {
   letter-spacing: 0;
   font-size: 12px;
   min-width: 0;
+  padding: 0 4px;
   color: rgba(255, 255, 255, 0.78);
 }
 

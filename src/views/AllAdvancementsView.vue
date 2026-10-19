@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import type { IRankInProgress, IUser } from '@/scripts/interfaces.ts';
+import type { IComment, IRankInProgress, IUser } from '@/scripts/interfaces.ts';
 import AdvancementCardComponent from "@/components/Advancement/AdvancementCardComponent.vue";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
 import ImportBackupComponent from "@/components/Universal/ImportBackupComponent.vue";
@@ -12,6 +12,8 @@ import { ITypesEnum } from "@/scripts/eventBus";
 import { RankInProgress } from "@/scripts/database/RankInProgress.ts";
 import { User } from "@/scripts/database/User.ts";
 import { Rank } from "@/scripts/database/Rank";
+import { Comment, isNewComment } from "@/scripts/database/Comment";
+import { commentPrefs, loadCommentPrefs } from "@/scripts/commentPrefs";
 import { useDbUpdates } from "@/scripts/composables";
 
 const { t } = useI18n();
@@ -19,21 +21,31 @@ const router = useRouter();
 
 const ranks = ref<IRankInProgress[]>([]);
 const people = ref<IUser[]>([]);
+const comments = ref<IComment[]>([]);
 const loaded = ref(false);
 const rankToDelete = ref<string | undefined>(undefined);
 const importer = ref<InstanceType<typeof ImportBackupComponent> | null>(null);
 
 const nameOf = (id: string) => people.value.find(p => p.id === id)?.fullName ?? '';
-const cards = computed(() => ranks.value.map(r => ({
-  rankInProgress: r,
-  rank: Rank.find(r.rankId),
-  menteeName: nameOf(r.personId),
-  mentorName: nameOf(r.mentorId),
-})));
+const cards = computed(() => ranks.value.map(r => {
+  const open = comments.value.filter(c => c.rankInProgressId === r.id && !c.resolved);
+  return {
+    rankInProgress: r,
+    rank: Rank.find(r.rankId),
+    menteeName: nameOf(r.personId),
+    mentorName: nameOf(r.mentorId),
+    openComments: open.length,
+    newComments: open.some(c => isNewComment(c, commentPrefs.seenAt[r.id], commentPrefs.authorId)),
+  };
+}));
 
 async function load() {
-  [ranks.value, people.value] = await Promise.all([RankInProgress.getAll(), User.getAll()]);
+  [ranks.value, people.value, comments.value] = await Promise.all([RankInProgress.getAll(), User.getAll(), Comment.getAll(), loadCommentPrefs()]);
   loaded.value = true;
+}
+
+async function loadComments() {
+  comments.value = await Comment.getAll();
 }
 
 const isEmpty = computed(() => loaded.value && people.value.length === 0 && ranks.value.length === 0);
@@ -41,6 +53,7 @@ const isEmpty = computed(() => loaded.value && people.value.length === 0 && rank
 onMounted(load);
 
 useDbUpdates([ITypesEnum.ERankInProgress, ITypesEnum.EUser], load);
+useDbUpdates([ITypesEnum.ETaskComment, ITypesEnum.ETask], loadComments);
 
 async function addAdvancement() {
   if (people.value.length === 0) {
@@ -66,6 +79,7 @@ async function confirmDelete() {
       <ButtonComponent :button-text="t('advancement.emptyAddPerson')" button-style="primary" block @click="router.push('/dodaj-osobe/')" />
       <ButtonComponent :button-text="t('advancement.emptyJoin')" block @click="router.push('/synchronizacja')" />
       <ButtonComponent :button-text="t('advancement.emptyImport')" button-style="ghost" block @click="importer?.pick()" />
+      <ButtonComponent :button-text="t('advancement.emptyHelp')" button-style="ghost" block @click="router.push('/pomoc/pierwsze-kroki')" />
     </div>
   </section>
   <h1 v-if="!isEmpty">{{ t('advancement.your') }}</h1>
@@ -77,6 +91,8 @@ async function confirmDelete() {
         :rank="card.rank"
         :mentee-name="card.menteeName"
         :mentor-name="card.mentorName"
+        :open-comments="card.openComments"
+        :new-comments="card.newComments"
         @click="router.push('/stopien/' + card.rankInProgress.id)"
         @delete-rank="rankToDelete = card.rankInProgress.id"
     />

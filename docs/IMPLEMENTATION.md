@@ -40,7 +40,7 @@ Zrobione: **fazy 1–5**. Poza zakresem, zgodnie z planem: faza 6 (załączniki)
 - `sync/room.ts`: pokój 128 bit, klucz 256 bit, link `/dolacz#r=…&k=…`, kod QR, „Zmień pokój” = nowy pokój i klucz.
 - `sync/syncService.ts`: `WebrtcProvider` z hasłem pokoju, stany `disabled | unsupported | offline | connecting | alone | synced`, `lastSyncedAt`, ponowne łączenie po `online` i `visibilitychange`.
 - `worker/`: `index.ts` (routing, kontrola Origin, limit na IP przez binding `ratelimits`), `signal.ts` (Durable Object z WebSocket Hibernation, auto-odpowiedź na ping, limity połączeń na pokój i na IP, rozmiaru wiadomości i tematów, IP tylko jako skrót), `signalHub.ts` (protokół y-webrtc), `turn.ts`.
-- `public/_headers`: CSP (`script-src 'self'`, `connect-src 'self'`), `no-referrer`, `nosniff`, `frame-ancestors 'none'`.
+- `public/_headers`: CSP (`script-src 'self'`, `connect-src 'self'`, `worker-src 'self' blob:` dla workera kompresji pdfmake), `no-referrer`, `nosniff`, `frame-ancestors 'none'`.
 
 ## Faza 5 – UX synchronizacji
 

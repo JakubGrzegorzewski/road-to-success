@@ -13,6 +13,8 @@ import {
     RtsFileError,
 } from '@/scripts/export/exportFile'
 import { freshDoc, seedAdvancement, snapshot } from './helpers'
+import { Comment } from '@/scripts/database/Comment'
+import { Requirement } from '@/scripts/database/Requirement'
 
 const toBytes = async (blob: Blob) => new Uint8Array(await blob.arrayBuffer())
 
@@ -93,5 +95,26 @@ describe('.rts export/import', () => {
         expect(json.advancements).toMatchObject([{ rank: 'Przewodnik', mentee: mentee.fullName, tasks: [{ requirementIds: [1001] }] }])
         expect(exportFileName('rts', new Date(2026, 0, 2))).toBe('road-to-success-2026-01-02.rts')
         expect(await toBytes(new Blob(['x']))).toEqual(new Uint8Array([120]))
+    })
+
+    it('puts comments under tasks, requirements and the advancement in the JSON export', async () => {
+        freshDoc()
+        const { rip, mentor, mentee } = await seedAdvancement(0)
+        const t = await Task.add(rip.id)
+        const onTask = await Comment.add({ rankInProgressId: rip.id, target: { type: 'task', id: t.id }, authorId: mentor.id, content: 'Popraw termin' })
+        await Comment.setResolved(onTask.id, true, mentee.id)
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'requirement', id: 1002 }, authorId: mentor.id, content: 'Brak zadania' })
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'requirement', id: 2016 }, authorId: mentor.id, content: 'inny stopień' })
+        await Comment.add({ rankInProgressId: rip.id, target: { type: 'advancement' }, authorId: mentee.id, content: 'Dziękuję' })
+        const json = buildJsonExport(undefined, new Date('2026-01-02T00:00:00Z'))
+        expect(json.advancements).toMatchObject([
+            {
+                comments: [{ author: mentee.fullName, content: 'Dziękuję', resolved: false }],
+                requirements: [{ id: 1002, number: Requirement.find(1002)!.number, comments: [{ author: mentor.fullName, content: 'Brak zadania' }] }],
+                tasks: [{ comments: [{ author: mentor.fullName, content: 'Popraw termin', resolved: true, resolvedBy: mentee.fullName }] }],
+            },
+        ])
+        // hidden orphan (requirement of another rank) is not exported
+        expect(JSON.stringify(json)).not.toContain('inny stopień')
     })
 })

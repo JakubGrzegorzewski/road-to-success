@@ -3,6 +3,9 @@ import { countRecords, docSchemaVersion, getDoc, getMaps, IMPORT_ORIGIN, readNum
 import { storeReady } from '@/scripts/store/persistence'
 import { readTaskRequirementIds } from '@/scripts/database/Task'
 import { Rank } from '@/scripts/database/Rank'
+import { Requirement } from '@/scripts/database/Requirement'
+import { isCommentVisible, readComment } from '@/scripts/database/Comment'
+import type { IComment } from '@/scripts/interfaces'
 
 /**
  * `.rts` backup file:
@@ -146,18 +149,29 @@ export function buildJsonExport(doc: Y.Doc = getDoc(), now = new Date()) {
     const people: { id: string; fullName: string }[] = []
     m.people.forEach((p, id) => people.push({ id, fullName: readString(p, 'fullName') }))
     const name = (id: string) => people.find((p) => p.id === id)?.fullName ?? null
+    const allComments: IComment[] = []
+    m.comments.forEach((c, commentId) => {
+        const comment = readComment(commentId, c, m)
+        if (isCommentVisible(comment, m)) allComments.push(comment)
+    })
+    allComments.sort((a, b) => a.date.localeCompare(b.date))
+    const exportComment = (c: IComment) => ({
+        id: c.id,
+        author: name(c.authorId) ?? (c.authorName || null),
+        date: c.date,
+        content: c.content,
+        resolved: c.resolved,
+        ...(c.editedAt ? { editedAt: c.editedAt } : {}),
+        ...(c.resolved && c.resolvedAt ? { resolvedAt: c.resolvedAt, resolvedBy: c.resolvedById ? name(c.resolvedById) : null } : {}),
+    })
     const advancements: object[] = []
     m.ranksInProgress.forEach((r, id) => {
         const rankId = readNumber(r, 'rankId')
+        const ripComments = allComments.filter((c) => c.rankInProgressId === id)
         const tasks: object[] = []
         m.tasks.forEach((t, taskId) => {
             if (readString(t, 'rankInProgressId') !== id) return
-            const comments: object[] = []
-            m.comments.forEach((c, commentId) => {
-                if (readString(c, 'taskId') === taskId) {
-                    comments.push({ id: commentId, author: name(readString(c, 'authorId')), date: readString(c, 'date'), content: readString(c, 'content') })
-                }
-            })
+            const comments = ripComments.filter((c) => c.targetType === 'task' && c.targetId === taskId).map(exportComment)
             tasks.push({
                 id: taskId,
                 order: readNumber(t, 'order'),
@@ -169,6 +183,13 @@ export function buildJsonExport(doc: Y.Doc = getDoc(), now = new Date()) {
             })
         })
         tasks.sort((a, b) => (a as { order: number }).order - (b as { order: number }).order)
+        const requirements = Requirement.findByRankId(rankId)
+            .map((req) => ({
+                id: req.id,
+                number: req.number,
+                comments: ripComments.filter((c) => c.targetType === 'requirement' && c.targetId === String(req.id)).map(exportComment),
+            }))
+            .filter((req) => req.comments.length > 0)
         advancements.push({
             id,
             rankId,
@@ -176,6 +197,8 @@ export function buildJsonExport(doc: Y.Doc = getDoc(), now = new Date()) {
             mentee: name(readString(r, 'personId')),
             mentor: name(readString(r, 'mentorId')),
             createdAt: new Date(readNumber(r, 'createdAt')).toISOString(),
+            comments: ripComments.filter((c) => c.targetType === 'advancement').map(exportComment),
+            requirements,
             tasks,
         })
     })

@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import ButtonComponent from '@/components/Universal/ButtonComponent.vue'
 import PopupComponent from '@/components/Universal/PopupComponent.vue'
 import QrCodeComponent from '@/components/Universal/QrCodeComponent.vue'
+import HelpLink from '@/components/Universal/HelpLink.vue'
 import { buildJoinLink, parseJoinInput } from '@/scripts/sync/room'
 import { createRoom, defaultDeviceName, isSyncSupported, leaveRoom, rotateRoom, setDeviceName, syncStatus } from '@/scripts/sync/syncService'
 import { useJoinRoom } from '@/scripts/sync/useJoinRoom'
@@ -111,6 +112,7 @@ async function onConfirm() {
         <span class="dot" aria-hidden="true" />
         <strong>{{ stateLabel }}</strong>
         <span v-if="lastSynced" class="muted">· {{ lastSynced }}</span>
+        <HelpLink to="synchronizacja#stany-synchronizacji" class="status-help" />
       </div>
       <template v-if="syncStatus.room">
         <h2 class="small-title">{{ t('sync.devices') }}</h2>
@@ -170,6 +172,7 @@ async function onConfirm() {
         <div class="actions danger-zone">
           <ButtonComponent :button-text="t('sync.rotate')" button-style="warning" :disabled="busy" @click="confirm = 'rotate'" />
           <ButtonComponent :button-text="t('sync.leave')" button-style="error" :disabled="busy" @click="confirm = 'leave'" />
+          <HelpLink to="synchronizacja#zmien-pokoj" class="actions-help" />
         </div>
       </section>
     </template>
@@ -192,7 +195,9 @@ async function onConfirm() {
         :option-one="{ text: t('sync.replace'), action: () => choose('replace'), disabled: joining }"
         :option-two="{ text: t('sync.merge'), action: () => choose('merge'), disabled: joining }"
         :dismiss="cancelJoin"
-    />
+    >
+      <p class="popup-help"><HelpLink to="synchronizacja#scal-czy-zacznij-od-danych-pokoju" new-tab /> {{ t('sync.mergeHelp') }}</p>
+    </PopupComponent>
     <PopupComponent
         v-if="message"
         :title="message"
@@ -322,6 +327,23 @@ h1 {
   margin-top: var(--space-md);
   padding-top: var(--space-sm);
   border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.status-help {
+  margin-left: auto !important;
+}
+
+.actions-help {
+  margin-left: 4px !important;
+}
+
+.popup-help {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 4px 10px;
+  font-size: 14px;
 }
 
 .qr-wrap {
