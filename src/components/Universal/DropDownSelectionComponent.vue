@@ -1,100 +1,145 @@
-<script setup lang="ts">
-import {ref, computed, onMounted, onBeforeUnmount, watch, defineProps, defineEmits} from 'vue';
-import {useI18n} from "vue-i18n";
+<script setup lang="ts" generic="T">
+import { ref, computed, onMounted, onBeforeUnmount, watch, useId } from 'vue';
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-interface Option<T = any> {
-  value: T;
+interface Option<V> {
+  value: V;
   label: string;
   disabled?: boolean;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   label?: string,
-  modelValue: any,
-  options: Option[],
+  modelValue: T,
+  options: Option<T>[],
   placeholder?: string,
   disabled?: boolean,
   styles?: string,
   backgroundColor?: string,
-}>();
+  /** Option labels are i18n keys. */
+  translateLabels?: boolean,
+  /** Stretch to the container width. */
+  block?: boolean,
+}>(), {
+  translateLabels: false,
+  block: false,
+});
 
 const emits = defineEmits<{
-  (e: 'update:modelValue', value: any): void
+  (e: 'update:modelValue', value: T): void
   (e: 'open'): void
   (e: 'close'): void
 }>();
 
+const id = useId()
 const isOpen = ref(false);
 const hoverIndex = ref(-1);
 const rootEl = ref<HTMLElement | null>(null);
+const triggerEl = ref<HTMLElement | null>(null);
 
-const selectedOption = computed(() =>
-    props.options.find(o => o.value === props.modelValue)
-);
+const selectedOption = computed(() => props.options.find(o => o.value === props.modelValue));
+const labelOf = (o: Option<T>) => (props.translateLabels ? t(o.label) : o.label)
 
-function toggle() {
-  if (props.disabled) return;
-  isOpen.value = !isOpen.value;
-  isOpen.value ? emits( 'open' ) : emits( 'close' );
+function open() {
+  if (props.disabled || isOpen.value) return;
+  isOpen.value = true;
+  hoverIndex.value = Math.max(0, props.options.findIndex(o => o.value === props.modelValue));
+  emits('open');
 }
 
 function close() {
-  if (isOpen.value) {
-    isOpen.value = false;
-    emits('close');
-    hoverIndex.value = -1;
-  }
+  if (!isOpen.value) return;
+  isOpen.value = false;
+  hoverIndex.value = -1;
+  emits('close');
 }
 
-function onSelect(option: Option) {
+function toggle() {
+  if (isOpen.value) close();
+  else open();
+}
+
+function onSelect(option: Option<T>) {
   if (option.disabled) return;
-  emits('update:modelValue', option.value);
+  if (option.value !== props.modelValue) emits('update:modelValue', option.value);
   close();
+  triggerEl.value?.focus();
 }
 
-function handleClickOutside(e: MouseEvent) {
-  if (!rootEl.value) return;
-  if (!rootEl.value.contains(e.target as Node)) {
-    close();
+function move(step: number) {
+  const n = props.options.length;
+  if (n === 0) return;
+  let i = hoverIndex.value;
+  for (let k = 0; k < n; k++) {
+    i = (i + step + n) % n;
+    if (!props.options[i]?.disabled) break;
+  }
+  hoverIndex.value = i;
+}
+
+function onKeydown(e: KeyboardEvent) {
+  switch (e.key) {
+    case 'Enter':
+    case ' ':
+      e.preventDefault();
+      if (isOpen.value && props.options[hoverIndex.value]) onSelect(props.options[hoverIndex.value]!);
+      else open();
+      break;
+    case 'ArrowDown':
+      e.preventDefault();
+      if (!isOpen.value) open(); else move(1);
+      break;
+    case 'ArrowUp':
+      e.preventDefault();
+      if (!isOpen.value) open(); else move(-1);
+      break;
+    case 'Escape':
+    case 'Tab':
+      close();
+      break;
   }
 }
 
-onMounted(() => {
-  document.addEventListener('mousedown', handleClickOutside);
-});
+function handlePointerOutside(e: Event) {
+  if (rootEl.value && !rootEl.value.contains(e.target as Node)) close();
+}
 
-onBeforeUnmount(() => {
-  document.removeEventListener('mousedown', handleClickOutside);
-});
+onMounted(() => document.addEventListener('pointerdown', handlePointerOutside));
+onBeforeUnmount(() => document.removeEventListener('pointerdown', handlePointerOutside));
 
 watch(() => props.modelValue, () => {
-  // Keep hover on selected if open
   if (isOpen.value) {
     const idx = props.options.findIndex(o => o.value === props.modelValue);
     if (idx !== -1) hoverIndex.value = idx;
   }
 });
-
 </script>
 
 <template>
-  <label v-if="label" class="dropdown-label">{{ label }}</label>
-  <div :style="props.styles" ref="rootEl" class="dropdown-root" :class="{ 'is-disabled': disabled }">
+  <label v-if="label" class="dropdown-label" :id="`${id}-label`" @click="triggerEl?.focus()">{{ label }}</label>
+  <div :style="props.styles" ref="rootEl" class="dropdown-root" :class="{ 'is-disabled': disabled, block }">
     <div
+        ref="triggerEl"
         class="dropdown-trigger"
+        :class="{ colored: !!backgroundColor }"
+        role="combobox"
+        :aria-expanded="isOpen"
+        :aria-controls="`${id}-list`"
+        :aria-labelledby="label ? `${id}-label` : undefined"
         :tabindex="disabled ? -1 : 0"
+        :style="backgroundColor ? { backgroundColor } : undefined"
         @click="toggle"
-        :style="'background-color:'+props.backgroundColor"
+        @keydown="onKeydown"
     >
-      <span class="dropdown-value" v-if="selectedOption">{{ selectedOption.label.includes(".") ? t(selectedOption.label) : selectedOption.label }}</span>
-      <span class="dropdown-placeholder" v-else>{{ placeholder || 'Select...' }}</span>
-      <span class="dropdown-arrow" :class="{ 'open': isOpen }">➤</span>
+      <span class="dropdown-value" v-if="selectedOption">{{ labelOf(selectedOption) }}</span>
+      <span class="dropdown-placeholder" v-else>{{ placeholder || '—' }}</span>
+      <span class="dropdown-arrow" :class="{ 'open': isOpen }" aria-hidden="true">➤</span>
     </div>
     <transition name="dropdown-fade">
       <div v-show="isOpen" class="dropdown-popover">
-        <ul class="dropdown-list" role="listbox">
+        <ul class="dropdown-list" role="listbox" :id="`${id}-list`">
           <li
               v-for="(opt, i) in options"
               :key="String(opt.value)"
@@ -104,14 +149,14 @@ watch(() => props.modelValue, () => {
                 'is-hover': i === hoverIndex,
                 'is-disabled': opt.disabled }
             ]"
+              role="option"
               :aria-selected="opt.value === modelValue"
-              :tabindex="-1"
+              :aria-disabled="opt.disabled || undefined"
               @mouseenter="!opt.disabled && (hoverIndex = i)"
-              @mouseleave="hoverIndex = -1"
               @click="onSelect(opt)"
           >
             <slot name="option" :option="opt" :active="opt.value === modelValue">
-              {{ opt.label.includes(".") ? t(opt.label) : opt.label }}
+              {{ labelOf(opt) }}
             </slot>
           </li>
         </ul>
@@ -121,11 +166,18 @@ watch(() => props.modelValue, () => {
 </template>
 
 <style scoped>
+.dropdown-label {
+  font-family: 'Museo', sans-serif;
+}
+
 .dropdown-root {
   position: relative;
   width: 240px;
   max-width: 100%;
   font-family: 'Museo', sans-serif;
+}
+.dropdown-root.block {
+  width: 100%;
 }
 .dropdown-root.is-disabled {
   opacity: 0.5;
@@ -136,12 +188,15 @@ watch(() => props.modelValue, () => {
   cursor: pointer;
   user-select: none;
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 6px 12px;
+  min-height: 34px;
   border-radius: 6px;
   font-size: 14px;
   line-height: 1.4;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -154,12 +209,19 @@ watch(() => props.modelValue, () => {
   .dropdown-trigger {
     background: var(--background-color);
     color: var(--primary-color);
+    box-shadow: inset 0 0 0 1px var(--border);
   }
 }
 
+/* status colours: always light text on the coloured background */
+.dropdown-trigger.colored {
+  color: white !important;
+  box-shadow: none;
+  font-weight: 500;
+}
 
-.dropdown-trigger:focus {
-  outline: 2px solid var(--primary-color-light);
+.dropdown-trigger:focus-visible {
+  outline: 2px solid var(--secondary-color);
   outline-offset: 2px;
 }
 
@@ -195,11 +257,11 @@ watch(() => props.modelValue, () => {
   left: 0;
   z-index: 20;
   width: 100%;
+  min-width: 180px;
   background: var(--background-color);
   border: 1px solid var(--background-color);
   border-radius: 6px;
   box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-  max-height: 220px;
   overflow: hidden;
 }
 @media (prefers-color-scheme: dark) {
@@ -213,8 +275,9 @@ watch(() => props.modelValue, () => {
   list-style: none;
   margin: 0;
   padding: 4px 0;
-  max-height: 220px;
+  max-height: min(280px, 50dvh);
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
 }
 
@@ -227,6 +290,7 @@ watch(() => props.modelValue, () => {
   gap: 6px;
   user-select: none;
   transition: background 0.15s, color 0.15s;
+  color: var(--primary-color);
 }
 .dropdown-item.is-disabled {
   cursor: not-allowed;
@@ -240,11 +304,25 @@ watch(() => props.modelValue, () => {
   background: #e3efff;
 }
 @media (prefers-color-scheme: dark) {
+  .dropdown-item {
+    color: var(--background-color);
+  }
   .dropdown-item.is-hover:not(.is-disabled) {
     background: var(--primary-color-light);
   }
   .dropdown-item.is-active {
     background: var(--secondary-color);
+  }
+}
+
+@media (pointer: coarse) {
+  .dropdown-trigger {
+    min-height: var(--touch-target);
+    font-size: 16px;
+  }
+  .dropdown-item {
+    min-height: var(--touch-target);
+    font-size: 16px;
   }
 }
 

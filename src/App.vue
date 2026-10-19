@@ -1,51 +1,128 @@
 <script setup lang="ts">
-import NavBarComponent from "@/components/Website/NavBarComponent.vue";
-import FooterComponent from "@/components/Website/FooterComponent.vue";
-import { useFavicon } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
+import NavBarComponent from '@/components/Website/NavBarComponent.vue'
+import FooterComponent from '@/components/Website/FooterComponent.vue'
+import MobileNavComponent from '@/components/Website/MobileNavComponent.vue'
+import BackupReminderComponent from '@/components/Website/BackupReminderComponent.vue'
+import ButtonComponent from '@/components/Universal/ButtonComponent.vue'
+import { appState } from '@/scripts/appState'
+import { useLayout } from '@/scripts/composables'
 
-const icon = useFavicon()
+const { t } = useI18n()
+const { isMobile } = useLayout()
 
-icon.value = '@/assets/favicon.ico'
-
-import {onMounted} from 'vue';
-import { db } from './scripts/db';
-import defaultRanks from '@/assets/json/rank.json';
-import defaultRequirements from '@/assets/json/requirements.json';
-import {Rank} from "@/scripts/database/Rank.ts";
-
-onMounted(async () => {
-  const ranks = await Rank.getAll();
-  if (ranks.length === 0) {
-    await db.ranks.bulkPut(defaultRanks);
-    await db.requirements.bulkPut(defaultRequirements);
-  }
-});
+function reload() {
+  location.reload()
+}
 </script>
 
 <template>
-  <div class="app-container">
+  <v-app class="app-container">
+    <a class="skip-link" href="#main">{{ t('app.skipToContent') }}</a>
     <NavBarComponent class="app-bar" />
-    <main class="main-content">
-      <router-view/>
-    </main>
-    <FooterComponent class="footer" />
-  </div>
+    <v-main id="main" class="main-content" :class="{ 'with-bottom-nav': isMobile }">
+      <p v-if="appState.storeReady && appState.storageMode === 'memory'" class="app-banner banner-warning" role="status">
+        {{ t('app.memoryOnly') }}
+      </p>
+      <BackupReminderComponent />
+      <router-view />
+    </v-main>
+    <FooterComponent v-if="!isMobile" class="footer" />
+    <MobileNavComponent v-if="isMobile" class="footer" />
+
+    <div v-if="appState.replacedInOtherTab" class="blocking-overlay" role="alertdialog" aria-modal="true">
+      <div class="blocking-card">
+        <p>{{ t('app.replacedInOtherTab') }}</p>
+        <button type="button" class="plain-button" @click="reload">
+          <ButtonComponent :button-text="t('app.reload')" button-style="primary" />
+        </button>
+      </div>
+    </div>
+  </v-app>
 </template>
 
 <style scoped>
 .app-container {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .main-content {
-  flex: 1;
+  /* own stacking context, so decorative layers with z-index: -1 stay visible */
+  position: relative;
+  z-index: 0;
+  flex: 1 0 auto;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+.main-content.with-bottom-nav {
+  /* Vuetify reserves the navigation height; the home indicator needs extra room */
+  padding-bottom: calc(var(--v-layout-bottom, var(--bottom-nav-height)) + var(--safe-bottom)) !important;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 2000;
+  background: var(--secondary-color);
+  color: white;
+  padding: 8px 12px;
+}
+
+.skip-link:focus {
+  left: 8px;
+}
+
+.app-banner {
+  margin: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 8px;
+  font-family: 'Museo', sans-serif;
+  font-size: 14px;
+}
+
+.app-banner.banner-warning {
+  background: var(--accent-warning);
+  color: #1f1300;
+}
+
+.blocking-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.blocking-card {
+  max-width: 420px;
+  background: var(--surface-raised);
+  color: var(--text);
+  border-radius: 12px;
+  padding: var(--space-md);
+  font-family: 'Museo', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.plain-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 @media print {
   .app-bar, .footer {
-    display: none;
+    display: none !important;
   }
 }
 </style>
@@ -53,17 +130,4 @@ onMounted(async () => {
 <style>
 @import url('assets/css/default.css');
 @import url('assets/css/custom_components.css');
-
-body {
-  margin: 0;
-  padding: 0;
-  @media (prefers-color-scheme: dark) {
-    color: var(--background-color);
-    background: var(--primary-color);
-  }
-  @media (prefers-color-scheme: light) {
-    color: var(--primary-color);
-    background: var(--background-color);
-  }
-}
 </style>

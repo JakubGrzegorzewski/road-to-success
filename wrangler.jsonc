@@ -1,9 +1,29 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "road-to-success",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-08-06",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // only these paths reach the Worker; everything else is served as a static file
+    "run_worker_first": ["/signal", "/api/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "SIGNAL", "class_name": "SignalRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SignalRoom"] }],
+  // per-IP limit for new signaling connections and TURN credential requests
+  "ratelimits": [
+    { "name": "RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 60, "period": 60 } }
+  ],
+  "vars": {
+    // lifetime of TURN credentials in seconds
+    "TURN_TTL": "14400"
+    // "TURN_URLS": "turn:turn.example.org:3478,turns:turn.example.org:5349"  (coturn only)
+  },
+  // Secrets (wrangler secret put …): TURN_KEY_ID + TURN_KEY_API_TOKEN (Cloudflare TURN) or TURN_SHARED_SECRET (coturn)
+  // The app stores nothing on the server; request logs are off.
+  "observability": { "enabled": false }
 }

@@ -1,71 +1,74 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { IRank, IRankInProgress, IRequirement, ITask, IUser } from "@/scripts/interfaces.js";
+import type { AdvancementViewModel } from "@/scripts/pdf/advancementViewModel";
+import { Status } from "@/scripts/interfaces";
 
+/** Screen preview of the "task list" document (same data as the PDF). */
+defineProps<{
+  vm: AdvancementViewModel,
+  rankIcon?: string,
+}>();
 
 const { t } = useI18n();
 
-const props = defineProps<{
-  rankInProgress: IRankInProgress,
-  rank: IRank,
-  mentee: IUser,
-  mentor: IUser,
-  tasks: ITask[],
-  requirements: IRequirement[],
-}>();
-
-function isRequirementSelected(task: ITask, requirement: IRequirement) {
-  const reqIds = Array.isArray(task.requirementsIds) ? task.requirementsIds : [];
-  return reqIds.includes(requirement.id as number);
+const statusKey: Record<Status, string> = {
+  [Status.DRAFT]: 'statusOptions.draft',
+  [Status.CREATED]: 'statusOptions.created',
+  [Status.PENDING]: 'statusOptions.pending',
+  [Status.IN_PROGRESS]: 'statusOptions.in_progress',
+  [Status.COMPLETED]: 'statusOptions.completed',
+  [Status.FAILED]: 'statusOptions.failed',
 }
-
 </script>
 
 <template>
-  <div
-      class="report-container"
-      :style="rank.iconInBase64 ? { '--bg-image': `url(data:image/png;base64,${rank.iconInBase64})` } : {}"
-  >
-
+  <div class="report-container">
       <div class="report-header">
-        <img v-if="rank.iconInBase64" :src="'data:image/png;base64,'+rank.iconInBase64" :alt="rank.fullName" class="rank-image"/>
-        <h1 style="padding-top: 10mm">{{ rank.fullName }}</h1>
-        <div><strong>{{ t('advancement.mentee') }}:</strong> {{ mentee.fullName || '—' }}</div>
-        <div><strong>{{ t('advancement.mentor') }}:</strong> {{ mentor.fullName || '—' }}</div>
+        <img v-if="rankIcon" :src="rankIcon" :alt="vm.rank.fullName" class="rank-image"/>
+        <h1>{{ vm.rank.fullName }}</h1>
+        <div><strong>{{ t('advancement.mentee') }}:</strong> {{ vm.menteeName || '—' }}</div>
+        <div><strong>{{ t('advancement.mentor') }}:</strong> {{ vm.mentorName || '—' }}</div>
       </div>
 
-      <article v-if="rank.idea" class="rank-idea" v-html="rank.idea"/>
+      <article class="rank-idea">
+        <template v-for="(segment, i) in vm.ideaSegments" :key="i"><span :class="{ 'idea-part-highlight': segment.highlighted }">{{ segment.text }}</span></template>
+      </article>
 
-      <section v-if="tasks.length > 0" class="tasks-section">
+      <section class="tasks-section">
         <h2>{{ t('advancement.task.tasks') }}</h2>
+        <p v-if="vm.tasks.length === 0" class="muted">{{ t('advancement.task.noTasks') }}</p>
 
-        <div v-for="task in tasks" :key="task.id" class="task-card">
-          <div class="task-row">
-            <strong>{{ task.content || '—' }}</strong>
+        <div v-for="task in vm.tasks" :key="task.id" class="task-card">
+          <div class="task-title">
+            <strong>{{ t('advancement.task.task') }} {{ task.index }}</strong>
+            <span class="status">{{ t(statusKey[task.status]) }}</span>
           </div>
+          <p class="task-text">{{ task.content || '—' }}</p>
 
-          <div v-if="task.partIdea && task.partIdea.length > 0" class="task-row">
+          <div v-if="task.ideaFragments.length > 0" class="task-row">
             <strong>{{ t('advancement.task.idea') }}:</strong>
-            <p>{{ task.partIdea.join(' ') }}</p>
+            <p class="fragment">{{ task.ideaFragments.join(' … ') }}</p>
           </div>
 
-        <div class="task-row">
-          <strong>{{ t('advancement.requirements') }}:</strong>
-          <div class="task-badges">
-            <template v-for="requirement in requirements" :key="requirement.id">
-              <div v-if="isRequirementSelected(task, requirement)" class="req-badge">
-                {{ requirement.number }}. {{ requirement.content }}
+          <div class="task-row">
+            <strong>{{ t('advancement.requirements') }}:</strong>
+            <div class="task-badges">
+              <div v-for="requirement in task.requirements" :key="requirement.id" class="req-badge">
+                <strong>{{ requirement.label }}.</strong> {{ requirement.content }}
               </div>
-            </template>
-            <span v-if="!task.requirementsIds || task.requirementsIds.length === 0">—</span>
+              <span v-if="task.requirements.length === 0">—</span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
   </div>
 </template>
 
 <style scoped>
+h1 {
+  margin: 10mm 0 8px;
+  text-align: center;
+}
 
 .report-header {
   display: flex;
@@ -77,6 +80,7 @@ function isRequirementSelected(task: ITask, requirement: IRequirement) {
 
 .rank-image{
   width: 300px;
+  max-width: 60%;
   padding: 20px;
 }
 
@@ -86,17 +90,58 @@ function isRequirementSelected(task: ITask, requirement: IRequirement) {
   break-after: page;
 }
 
-.task-card {
-  padding: 20px 0 20px 0;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  background: #f8fafc;
+.idea-part-highlight {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
 }
+
+.muted {
+  color: #64748b;
+}
+
+.task-card {
+  padding: 16px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e2e8f0;
+  break-inside: avoid;
+}
+
+.task-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.status {
+  font-size: 0.85em;
+  color: #475569;
+}
+
+.task-text {
+  white-space: pre-wrap;
+  margin: 6px 0 10px;
+}
+
+.fragment {
+  margin: 2px 0 0;
+  font-style: italic;
+}
+
 .task-row {
   margin-bottom: 12px;
 }
 .task-row:last-child {
   margin-bottom: 0;
+}
+
+.task-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 h2 {
@@ -109,20 +154,34 @@ h2 {
   font-family: 'Museo', sans-serif;
   background: white;
   width: 210mm;
+  max-width: 100%;
   min-height: 297mm;
   padding: 20mm;
   margin: 20px auto;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   color: #000;
   font-size: 11pt;
-  gap: 15px;
   display: block;
 }
 
-.report-container .task-card {
-  background: transparent;
-  border-radius: 0;
-  break-inside: avoid;
+@media (max-width: 959px) {
+  .report-container {
+    width: auto;
+    min-height: 0;
+    margin: 12px;
+    padding: 20px 16px;
+    font-size: 15px;
+  }
+  .report-header {
+    padding: 0 0 20px;
+  }
+  h1 {
+    margin-top: 0;
+    font-size: 1.6rem;
+  }
+  .rank-idea {
+    text-align: left;
+  }
 }
 
 @media print {
@@ -134,7 +193,6 @@ h2 {
     background: #fff !important;
   }
 
-  /* Target wrapper elements that might break layouts */
   #app, main, .v-application {
     display: block !important;
     margin: 0 !important;
@@ -165,10 +223,9 @@ h2 {
 
   .task-card {
     background: transparent !important;
-    page-break-inside: avoid !important; /* Legacy fallback */
-    break-inside: avoid !important;      /* Modern standard */
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-
 
   strong, p, li, div, span { color: #000 !important; }
 }

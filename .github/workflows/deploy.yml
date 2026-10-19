@@ -1,37 +1,76 @@
-name: Build and Push Docker Image
+name: CI & deploy (Cloudflare)
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  WRANGLER_SEND_METRICS: "false"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - name: Get Short SHA
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - uses: actions/setup-node@v7
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: 22
+          cache: npm
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - run: npm ci
+      - name: Typecheck (app, configs, worker)
+        run: npm run typecheck
+      - name: Unit, merge and worker logic tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Worker integration test (wrangler local runtime)
+        run: npm run test:worker
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: E2E (phone 360 px, PDF, backup, P2P sync)
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
         with:
-          context: .
-          push: true
-          tags: ghcr.io/jakubgrzegorzewski/road-to-success:latest
-          # Pass the version as a build argument
-          build-args: |
-            VITE_APP_VERSION=${{ steps.vars.outputs.sha_short }}
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      # GITHUB_SHA is appended to the version shown in the footer and stored in exports
+      - run: npm run build
+
+      - name: Deploy (static app + Worker + Durable Object)
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: npx wrangler deploy
+
+      - name: Cloudflare credentials missing
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "::warning::Add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to deploy."

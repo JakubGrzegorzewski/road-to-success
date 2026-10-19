@@ -1,0 +1,90 @@
+[
+  {
+    "id": 0,
+    "fullName": "Przewodnik",
+    "shortName": "pwd",
+    "colorHex": "#1E2F5C",
+    "idea": "Swoją postawą propaguje harcerski system wartości wynikający z Przyrzeczenia i Prawa Harcerskiego. Poznaje siebie i motywy swojego postępowania. Pracuje nad własnymi słabościami i rozwija zdolności. Jest wzorem dla harcerzy. We współdziałaniu z dziećmi i młodzieżą znajduje radość, umie być starszym kolegą i przewodnikiem. Bierze aktywny udział w życiu drużyny, świadomie stosując metodę harcerską i wykorzystując przykład osobisty do realizacji celów wychowawczych. Ma poczucie odpowiedzialności za pracę i powierzoną grupę. Współtworzy hufcową wspólnotę. Ma świadomość wychowawczej roli służby w harcerstwie.",
+    "startRequirements": [
+      "Złożenie Przyrzeczenia Harcerskiego",
+      "Przedstawienie KSI programu swojej próby zapewniającego osiągnięcie poziomu opisanego w idei stopnia oraz realizację wymagań.",
+      "Ukończone 16 lat",
+      "Posiadanie aktualnego certyfikatu \"Safe from Harm\"."
+    ],
+    "endRequirements": [
+      "Osiągnięcie poziomu opisanego w idei stopnia i zrealizowanie wymagań próby",
+      "Przestrzeganie zasad „Polityki ochrony bezpieczeństwa dzieci, młodzieży i dorosłych w Związku Harcerstwa Polskiego – programu \"Safe from Harm\" oraz innych przepisów dotyczących zasad bezpieczeństwa w pracy z dziećmi i młodzieżą.",
+      "Posiadanie stopnia harcerki orlej / harcerza orlego (dotyczy osób w wieku wędrowniczym w momencie zamykania próby) lub wiedzy i umiejętności harcerskich na poziomie samarytanki/ćwika (dla pozostałych osób).",
+      "Ukończenie minimum 15-godzinnego kursu pierwszej pomocy zawierającego zajęcia w praktyce",
+      "Pozytywnie oceniona praca wychowawcza w gromadzie/drużynie w okresie realizacji próby.",
+      "Ukończenie kursu przewodnikowskiego.",
+      "Posiadanie wiedzy i umiejętności odpowiadających wymaganiom stawianym wychowawcom wypoczynku.",
+      "Posiadanie aktualnego certyfikatu \"Safe from Harm\"."
+    ]
+  },
+  {
+    "id": 1,
+    "fullName": "Podharcmistrz",
+    "shortName": "phm",
+    "colorHex": "#467A78",
+    "idea": "Określa kierunki swojego rozwoju i je realizuje. Pracuje nad sobą, przełamuje własne ograniczenia. Przykładem osobistym, w tym zdrowym trybem życia, świadomie i pozytywnie oddziałuje na otoczenie. Rozumie ludzi i otaczającą go rzeczywistość – reaguje na ich potrzeby. Systematycznie stosuje służbę jako narzędzie harcerskiej pracy wychowawczej. Potrafi zauważyć sytuacje problemowe i je rozwiązywać. Umie spojrzeć na nie szerzej, niż tylko z perspektywy własnego środowiska. Buduje swój autorytet. Doskonali swą wiedzę i umiejętności wychowawcze. Dzieli się nimi z kadrą. Świadomie i konsekwentnie stosuje Harcerski System Wychowawczy. Pracuje w zespole instruktorskim. Ma własny pogląd na sprawy nurtujące jego środowisko harcerskie. Wzmacnia tożsamość harcerstwa, w tym ma świadomość możliwości płynących z przynależności do światowego ruchu skautowego.",
+    "startRequirements": [
+      "Pozytywnie oceniana praca instruktorska przez co najmniej 12 miesięcy od przyznania stopnia przewodnika.",
+      "Zaliczona służba instruktorska.",
+      "Ukończone 18 lat.",
+      "Przedstawienie KSI programu swojej próby zapewniającego osiągnięcie poziomu opisanego w idei stopnia oraz realizację wymagań.",
+      "Posiadanie doświadczenia w doskonaleniu zastępowych lub przybocznych.",
+      "Posiadanie co najmniej 12-miesięcznego doświadczenia na funkcji drużynowego lub przybocznego.",
+      "Posiadanie aktualnego certyfikatu \"Safe from Harm\"."
+    ],
+    "endRequirements": [
+      "Osiągnięcie poziomu opisanego w idei stopnia i zrealizowanie wymagań próby.",
+      "Pozytywnie oceniana praca instruktorska w okresie realizacji próby.",
+      "Ukończenie kursu podharcmistrzowskiego.",
+      "Posiadanie wiedzy i umiejętności odpowiadających wymaganiom stawianym kierownikom wypoczynku.",
+      "Ukończenie minimum 6-godzinnej formy przygotowującej do bycia opiekunem prób przewodnikowskich.",
+      "Posiadanie aktualnego certyfikatu \"Safe from Harm\"."
+    ]
+  },
+  {
+    "id": 2,
+    "fullName": "Harcmistrz",
+    "shortName": "hm",
+    "colorHex": "#db0000",
+    "idea": "Jest wzorem dla instruktorów. Prowadzi zdrowy tryb życia. Dba o swój wszechstronny rozwój. Stara się odkryć sens życia. Konsekwentnie realizuje swoje cele życiowe. Osiągnął założoną przez siebie dojrzałość w życiu rodzinnym, zawodowym i społecznym. Kreuje rzeczywistość. Jest znaczącą osobowością w zespole instruktorskim, z którym aktywnie pracuje w środowisku swojego działania. Dzieli się własnymi doświadczeniami życiowymi i wychowawczymi i przekłada je na trwały dorobek. Po mistrzowsku stosuje Harcerski System Wychowawczy. Ma dużą wiedzę i umiejętności w zakresie samodzielnego kierowania zespołem. Potrafi inspirować i organizować swoje środowisko do potrzebnego społecznie działania. Wpływa na oblicze harcerstwa, buduje jego tożsamość.",
+    "startRequirements": [
+      "Pozytywnie oceniana praca instruktorska przez co najmniej 24 miesiące od przyznania stopnia podharcmistrza.",
+      "Zaliczona służba instruktorska.",
+      "Ukończone 21 lat.",
+      "Przedstawienie KSI programu swojej próby zapewniającego osiągnięcie poziomu opisanego w idei stopnia oraz realizację wymagań.",
+      "Posiadanie aktualnego certyfikatu \"Safe from Harm\"."
+    ],
+    "endRequirements": [
+      "Osiągnięcie poziomu opisanego w idei stopnia i zrealizowanie wymagań próby.",
+      "Osiągnięcie sukcesu w wybranej dziedzinie.",
+      "Pozytywnie oceniana praca instruktorska w okresie realizacji próby.",
+      "Ukończenie kursu harcmistrzowskiego lub aktywne uczestniczenie w minimum 3 innych stacjonarnych formach wymiany doświadczeń poziomu harcmistrzowskiego (kursy, warsztaty, seminaria, konferencje itp.).",
+      "Poprowadzenie samodzielnej programowo formy podczas HALiZ (obozu, podobozu, kolonii lub zimowiska) w okresie od zdobycia stopnia podharcmistrza. Uzyskanie pozytywnej oceny swojej pracy.",
+      "Pełnienie funkcji opiekuna pozytywnie zakończonej próby na stopień instruktorski w okresie od zdobycia stopnia podharcmistrza.",
+      "Posiadanie aktualnego certyfikatu \"Safe from Harm\"."
+    ]
+  },
+  {
+    "id": 3,
+    "fullName": "Harcerz Orli",
+    "shortName": "ho",
+    "colorHex": "#9C1006",
+    "idea": "Świadomie pracuję nad budowaniem swojej osobowości. Dojrzale pojmuję wzorzec określony Prawem Harcerskim i konsekwentnie do niego dążę. Stawiam sobie ważne pytania i poszukuję na nie odpowiedzi. Wyciągam wnioski na przyszłość. Umiejętnie zarządzam swoim czasem i zasobami, tak by racjonalnie godzić moje różne role społeczne. Szukam swojej drogi do dorosłości. Jestem świadomy/świadoma odpowiedzialności i konsekwencji dokonywanych przeze mnie wyborów. Ważne miejsce w moim życiu zajmuje troska o innych i otoczenie, w którym żyję. Nie akceptuję zachowań uderzających w godność człowieka. Wybieram kolejne pola służby i rzetelnie je realizuję. Poszerzam swoje horyzonty – poznaję kulturę, historię, osiągnięcia nauki, dokonuję oceny i buduję swój obraz świata. Odważnie podejmuję wyzwania i konsekwentnie je realizuję. Rozwijam siłę ciała, ducha i rozumu – dążę do mistrzostwa w wybranej dziedzinie. Dbam o moją rodzinę.",
+    "startRequirements": [],
+    "endRequirements": []
+  },
+  {
+    "id": 4,
+    "fullName": "Harcerz Rzeczypospolitej",
+    "shortName": "hr",
+    "colorHex": "#9C1006",
+    "idea": "Jestem gotów/gotowa do wzięcia odpowiedzialności za swój los. Mam ukształtowany system wartości zbudowany na Prawie Harcerskim. Rozumiem, na czym polega harcerski styl życia. Wiem, co jest dla mnie ważne, umiem samodzielnie podejmować decyzje zgodne ze swoim kodeksem wartości. Stale buduję i pogłębiam własny pogląd na świat. Samodzielnie oceniam zdarzenia i fakty. Potrafię słuchać innych, jestem otwarty/otwarta na argumenty i potrafię je krytycznie analizować. Odpowiedzialnie podchodzę do życia i świadomie kształtuję otoczenie i swoją przyszłość. Jestem wrażliwy/wrażliwa na potrzeby innych. Pogłębiam moją wiedzę o kulturze, historii, osiągnięciach naukowych. Mam poczucie współodpowiedzialności za losy mojej rodziny, kraju i świata. Realizuję swoje pasje. Jestem odważny/odważna w działaniu, nie boję się trudnych wyborów i konsekwencji z tym związanych. Stawiam sobie ambitne cele i je realizuję. Troszczę się o harmonijny rozwój - duchowy, społeczny, fizyczny, intelektualny i emocjonalny. Osiągam mistrzostwo w wybranych dziedzinach aktywności. Zaczynam kreować moją zawodową przyszłość. Buduję trwałe więzi, relacje z innymi traktuję poważnie. Uczestniczę w budowaniu tożsamości mojej rodziny, jestem jej ważną częścią.",
+    "startRequirements": [],
+    "endRequirements": []
+  }
+]

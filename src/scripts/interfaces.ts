@@ -1,5 +1,5 @@
 // ==========================================
-// 1. ENUMS (From Status.ts & Style.ts)
+// 1. ENUMS
 // ==========================================
 
 export enum Status {
@@ -11,63 +11,76 @@ export enum Status {
     FAILED = 'FAILED',
 }
 
+export const ALL_STATUSES: readonly Status[] = Object.values(Status)
 
-// ==========================================
-// 2. DATA TRANSFER OBJECTS (DTOs)
-// ==========================================
-
-export interface IUser {
-    id?: number;
-    fullName: string;
-    ranksInProgressIds: number[];
-    mentorRanksInProgressIds: number[];
-    commentIds: number[];
+export function isStatus(value: unknown): value is Status {
+    return typeof value === 'string' && (ALL_STATUSES as readonly string[]).includes(value)
 }
 
+// ==========================================
+// 2. STATIC CATALOG (bundled JSON, never synchronised)
+// ==========================================
+
 export interface IRank {
-    id?: number;
+    id: number;
     fullName: string;
     shortName: string;
     idea: string;
     startRequirements: string[];
     endRequirements: string[];
-    requirementIds: number[];
     colorHex: string;
-    iconInBase64: string;
-}
-
-export interface IRankInProgress {
-    id?: number;
-    rankId: number;
-    userId: number;
-    mentorId: number;
-    taskIds: number[];
 }
 
 export interface IRequirement {
-    id?: number;
+    id: number;
     number: string;
     content: string;
     rankId: number;
 }
 
+// ==========================================
+// 3. USER DATA (stored in the Yjs document, ids are UUIDs)
+// ==========================================
+
+/** A person: mentee (harcerz) or mentor (opiekun). Stored in the `people` map. */
+export interface IUser {
+    id: string;
+    fullName: string;
+}
+
+export interface IRankInProgress {
+    id: string;
+    rankId: number;
+    /** Mentee working on the rank. */
+    personId: string;
+    mentorId: string;
+    createdAt: number;
+}
+
 export interface ITask {
-    id?: number;
-    rankInProgressId: number;
-    requirementsIds: number[];
+    id: string;
+    rankInProgressId: string;
+    requirementIds: number[];
     content: string;
-    status: Status; // Uses the Status Enum above
+    status: Status;
+    /**
+     * Selected fragments of the rank idea. The full idea split into words means
+     * "nothing selected yet" (kept for compatibility with data created before 2.0).
+     */
     partIdea: string[];
-    commentIds: number[];
+    order: number;
+    createdAt: number;
 }
 
-export interface ITaskReport {
-    id?: number;
-    taskId: number;
+export interface ITaskComment {
+    id: string;
+    taskId: string;
+    authorId: string;
+    date: string;
     content: string;
-    attachments: IAttachment[];
 }
 
+// Attachments are out of scope for the first local-first version (phase 6).
 export interface IAttachment {
     name: string;
     type: string;
@@ -75,10 +88,9 @@ export interface IAttachment {
     fileData: File;
 }
 
-export interface ITaskComment{
-    id?: number;
-    date: string;
+export interface ITaskReport {
+    id?: string;
+    taskId: string;
     content: string;
-    taskId: number;
-    userId: number;
+    attachments: IAttachment[];
 }

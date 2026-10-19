@@ -1,36 +1,33 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import { onMounted, ref } from 'vue'
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {useI18n} from "vue-i18n";
-import {IUser} from "@/scripts/interfaces.ts";
-import {User} from "@/scripts/database/User.ts";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
-import router from "@/scripts/router.ts";
+import { User } from "@/scripts/database/User.ts";
 
 const { t } = useI18n();
+const router = useRouter();
 
 const fullName = ref('')
 const popupMessage = ref('')
 const isFirst = ref(false);
 
 async function onSubmit() {
-  const user: Omit<IUser, 'id'> = {
-    fullName: fullName.value,
-    ranksInProgressIds: [],
-    mentorRanksInProgressIds: [],
-    commentIds: [],
-  }
-  await User.add(user)
-
+  if (!fullName.value.trim()) return
+  await User.add({ fullName: fullName.value })
   fullName.value = ''
-  popupMessage.value = 'Użytkownik dodany'
+  popupMessage.value = t('user.added')
+}
+
+function close() {
+  popupMessage.value = ''
+  if (window.history.state?.back) router.back()
+  else void router.push('/')
 }
 
 onMounted(async () => {
-  User.getAll().then(users => {
-    if (users.length === 0)
-      isFirst.value = true;
-  })
+  isFirst.value = (await User.getAll()).length === 0
 })
 </script>
 
@@ -39,17 +36,16 @@ onMounted(async () => {
       <div>
         <h2 v-if="isFirst">{{ t('user.addFirstUser') }}</h2>
         <h2 v-else>{{ t('user.addUser') }}</h2>
-        <label>{{ t('user.nameRankCombo') }}</label>
-        <input v-model="fullName" required />
+        <p v-if="isFirst" class="hint">{{ t('user.firstUserHint') }}</p>
+        <label for="person-name">{{ t('user.nameRankCombo') }}</label>
+        <input id="person-name" v-model="fullName" required autocomplete="name" enterkeyhint="done" />
       </div>
-      <button type="submit" style="display: flex; justify-content: center;">
-        <ButtonComponent :button-text="t('edit.add')"/>
-      </button>
+      <ButtonComponent type="submit" class="submit" :button-text="t('edit.add')" block />
       <PopupComponent
           v-if="popupMessage"
           :title="popupMessage"
           message=""
-          :option-two="{ text: t('edit.ok'), action: () => { popupMessage = ''; router.go(-1) } }"
+          :option-two="{ text: t('edit.ok'), action: close }"
       />
     </form>
 </template>
@@ -69,6 +65,16 @@ onMounted(async () => {
   color: var(--background-color);
 }
 
+h2 {
+  margin: 0 0 8px;
+}
+
+.hint {
+  margin: 0 0 12px;
+  opacity: 0.85;
+  font-size: 14px;
+}
+
 label {
   display: block;
   font-size: 0.95rem;
@@ -76,9 +82,10 @@ label {
   font-weight: 500;
 }
 
-input, select, textarea {
+input {
   padding: 8px 12px;
-  font-size: 1rem;
+  min-height: 44px;
+  font-size: 16px;
   border-radius: 6px;
   border: 1px solid rgba(0,0,0,0.08);
   background: var(--background-color);
@@ -87,30 +94,19 @@ input, select, textarea {
   box-sizing: border-box;
 }
 
-button{
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: 2px solid var(--primary-color-light);
+input:focus {
+  outline: 2px solid var(--secondary-color);
   outline-offset: 2px;
 }
 
-.success {
-  color: var(--accent-success);
-  font-weight: 600;
-  margin-top: 8px;
+.submit {
+  justify-self: center;
 }
 
 @media (max-width: 600px) {
   .form {
-    padding: var(--space-sm);
+    padding: var(--space-md) var(--space-sm);
     margin: var(--space-sm);
   }
 }
 </style>
-

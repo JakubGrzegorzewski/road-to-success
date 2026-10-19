@@ -1,22 +1,24 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "vite.config.ts"],
   "compilerOptions": {
-    "lib": ["ES2020", "DOM"],
-    "target": "es2020",
-    "module": "esnext",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
     "moduleResolution": "bundler",
-    "noEmit": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noEmit": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+    "types": ["vite/client", "vite-plugin-pwa/vanillajs"],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "exclude": ["node_modules", "dist"],
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "allowImportingTsExtensions": true
-  }
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue", "tests/unit/**/*.ts"],
+  "exclude": ["node_modules", "dist", "worker"]
 }

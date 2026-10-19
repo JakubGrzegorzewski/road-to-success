@@ -1,28 +1,34 @@
-import { db } from '../db';
-import type {IRank} from '../interfaces';
+import ranksData from '@/assets/json/ranks.json'
+import type { IRank } from '../interfaces'
+
+/**
+ * Ranks are static data bundled with the app (never synchronised); records in the
+ * Yjs document reference them by `rankId`. Images live in src/assets/ranks (see rankAssets.ts).
+ */
+const RANKS: readonly IRank[] = Object.freeze((ranksData as IRank[]).map((r) => Object.freeze({ ...r })))
+const BY_ID = new Map(RANKS.map((r) => [r.id, r]))
 
 export class Rank {
-    static async getAll(): Promise<Array<IRank>> {
-        return db.ranks.toArray();
+    static list(): readonly IRank[] {
+        return RANKS
+    }
+
+    static find(id: number | undefined | null): IRank | undefined {
+        return id === undefined || id === null ? undefined : BY_ID.get(id)
+    }
+
+    /** Rank used for new advancements. */
+    static default(): IRank {
+        return RANKS[0]!
+    }
+
+    static async getAll(): Promise<IRank[]> {
+        return [...RANKS]
     }
 
     static async getById(id: number): Promise<IRank> {
-        const rank = await db.ranks.get(id);
-        if (!rank) throw new Error(`rank with id ${id} not found`);
-        return rank;
-    }
-
-    static async add(rank: IRank): Promise<IRank> {
-        await db.ranks.put(rank);
-        return rank;
-    }
-
-    static async update(rank: IRank): Promise<IRank | undefined> {
-        const updatedRows = await db.ranks.update(rank.id as NonNullable<IRank["id"]>, rank as any);
-        return updatedRows > 0 ? rank : undefined;
-    }
-
-    static async deleteObject(id: number): Promise<void> {
-        await db.ranks.delete(id);
+        const rank = BY_ID.get(id)
+        if (!rank) throw new Error(`rank with id ${id} not found`)
+        return rank
     }
 }

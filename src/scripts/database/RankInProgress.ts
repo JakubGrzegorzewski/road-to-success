@@ -1,87 +1,110 @@
-import { db } from '../db';
-import type {IRankInProgress, IRequirement} from '../interfaces';
-import {Requirement} from "@/scripts/database/Requirement.ts";
-import {Task} from "@/scripts/database/Task.ts";
-import {eventBus, ITypesEnum} from "@/main.ts";
-import {User} from "@/scripts/database/User.ts";
+import * as Y from 'yjs'
+import type { IRankInProgress, IRequirement } from '../interfaces'
+import { getDoc, getMaps, LOCAL_ORIGIN, readNumber, readString, type RecordMap } from '../store/doc'
+import { newId } from '../store/ids'
+import { storeReady } from '../store/persistence'
+import { Rank } from './Rank'
+import { Requirement } from './Requirement'
+import { deleteTasksWhere, readTaskRequirementIds } from './Task'
+import { User } from './User'
 
+function read(id: string, m: RecordMap): IRankInProgress {
+    return {
+        id,
+        rankId: readNumber(m, 'rankId', Rank.default().id),
+        personId: readString(m, 'personId'),
+        mentorId: readString(m, 'mentorId'),
+        createdAt: readNumber(m, 'createdAt'),
+    }
+}
+
+/** Advancements ("próby") — `ranksInProgress` map of the Yjs document. */
 export class RankInProgress {
-    static async getAll(): Promise<Array<IRankInProgress>> {
-        return db.ranksInProgress.toArray();
+    static async getAll(): Promise<IRankInProgress[]> {
+        await storeReady()
+        const out: IRankInProgress[] = []
+        getMaps().ranksInProgress.forEach((m, id) => out.push(read(id, m)))
+        return out.sort((a, b) => a.createdAt - b.createdAt || a.id.localeCompare(b.id))
     }
 
-    static async getById(id: number): Promise<IRankInProgress> {
-        const ranksInProgress = await db.ranksInProgress.get(id);
-        if (!ranksInProgress) throw new Error(`ranksInProgress with id ${id} not found`);
-        return ranksInProgress;
+    static async findById(id: string | undefined | null): Promise<IRankInProgress | undefined> {
+        await storeReady()
+        if (!id) return undefined
+        const m = getMaps().ranksInProgress.get(id)
+        return m ? read(id, m) : undefined
     }
 
-    static async getRequirementsStatuses(id:number): Promise<{isCompleted: boolean, requirement : IRequirement}[]>{
-        const rankInProgress = await db.ranksInProgress.get(id);
-        if (!rankInProgress) throw new Error(`task with id ${id} not found`);
-        const requirements = await Requirement.getByRankId(rankInProgress.rankId);
-        const tasks = await Task.getByRankInProgressId(id);
-        const returnValues: {isCompleted: boolean, requirement : IRequirement}[] = [];
-
-        requirements.forEach(req => {
-            tasks.forEach((task) => {
-                if (task.requirementsIds.includes(<number>req.id)) {
-                    returnValues.push({isCompleted: true, requirement: req});
-                    return
-                }
-            })
-        });
-
-        return returnValues;
+    static async getById(id: string): Promise<IRankInProgress> {
+        const rip = await RankInProgress.findById(id)
+        if (!rip) throw new Error(`rankInProgress with id ${id} not found`)
+        return rip
     }
 
-    static async add(ranksInProgress: IRankInProgress): Promise<IRankInProgress> {
-        // .put adds if new, updates if key exists
-        await db.ranksInProgress.put(ranksInProgress);
-        eventBus.emit('db-update', { type: ITypesEnum.ERankInProgress});
-        return ranksInProgress;
+    /** Every requirement of the advancement's rank, with whether at least one task covers it. */
+    static async getRequirementsStatuses(id: string): Promise<{ isCompleted: boolean; requirement: IRequirement }[]> {
+        const rip = await RankInProgress.getById(id)
+        const covered = new Set<number>()
+        getMaps().tasks.forEach((t) => {
+            if (readString(t, 'rankInProgressId') === id) readTaskRequirementIds(t).forEach((r) => covered.add(r))
+        })
+        return Requirement.findByRankId(rip.rankId).map((requirement) => ({ isCompleted: covered.has(requirement.id), requirement }))
     }
 
-    static async addDefault(): Promise<IRankInProgress> {
-        const iUsers = await User.getAll();
-        if (iUsers.length === 0) throw new Error('No users')
-        if (iUsers[0] === null || iUsers[0] === undefined) throw new Error('No users')
-        const newRankData: Omit<IRankInProgress, 'id'> = {
-            rankId: 0,
-            userId: <number>iUsers[0].id,
-            mentorId: <number>iUsers[0].id,
-            taskIds: []
-        };
-
-
-        const generatedId = await db.ranksInProgress.add(newRankData);
-
-        console.log(`Added new rankInProgress with id ${generatedId}`);
-        eventBus.emit('db-update', { type: ITypesEnum.ERankInProgress});
-
-        return { id: generatedId, ...newRankData };
-    }
-
-
-    static async update(ranksInProgress: IRankInProgress | undefined): Promise<IRankInProgress | undefined> {
-        if (ranksInProgress == undefined && ranksInProgress == null) throw new Error(`ranksInProgress is undefined`);
-        const currentRIN = await RankInProgress.getById(<number>ranksInProgress.id);
-        if (currentRIN?.rankId !== ranksInProgress.rankId && currentRIN?.taskIds) {
-            await Promise.all(
-                currentRIN.taskIds.map(taskId => Task.deleteObject(taskId))
-            );
+    static async add(data: Omit<IRankInProgress, 'id' | 'createdAt'> & { id?: string; createdAt?: number }): Promise<IRankInProgress> {
+        await storeReady()
+        const record: IRankInProgress = {
+            id: data.id ?? newId(),
+            rankId: data.rankId,
+            personId: data.personId,
+            mentorId: data.mentorId,
+            createdAt: data.createdAt ?? Date.now(),
         }
-        const plainRankInProgress = JSON.parse(JSON.stringify(ranksInProgress));
-        const updatedRows = await db.ranksInProgress.update(
-            ranksInProgress.id as NonNullable<IRankInProgress["id"]>,
-            plainRankInProgress);
-
-        eventBus.emit('db-update', { type: ITypesEnum.ERankInProgress});
-        return updatedRows > 0 ? ranksInProgress : undefined;
+        getDoc().transact(() => {
+            const m = new Y.Map<unknown>()
+            getMaps().ranksInProgress.set(record.id, m)
+            m.set('rankId', record.rankId)
+            m.set('personId', record.personId)
+            m.set('mentorId', record.mentorId)
+            m.set('createdAt', record.createdAt)
+        }, LOCAL_ORIGIN)
+        return record
     }
 
-    static async deleteObject(id: number): Promise<void> {
-        await db.ranksInProgress.delete(id);
-        eventBus.emit('db-update', { type: ITypesEnum.ERankInProgress});
+    /** New advancement with the first rank and the first person as mentee and mentor. */
+    static async addDefault(): Promise<IRankInProgress> {
+        const users = await User.getAll()
+        const first = users[0]
+        if (!first) throw new Error('No users')
+        return RankInProgress.add({ rankId: Rank.default().id, personId: first.id, mentorId: first.id })
+    }
+
+    /**
+     * Writes only the fields that differ from the document. Changing the rank removes the
+     * advancement's tasks (they belong to the old rank's idea/requirements) in the same transaction.
+     */
+    static async update(rankInProgress: IRankInProgress | undefined): Promise<IRankInProgress | undefined> {
+        if (!rankInProgress) throw new Error('ranksInProgress is undefined')
+        await storeReady()
+        const m = getMaps().ranksInProgress.get(rankInProgress.id)
+        if (!m) return undefined
+        const current = read(rankInProgress.id, m)
+        getDoc().transact(() => {
+            if (current.rankId !== rankInProgress.rankId) {
+                deleteTasksWhere((t) => readString(t, 'rankInProgressId') === rankInProgress.id)
+                m.set('rankId', rankInProgress.rankId)
+            }
+            if (current.personId !== rankInProgress.personId) m.set('personId', rankInProgress.personId)
+            if (current.mentorId !== rankInProgress.mentorId) m.set('mentorId', rankInProgress.mentorId)
+        }, LOCAL_ORIGIN)
+        return rankInProgress
+    }
+
+    /** Deletes the advancement with its tasks and their comments in one transaction. */
+    static async deleteObject(id: string): Promise<void> {
+        await storeReady()
+        getDoc().transact(() => {
+            deleteTasksWhere((t) => readString(t, 'rankInProgressId') === id)
+            getMaps().ranksInProgress.delete(id)
+        }, LOCAL_ORIGIN)
     }
 }
