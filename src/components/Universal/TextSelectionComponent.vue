@@ -1,119 +1,122 @@
 <script setup lang="ts">
-import {ref, nextTick, onMounted} from 'vue'
+import { computed, ref, watch } from 'vue'
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
+/**
+ * Lets the user pick fragments of the rank idea: drag to select a range (mouse) or tap words
+ * (touch). Emits the selected words grouped into contiguous fragments.
+ */
 const props = defineProps<{ text: string[]; originalText: string[] }>();
 
 const emits = defineEmits<{
   (e: 'text-highlighted', payload: { text: string[]; reset: boolean }): void;
 }>();
 
-const showAddSelection = ref<boolean>(false);
-const showClearSelection = ref<boolean>(false);
-const textContainer = ref<HTMLElement | null>(null);
+const selected = ref<Set<number>>(new Set());
+const container = ref<HTMLElement | null>(null);
+let suppressNextClick = false;
 
-async function clearHighlight() {
-  if (textContainer.value) {
-    const highlightedEls = Array.from(textContainer.value.getElementsByClassName('highlighted'))
-    highlightedEls.forEach((el) => el.classList.remove('highlighted'))
+const hasSelection = computed(() => selected.value.size > 0);
+const isNarrowed = computed(() => props.text.length !== props.originalText.length);
+
+watch(() => props.text, () => {
+  selected.value = new Set();
+});
+
+function toggle(indices: number[]) {
+  const next = new Set(selected.value);
+  for (const i of indices) {
+    if (next.has(i)) next.delete(i);
+    else next.add(i);
   }
-
-  showAddSelection.value = false
-  window.getSelection()?.removeAllRanges()
-  await nextTick()
-  showClearSelection.value = props.text.length !== props.originalText.length;
+  selected.value = next;
 }
 
-async function handleTextSelection() {
-  await nextTick()
-  const selection = window.getSelection()
-
-  if (!selection || !selection.rangeCount || selection.isCollapsed || !selection.toString().trim()) {
-    showAddSelection.value = false
-    selection?.removeAllRanges()
-    return
+function onWordClick(index: number) {
+  if (suppressNextClick) {
+    suppressNextClick = false;
+    return;
   }
+  toggle([index]);
+}
 
+/** Mouse drag selection: every word touched by the range is toggled. */
+function onSelectionEnd() {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed || !selection.toString().trim()) return;
   const range = selection.getRangeAt(0);
-  const container = textContainer.value;
-  if (!container || !container.contains(range.commonAncestorContainer)) return;
+  if (!container.value || !container.value.contains(range.commonAncestorContainer)) return;
+  const indices: number[] = [];
+  container.value.querySelectorAll<HTMLElement>('[data-word-index]').forEach((span) => {
+    if (selection.containsNode(span, true)) indices.push(Number(span.dataset.wordIndex));
+  });
+  toggle(indices);
+  selection.removeAllRanges();
+  suppressNextClick = true;
+  setTimeout(() => (suppressNextClick = false), 0);
+}
 
-  const spans = container.querySelectorAll<HTMLSpanElement>('.snipped-word');
-  spans.forEach((span) => {
-    if (selection.containsNode(span, true)) {
-      if (span.classList.contains('highlighted')) {
-        span.classList.remove('highlighted');
-      }else {
-        span.classList.add('highlighted');
-      }
+function confirmSelection() {
+  const groups: string[] = [];
+  let current: string[] = [];
+  props.text.forEach((word, i) => {
+    if (selected.value.has(i)) {
+      current.push(word.trim());
+    } else if (current.length > 0) {
+      groups.push(current.join(' '));
+      current = [];
     }
   });
-
-  if (container.querySelectorAll<HTMLSpanElement>('.highlighted').length > 0) {
-    showAddSelection.value = true;
-    showClearSelection.value = props.text.length !== props.originalText.length;
-    selection.removeAllRanges();
-  }
+  if (current.length > 0) groups.push(current.join(' '));
+  emits('text-highlighted', { text: groups.filter((g) => g.length > 0), reset: false });
+  selected.value = new Set();
 }
 
-const confirmSelection = () => {
-  if (!textContainer.value) return;
-  let selectedText: string[] = [];
-  let currentSpan : string = "";
-  const spans = textContainer.value.querySelectorAll<HTMLSpanElement>('.snipped-word');
-  spans.forEach((span) => {
-    if (span.classList.contains('highlighted')) {
-      currentSpan = currentSpan + " " + span.innerText.trim();
-      console.log(currentSpan);
-    }else{
-      if(currentSpan.length > 0){
-        selectedText.push(currentSpan);
-      }
-      currentSpan = "";
-    }
-  });
-  if (currentSpan.length > 0) {
-    selectedText.push(currentSpan);
-  }
-  selectedText = selectedText.map((part) => part.trim()).filter((part) => part.length > 0);
-  console.log(selectedText);
-  emits('text-highlighted', { text: selectedText, reset: false })
-  clearHighlight()
+function clearSelection() {
+  selected.value = new Set();
 }
 
-const resetSelection = () => {
-  emits('text-highlighted', { text: props.text, reset: true })
-  clearHighlight()
+function resetSelection() {
+  emits('text-highlighted', { text: props.text, reset: true });
+  selected.value = new Set();
 }
-
-onMounted(() => {
-  showClearSelection.value = props.text.length !== props.originalText.length;
-})
-
 </script>
 
 <template>
-  <div ref="textContainer" class="snipped">
-    <div class="snipped-text" @mouseup="handleTextSelection" @touchend="handleTextSelection">
-      <span v-for="(word, index) in props.text" :key="`${word}-${index}`" class="snipped-word">
-        {{ word }}{{ index < props.text.length - 1 ? ' ' : '' }}
-      </span>
+  <div class="snipped">
+    <p class="snipped-hint">{{ t('advancement.task.ideaHint') }}</p>
+    <div ref="container" class="snipped-text" @mouseup="onSelectionEnd">
+      <span
+          v-for="(word, index) in props.text"
+          :key="`${word}-${index}`"
+          class="snipped-word"
+          :class="{ highlighted: selected.has(index) }"
+          :data-word-index="index"
+          @click="onWordClick(index)"
+      >{{ word }}{{ index < props.text.length - 1 ? ' ' : '' }}</span>
     </div>
 
     <div class="snipped-buttons">
-      <button-component
-          v-if="showAddSelection"
+      <span v-if="hasSelection" class="snipped-count">{{ t('advancement.task.selectedCount', { n: selected.size }) }}</span>
+      <ButtonComponent
+          v-if="hasSelection"
           @click.stop="confirmSelection"
           :button-text="t('edit.save')"
           button-style="success"
       />
-      <button-component
-          v-if="showClearSelection"
-          @click.stop="resetSelection"
+      <ButtonComponent
+          v-if="hasSelection"
+          @click.stop="clearSelection"
           :button-text="t('edit.cancel')"
+          button-style="ghost"
+      />
+      <ButtonComponent
+          v-if="!hasSelection && isNarrowed"
+          @click.stop="resetSelection"
+          :button-text="t('advancement.task.ideaReset')"
           button-style="warning"
       />
     </div>
@@ -125,32 +128,37 @@ onMounted(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  user-select: text;
-  cursor: text;
+  align-items: stretch;
   min-height: 60px;
   font-family: 'Museo', sans-serif;
   font-size: 12px;
 }
 
+.snipped-hint {
+  margin: 0 0 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
 .snipped-text {
   font-size: 1.1em;
-  line-height: 1.6;
+  line-height: 1.7;
+  user-select: text;
+  cursor: text;
   @media (prefers-color-scheme: dark) {
     color: var(--background-color);
   }
   @media (prefers-color-scheme: light) {
     color: var(--primary-color);
   }
-  display: flex;
-  justify-content: left;
-  flex-wrap: wrap;
 }
 
 .snipped-word {
   margin: 0;
-  padding: 0.1em 0.2em;
-  display: inline;
+  padding: 0.1em 0.05em;
+  border-radius: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .snipped-word.highlighted {
@@ -161,7 +169,28 @@ onMounted(() => {
 
 .snipped-buttons {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 12px;
+}
+
+.snipped-count {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* Touch: tap words instead of fighting with native text selection */
+@media (pointer: coarse) {
+  .snipped-text {
+    user-select: none;
+    -webkit-user-select: none;
+    font-size: 1.25em;
+    line-height: 1.9;
+  }
+  .snipped-word {
+    padding: 0.2em 0.1em;
+  }
 }
 </style>

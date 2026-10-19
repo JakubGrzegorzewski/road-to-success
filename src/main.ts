@@ -1,39 +1,29 @@
 import { createApp } from 'vue'
+import { registerSW } from 'virtual:pwa-register'
 import App from './App.vue'
-import router from './scripts/router.js'
-import i18n from './scripts/i18n.js'
+import router from './scripts/router'
+import i18n from './scripts/i18n'
 import 'vuetify/styles'
-import { vuetify } from './scripts/vuetify.ts'
-import './scripts/bootstrap'
-import mitt from "@/scripts/mitt.ts";
+import { vuetify } from './scripts/vuetify'
+import { initStore } from './scripts/store/persistence'
+import { initSync } from './scripts/sync/syncService'
+
+console.info('Droga do sukcesu', __APP_VERSION__)
+document.documentElement.lang = i18n.global.locale.value
 
 const app = createApp(App)
-
-
-export enum CardType {
-    DEFAULT = 'default',
-    ADD = 'add',
-    IMPORT = 'import'
-}
-
-export enum ITypesEnum {
-    ERank,
-    ERankInProgress,
-    ERequirement,
-    ETask,
-    ETaskComment,
-    EUser
-}
-
-// 1. Define the events and their expected payloads
-type ApplicationEvents = {
-    'db-update': { type: ITypesEnum};
-};
-
-// 2. Create and export the typed emitter instance
-export const eventBus = mitt<ApplicationEvents>();
-
 app.use(router)
 app.use(i18n)
 app.use(vuetify)
 app.mount('#app')
+
+// Load the local document (IndexedDB + one-time migration), then resume syncing.
+// Views do not wait for this: every data facade awaits the store itself.
+initStore()
+    .then(() => initSync())
+    .catch((e) => console.error('[startup]', e))
+
+if (import.meta.env.PROD) {
+    // Service worker (vite-plugin-pwa, autoUpdate): the app works offline and updates itself.
+    registerSW({ immediate: true })
+}

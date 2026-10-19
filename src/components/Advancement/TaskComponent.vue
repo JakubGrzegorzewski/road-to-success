@@ -1,54 +1,33 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import ButtonComponent from "@/components/Universal/ButtonComponent.vue";
-import {onMounted, Ref, ref} from "vue";
 import DropDownSelectionComponent from "@/components/Universal/DropDownSelectionComponent.vue";
-import {useI18n} from "vue-i18n";
 import PopupComponent from "@/components/Universal/PopupComponent.vue";
-import {ITask, ITaskComment, Status} from "@/scripts/interfaces.ts";
-import {TaskComment} from "@/scripts/database/TaskComment.ts"
+import { Status, type ITask } from "@/scripts/interfaces.ts";
 
+/** Card frame of a task: status selector, content slot, delete with confirmation. */
 const props = defineProps<{
-  task : ITask,
+  task: ITask,
+  index?: number,
 }>();
 
 const emits = defineEmits<{
   (e: 'delete:task'): void;
+  (e: 'update:status', status: Status): void;
 }>();
 
-const shouldShowAccept = ref<boolean>( false);
-
-const comments : Ref<ITaskComment[] | []> = ref([]);
-
-const contentDivRef = ref(null);
-const contentDivHeight = ref(0);
-
-function sizeObserver() {
-  if (contentDivRef.value) {
-    let observer = new ResizeObserver(entries => {
-      for (let entry of entries) {
-        contentDivHeight.value = entry.contentRect.height;
-      }
-    });
-    observer.observe(contentDivRef.value);
-  }
-}
-
-onMounted(() => {
-  sizeObserver()
-  props.task.commentIds.forEach((commentId: number) => {
-    TaskComment.getById(commentId).then((comment: ITaskComment | null) => {
-      if (comment) {
-        comments.value = [comment, ...comments.value || [] ];
-      }
-    });
-  })
-});
-
 const { t } = useI18n();
+const shouldShowAccept = ref<boolean>(false);
+
+function onStatusChange(status: Status) {
+  emits('update:status', status);
+}
 
 const statusOptions = [
   { value: Status.CREATED, label: 'statusOptions.created' },
   { value: Status.IN_PROGRESS, label: 'statusOptions.in_progress' },
+  { value: Status.PENDING, label: 'statusOptions.pending' },
   { value: Status.COMPLETED, label: 'statusOptions.completed' },
   { value: Status.FAILED, label: 'statusOptions.failed' },
 ];
@@ -56,7 +35,7 @@ const statusOptions = [
 const getStatusStyle = (status: Status) => {
   switch (status) {
     case Status.CREATED:
-      return 'var(--primary-color)';
+      return 'var(--primary-color-light)';
     case Status.PENDING:
       return 'var(--accent-warning)';
     case Status.IN_PROGRESS:
@@ -66,23 +45,27 @@ const getStatusStyle = (status: Status) => {
     case Status.FAILED:
       return 'var(--accent-error)';
     default:
-      return '';
+      return 'var(--primary-color-light)';
   }
 };
 </script>
 
 <template>
-<div class="task">
-  <div class="task-content box-shadow" ref="contentDivRef" :style="{'border-color': getStatusStyle(task.status)}">
-    <DropDownSelectionComponent
-        v-model="task.status"
-        :options="statusOptions"
-        styles="align-self: flex-end;"
-        :backgroundColor="getStatusStyle(task.status)"
-    />
+<article class="task">
+  <div class="task-content box-shadow" :style="{'border-color': getStatusStyle(props.task.status)}">
+    <header class="task-header">
+      <h2 v-if="index !== undefined" class="task-number">{{ t('advancement.task.task') }} {{ index }}</h2>
+      <DropDownSelectionComponent
+          :model-value="props.task.status"
+          :options="statusOptions"
+          translate-labels
+          styles="width: 180px"
+          :background-color="getStatusStyle(props.task.status)"
+          @update:model-value="onStatusChange"
+      />
+    </header>
     <slot/>
     <ButtonComponent
-        v-if="task"
         class="task-delete"
         button-style="error"
         :button-text="t('advancement.task.delete')"
@@ -92,11 +75,11 @@ const getStatusStyle = (status: Status) => {
         v-if="shouldShowAccept"
         :title="t('popups.delete.title')"
         :message="t('popups.delete.message')"
-        :option-one="{ text: t('edit.delete'), action: () => { emits('delete:task'); shouldShowAccept = false } }"
-        :option-two="{ text: t('edit.cancel'), action: () => { shouldShowAccept = false} }"
+        :option-one="{ text: t('edit.delete'), style: 'error', action: () => { emits('delete:task'); shouldShowAccept = false } }"
+        :option-two="{ text: t('edit.cancel'), action: () => { shouldShowAccept = false } }"
     />
   </div>
-</div>
+</article>
 </template>
 
 <style scoped>
@@ -132,15 +115,33 @@ const getStatusStyle = (status: Status) => {
   border-width: 4px;
 }
 
+.task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.task-number {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
 .task-delete {
   align-self: flex-end;
   margin: 10px;
-  justify-self: flex-end
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .task-content {
     padding: var(--space-sm);
+    border-width: 3px;
+    background-size: 420px;
+  }
+  .task-delete {
+    margin: 4px 0 0;
   }
 }
 </style>

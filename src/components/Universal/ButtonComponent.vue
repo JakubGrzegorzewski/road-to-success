@@ -1,109 +1,133 @@
 <script setup lang="ts">
-import {computed, ref, Ref} from "vue";
-  const props = defineProps({
-    buttonText: { type: String, required: false },
-    buttonHint: { type: String, required: false },
-    buttonIcon: { type: String, default: '', required: false },
-    buttonStyle: { type: String, default: 'default' }
-  })
+import { computed } from "vue";
 
-  const resolvedImageSrc = computed(() => {
-    if (props.buttonIcon) {
-      return new URL(props.buttonIcon.replace('@', '../..'), import.meta.url).href
-    }
-    return ''
-  })
+const props = withDefaults(defineProps<{
+  buttonText?: string;
+  buttonHint?: string;
+  buttonIcon?: string;
+  buttonStyle?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  /** Full width on phones. */
+  block?: boolean;
+}>(), {
+  buttonStyle: 'default',
+  type: 'button',
+  disabled: false,
+  block: false,
+});
 
-const hintRef = ref<HTMLElement | null>(null) as Ref<HTMLElement | null>
-
-const hintStyle = computed(() => {
-  const height = hintRef.value?.getBoundingClientRect?.().height ?? 0
-  const width = hintRef.value?.getBoundingClientRect?.().width ?? 0
-
-  return { transform: `translate(+${width/2-40}px, -${height/2+30}px)` }
+const resolvedImageSrc = computed(() => {
+  if (props.buttonIcon) {
+    return new URL(props.buttonIcon.replace('@', '../..'), import.meta.url).href
+  }
+  return ''
 })
 </script>
 
 <template>
-    <div :class="[buttonStyle, 'button']">
-      <span v-if="buttonText"> {{ buttonText }} </span>
-      <span v-if="buttonHint" :style="hintStyle" class="button-hint" ref="hintRef">{{ buttonHint }}</span>
-      <img v-if="buttonIcon" :src="resolvedImageSrc" alt="Button Icon" style="width: 16px; height: 16px; object-fit: contain;">
-    </div>
+  <button :type="type" :disabled="disabled" :class="[`btn--${buttonStyle}`, 'button', { block }]" :title="buttonHint">
+    <img v-if="buttonIcon" :src="resolvedImageSrc" alt="" class="button-icon">
+    <slot name="icon" />
+    <span v-if="buttonText" class="button-text">{{ buttonText }}</span>
+    <span v-if="buttonHint" class="button-hint" aria-hidden="true">{{ buttonHint }}</span>
+  </button>
 </template>
 
 <style scoped>
   .button {
+    position: relative;
     border: none;
     border-radius: 6px;
     padding: 8px 16px;
+    min-height: 36px;
     cursor: pointer;
     font-size: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, opacity 0.2s ease;
     white-space: nowrap;
     font-family: 'Museo', sans-serif;
     width: fit-content;
+    max-width: 100%;
+    color: white;
+    font-weight: 500;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .button:hover {
-    transform: scale(1.05);
+  .button-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .button:active {
+  .button-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+
+  /* no sticky hover zoom after a tap on touch screens */
+  @media (hover: hover) {
+    .button:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+  }
+
+  .button:active:not(:disabled) {
     transform: scale(0.95);
   }
 
-  .default {
+  .button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn--default {
     background-color: var(--primary-color);
-    color: white;
-    font-weight: 500;
   }
 
-  .default-light{
+  .btn--default-light {
     background-color: var(--primary-color-light);
-    color: white;
-    font-weight: 500;
   }
 
-  .primary {
+  .btn--primary {
     background-color: var(--secondary-color);
-    color: white;
-    font-weight: 500;
   }
 
-  .success {
+  .btn--secondary {
+    background-color: var(--primary-color-light);
+  }
+
+  .btn--success {
     background-color: var(--accent-success);
-    color: white;
-    font-weight: 500;
   }
 
-  .warning {
+  .btn--warning {
     background-color: var(--accent-warning);
-    color: white;
-    font-weight: 500;
   }
 
-  .error {
+  .btn--error {
     background-color: var(--accent-error);
-    color: white;
-    font-weight: 500;
   }
 
-  .info {
+  .btn--info {
     background-color: var(--accent-info);
-    color: white;
-    font-weight: 500;
   }
 
-  .white {
+  .btn--white {
     background-color: white;
     color: var(--primary-color);
     font-weight: 700;
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+    border: 1px solid var(--border);
   }
 
   .button-hint {
@@ -111,27 +135,46 @@ const hintStyle = computed(() => {
     font-weight: 500;
     text-transform: uppercase;
     visibility: hidden;
+    opacity: 0;
     background-color: white;
     color: black;
     text-align: justify;
     padding: 5px;
     position: absolute;
-    z-index: 1;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
     border-radius: 4px;
     white-space: normal;
     font-family: 'Museo', sans-serif;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     width: 300px;
     max-width: min(300px, 80vw);
-  }
-  .button:hover .button-hint {
-    visibility: visible;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
   }
 
-  @media (max-width: 600px) {
+  @media (hover: hover) {
+    .button:hover .button-hint,
+    .button:focus-visible .button-hint {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  /* touch screens: comfortable targets (≥ 44 px) */
+  @media (pointer: coarse) {
     .button {
-      font-size: 13px;
-      padding: 10px 14px;
+      min-height: var(--touch-target);
+      font-size: 14px;
+      padding: 10px 16px;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .button.block {
+      width: 100%;
     }
   }
 </style>

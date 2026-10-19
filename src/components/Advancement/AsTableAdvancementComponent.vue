@@ -1,62 +1,50 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { IRank, IRankInProgress, IRequirement, ITask, IUser } from "@/scripts/interfaces.js";
+import type { AdvancementViewModel } from "@/scripts/pdf/advancementViewModel";
+import { useLayout } from "@/scripts/composables";
 
-const { t } = useI18n();
-
-const props = defineProps<{
-  rankInProgress: IRankInProgress,
-  rank: IRank,
-  mentee: IUser,
-  mentor: IUser,
-  tasks: ITask[],
-  requirements: IRequirement[],
+/** Screen preview of the "requirement table" document (same data as the PDF). */
+defineProps<{
+  vm: AdvancementViewModel,
+  rankIcon?: string,
 }>();
 
-function getTasksForRequirement(requirement: IRequirement): ITask[] {
-  return props.tasks.filter(task => {
-    const reqIds = Array.isArray(task.requirementsIds) ? task.requirementsIds : [];
-    return reqIds.includes(requirement.id as number);
-  });
-}
+const { t } = useI18n();
+const { isWide } = useLayout();
 </script>
 
 <template>
   <div class="report-container">
     <div class="report-header">
-      <img v-if="rank.iconInBase64" :src="'data:image/png;base64,'+rank.iconInBase64" :alt="rank.fullName" class="rank-image"/>
-      <h1 style="padding-top: 10mm">{{ rank.fullName }}</h1>
-      <div><strong>{{ t('advancement.mentee') }}:</strong> {{ mentee.fullName || '—' }}</div>
-      <div><strong>{{ t('advancement.mentor') }}:</strong> {{ mentor.fullName || '—' }}</div>
+      <img v-if="rankIcon" :src="rankIcon" :alt="vm.rank.fullName" class="rank-image"/>
+      <h1>{{ vm.rank.fullName }}</h1>
+      <div><strong>{{ t('advancement.mentee') }}:</strong> {{ vm.menteeName || '—' }}</div>
+      <div><strong>{{ t('advancement.mentor') }}:</strong> {{ vm.mentorName || '—' }}</div>
     </div>
 
+    <article class="rank-idea">
+      <template v-for="(segment, i) in vm.ideaSegments" :key="i"><span :class="{ 'idea-part-highlight': segment.highlighted }">{{ segment.text }}</span></template>
+    </article>
 
-    <article v-if="rank.idea" class="rank-idea" v-html="rank.idea"/>
-
-    <section v-if="requirements.length > 0" class="matrix-section">
+    <section v-if="vm.requirements.length > 0" class="matrix-section">
       <h2>{{ t('advancement.requirements') }}</h2>
 
-      <table class="matrix-table">
+      <table v-if="isWide" class="matrix-table">
         <thead>
         <tr>
-          <th class="col-req">{{ t('advancement.requirement.showRequirements') }}</th>
+          <th class="col-req">{{ t('requirement.requirement') }}</th>
           <th class="col-tasks">{{ t('advancement.task.tasks') }}</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="requirement in requirements" :key="requirement.id">
+        <tr v-for="requirement in vm.requirements" :key="requirement.id">
           <td class="col-req">
-            <strong>{{ requirement.number }}.</strong> {{ requirement.content }}
+            <strong>{{ requirement.label }}.</strong> {{ requirement.content }}
           </td>
-
           <td class="col-tasks">
-            <div v-if="getTasksForRequirement(requirement).length > 0" class="tasks-wrapper">
-              <div
-                  v-for="task in getTasksForRequirement(requirement)"
-                  :key="task.id"
-                  class="task-item"
-              >
-                <p class="task-content">{{ task.content }}</p>
+            <div v-if="requirement.tasks.length > 0" class="tasks-wrapper">
+              <div v-for="task in requirement.tasks" :key="task.id" class="task-item">
+                <p class="task-content">{{ task.content || '—' }}</p>
               </div>
             </div>
             <span v-else class="no-tasks">—</span>
@@ -64,15 +52,33 @@ function getTasksForRequirement(requirement: IRequirement): ITask[] {
         </tr>
         </tbody>
       </table>
+
+      <!-- below 960 px: one card per requirement instead of a table -->
+      <ul v-else class="requirement-cards">
+        <li v-for="requirement in vm.requirements" :key="requirement.id" class="requirement-card" :class="{ empty: requirement.tasks.length === 0 }">
+          <p class="requirement-text"><strong>{{ requirement.label }}.</strong> {{ requirement.content }}</p>
+          <div class="requirement-tasks">
+            <span class="cards-label">{{ t('advancement.task.tasks') }}:</span>
+            <p v-for="task in requirement.tasks" :key="task.id" class="task-content">{{ task.content || '—' }}</p>
+            <span v-if="requirement.tasks.length === 0" class="no-tasks">—</span>
+          </div>
+        </li>
+      </ul>
     </section>
   </div>
 </template>
 
 <style scoped>
+h1 {
+  margin: 10mm 0 8px;
+  text-align: center;
+}
+
 h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px; }
 
 .rank-image{
   width: 300px;
+  max-width: 60%;
   padding: 20px;
 }
 
@@ -81,7 +87,7 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 20mm  20mm 20mm;
+  padding: 0 20mm 20mm 20mm;
 }
 
 .rank-idea {
@@ -90,11 +96,18 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
   break-after: page;
 }
 
+.idea-part-highlight {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
 
 .report-container {
   font-family: 'Museo', sans-serif;
   background: white;
   width: 210mm;
+  max-width: 100%;
   min-height: 297mm;
   padding: 20mm;
   margin: 20px auto;
@@ -109,7 +122,6 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
   border-color: #000;
 }
 
-/* Style tabeli */
 .matrix-section {
   margin-top: 25px;
 }
@@ -160,15 +172,64 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 
 .task-content {
   margin: 0 0 4px 0;
-}
-
-.task-idea {
-  margin: 0;
-  color: #64748b;
+  white-space: pre-wrap;
 }
 
 .no-tasks {
   color: #94a3b8;
+}
+
+.requirement-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.requirement-card {
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid var(--accent-success);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.requirement-card.empty {
+  border-left-color: #cbd5e1;
+}
+
+.requirement-text {
+  margin: 0 0 8px;
+}
+
+.cards-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 2px;
+}
+
+/* tablets and phones: fluid "paper" instead of a fixed A4 sheet */
+@media (max-width: 959px) {
+  .report-container {
+    width: auto;
+    min-height: 0;
+    margin: 12px;
+    padding: 20px 16px;
+    font-size: 15px;
+  }
+  .report-header {
+    padding: 0 0 20px;
+  }
+  h1 {
+    margin-top: 0;
+    font-size: 1.6rem;
+  }
+  .rank-idea {
+    text-align: left;
+  }
 }
 
 @media print {
@@ -207,7 +268,6 @@ h2 { border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 15px;
 
   .task-item {
     border-color: #000 !important;
-
   }
   strong, p, li, div, span, th, td { color: #000 !important; }
 }

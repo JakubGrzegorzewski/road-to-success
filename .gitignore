@@ -11,6 +11,7 @@ node_modules
 .DS_Store
 dist
 dist-ssr
+dev-dist
 coverage
 *.local
 .env.local
@@ -20,6 +21,13 @@ coverage
 
 /cypress/videos/
 /cypress/screenshots/
+
+# Cloudflare / tests
+.wrangler
+.dev.vars
+test-results
+playwright-report
+blob-report
 
 # Editor directories and files
 .vscode/*
@@ -39,4 +47,3 @@ coverage
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
-
