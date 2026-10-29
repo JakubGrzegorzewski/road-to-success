@@ -26,14 +26,10 @@ export async function loadHelpArticle(slug: string, lang: string): Promise<{ art
     if (!load) return null
     return { article: await load(), fallback: found.fallback }
 }
-
-/** "Zgłoś problem" under an article: a new GitHub issue with the article in the title. */
-export const HELP_ISSUES_URL = 'https://github.com/JakubGrzegorzewski/road-to-success/issues/new'
+export const HELP_ISSUES_URL = 'mailto:grzegorzewski.jakub@zhp.net.pl'
 
 export function helpFeedbackUrl(articleTitle: string, page: string): string {
-    const params = new URLSearchParams({
-        title: `Pomoc: ${articleTitle}`,
-        body: `Poradnik: ${page}\n\nCo jest niejasne albo działa inaczej, niż opisano?\n\n`,
-    })
-    return `${HELP_ISSUES_URL}?${params.toString()}`
+    const subject = `Pomoc: ${articleTitle}`
+    const body = `Poradnik: ${page}\n\nCo jest niejasne albo działa inaczej, niż opisano?\n\n`
+    return `${HELP_ISSUES_URL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
